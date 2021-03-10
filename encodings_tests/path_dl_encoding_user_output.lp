@@ -3,6 +3,7 @@
 % ----------------------------------------------------------------------------
 
 #script(python)
+import sys
 import itertools
 import networkx as nx
 from clorm import func, simple_predicate, alias, notin_, in_, ph1_
@@ -50,36 +51,25 @@ def print_nx_task_sequence(G,fb):
 
 # -------------------------------------------------------------------------------
 # Print moves by robot
-
-# FIXUP: THERE IS A BUG IN THE QUERY SORT. SO SORT MANUALLY TILL I FIX IT
 # -------------------------------------------------------------------------------
 
-def print_visits(G,fb):
+def add_visits(G,fb):
     qVisits = fb.query(Visit,Arr,Exit)\
                 .join(Visit.tid == Arr.a.tid, Visit.tid == Exit.e.tid,
                       Visit.vertex == Arr.a.vertex,
                       Visit.vertex == Exit.e.vertex)\
                 .order_by(Visit.tid, Arr.t)\
-                .select(Visit.tid,Visit.vertex,Arr.t,Exit.t)
-
-    visits = list(qVisits.all())
-    visits.sort(key=lambda x: (x[0],x[2]))
-    for t, vis in itertools.groupby(visits, lambda x: x[0]):
-        tmp = [ (x[1],x[2],x[3]) for x in vis]
-        G.add_node(t,visits=tmp)
-
-
-#    for t, visits in qVisits.all():
-#        vlist = list(visits)
-#        print("VISITS: {}: {}".format(t, vlist))
-#        G.add_node(t,visits=vlist)
+                .group_by()\
+                .select(Visit.vertex,Arr.t,Exit.t)
+    for t, vis in qVisits.all():
+        G.add_node(t,visits=list(vis))
 
 # -------------------------------------------------------------------------------
 # Print output
 # -------------------------------------------------------------------------------
 def print_output(fb):
     G = nx.DiGraph()
-    print_visits(G,fb)
+    add_visits(G,fb)
     print_nx_task_sequence(G,fb)
 
 # -------------------------------------------------------------------------------
@@ -106,4 +96,8 @@ def main(ctrl_):
         raise SystemError("Unsatisfiable")
     if opt_mode != "optN":
         print_output(fb)
+
+    sys.stderr.flush()
+    sys.stdout.flush()
+
 #end.

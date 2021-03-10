@@ -3,6 +3,7 @@
 % ----------------------------------------------------------------------------
 
 #script(python)
+import sys
 import networkx as nx
 from clorm import func, simple_predicate, alias, notin_, in_, ph1_
 from clorm.clingo import Control
@@ -102,4 +103,8 @@ def main(ctrl_):
         raise SystemError("Unsatisfiable")
     if opt_mode != "optN":
         print_output(fb)
+
+    sys.stderr.flush()
+    sys.stdout.flush()
+
 #end.

@@ -3,7 +3,7 @@
 % ----------------------------------------------------------------------------
 
 #script(python)
-import itertools
+import sys
 import networkx as nx
 from clorm import func, simple_predicate, alias, notin_, in_, ph1_
 from clorm.clingo import Control
@@ -24,8 +24,6 @@ Exit=DlExit
 
 # -------------------------------------------------------------------------------
 # Add a list of visits as attributes to task graph nodes
-
-# FIXUP: THERE IS A BUG IN THE QUERY SORT. SO SORT MANUALLY TILL I FIX IT
 # -------------------------------------------------------------------------------
 
 def add_visits(G,fb):
@@ -34,13 +32,10 @@ def add_visits(G,fb):
                       Visit.vertex == Arr.a.vertex,
                       Visit.vertex == Exit.e.vertex)\
                 .order_by(Visit.tid, Arr.t)\
-                .select(Visit.tid,Visit.vertex,Arr.t,Exit.t)
-
-    visits = list(qVisits.all())
-    visits.sort(key=lambda x: (x[0],x[2]))
-    for t, vis in itertools.groupby(visits, lambda x: x[0]):
-        tmp = [ (x[1],x[2],x[3]) for x in vis]
-        G.add_node(t,visits=tmp)
+                .group_by()\
+                .select(Visit.vertex,Arr.t,Exit.t)
+    for t, vis in qVisits.all():
+        G.add_node(t,visits=list(vis))
 
 # -------------------------------------------------------------------------------
 # Add everything else from into the task graph
@@ -117,4 +112,8 @@ def main(ctrl_):
         raise SystemError("Unsatisfiable")
     if opt_mode != "optN":
         print_walks_and_actions(fb)
+
+    sys.stderr.flush()
+    sys.stdout.flush()
+
 #end.

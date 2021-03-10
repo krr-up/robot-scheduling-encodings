@@ -29,3 +29,8 @@ same_robot(T,T')  :- assignment(R,T), assignment(R,T'), T < T'.
 
 :- task(T,_), not task_sequence(T,_), not task_sequence(_,T).
 
+:- depends(deliver,T,T'), not task_sequence(T,T').
+
+% Redundant
+%:- depends(deliver,T,T'), assignment(R,T), not assignment(R,T').
+%:- depends(deliver,T,T'), assignment(R,T'), not assignment(R,T).
