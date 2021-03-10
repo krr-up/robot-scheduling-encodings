@@ -4,7 +4,7 @@
 
 % BUG clingo-dl is not checking relative path so for the moment have to include
 % task_sequencing.lp from the command line.
-%#include "task_sequencing.lp".
+#include "task_sequencing.lp".
 
 % ------------------------------------------------------------------------------
 % Robot timed walk assignment: Definition 4(ii) + Definition 6 (except 6(iii)).
@@ -68,10 +68,6 @@ before(e,(R',S'),(R,S))     :-  walk(R,S,V1), walk(R,S+1,V2),
 &diff{ exit(R',S') - exit(R,S) } <= 0         :- proj(T,S), assignment(R,T),
                                                  proj(T',S'), assignment(R',T'),
                                                  depends(_,T',T).
-
-:- depends(deliver,T,T'), not task_sequence(T,T').
-:- depends(deliver,T,T'), assignment(R,T), not assignment(R,T').
-:- depends(deliver,T,T'), assignment(R,T'), not assignment(R,T).
 
 
 % ------------------------------------------------------------------------------

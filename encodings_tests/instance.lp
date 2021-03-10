@@ -42,4 +42,3 @@ depends(wait,t1,t4).
 depends(deliver,t5,t6).
 depends(deliver,t7,t8).
 depends(wait,t5,t8).
-

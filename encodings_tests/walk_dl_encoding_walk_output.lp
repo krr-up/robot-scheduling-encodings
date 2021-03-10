@@ -3,6 +3,7 @@
 % ----------------------------------------------------------------------------
 
 #script(python)
+import sys
 import networkx as nx
 from clorm import func, simple_predicate, alias, notin_, in_, ph1_
 from clorm.clingo import Control
@@ -77,4 +78,8 @@ def main(ctrl_):
     if opt_mode != "optN":
         print_walk(fb)
         print_action(fb)
+
+    sys.stderr.flush()
+    sys.stdout.flush()
+
 #end.

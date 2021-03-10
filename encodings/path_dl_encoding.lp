@@ -1,10 +1,10 @@
 % ------------------------------------------------------------------------------
-% Robot task sequence asssignment: Definition 4(i) + Definition 5
+% Robot task sequence assignment: Definition 4(i) + Definition 5
 % ------------------------------------------------------------------------------
 
 % BUG clingo-dl is not checking relative path so for the moment have to include
 % task_sequencing.lp from the command line.
-%#include "task_sequencing.lp".
+#include "task_sequencing.lp".
 
 % ------------------------------------------------------------------------------
 % Partial merging of Definition 4(ii) + Definition 6 (except 6(iii)) +
@@ -76,23 +76,18 @@ before(e,(T',V1'),(T,V2))     :- move(T,V1,V2), move(T',V1',V2'),
                                  not before(e,(T,V2),(T',V1')).
 
 
-
-
 &diff{ exit(T,V) - arrive(T',V') } <= -1  :- before(v,(T,V),(T',V')).
 &diff{ arrive(T,V) - exit(T',V') } <= -1  :- before(e,(T,V),(T',V')).
 
 % ------------------------------------------------------------------------------
 % Partial Definitions 9.
 %
-% Assignment dependency checking.
+% Assignment dependency checking. - Only required for wait dependency because
+% deliver dependency is for a single robot and handled by task sequencing.
 % ------------------------------------------------------------------------------
 
 &diff{ arrive(T,V) - arrive(T',V')} <= 0  :- depends(_,T,T'),
                                              task(T,V), task(T',V').
-
-:- depends(deliver,T,T'), not task_sequence(T,T').
-:- depends(deliver,T,T'), assignment(R,T), not assignment(R,T').
-:- depends(deliver,T,T'), assignment(R,T'), not assignment(R,T).
 
 % ------------------------------------------------------------------------------
 % Show for post-processing
