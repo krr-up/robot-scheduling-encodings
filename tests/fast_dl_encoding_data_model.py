@@ -21,20 +21,10 @@ class Arrive(Predicate):
     pid=ConstantField
     vertex=ConstantField
 
-class Exit(Predicate):
-    pid=ConstantField
-    vertex=ConstantField
-
 class DlArrive(Predicate):
     a=Arrive.Field
     t=IntegerField
     class Meta: name = "dl"
-
-class DlExit(Predicate):
-    e=Exit.Field
-    t=IntegerField
-    class Meta: name = "dl"
-
 
 # ------------------------------------------------------------------------------
 # main

@@ -8,13 +8,11 @@ import networkx as nx
 from clorm import func, simple_predicate, alias, notin_, in_, ph1_
 from clorm.clingo import Control
 from common_data_model import Task, Assignment, TaskSequence
-from path_dl_encoding_data_model import Move, Path, Visit, Arrive, Exit,\
-    DlArrive, DlExit
+from fast_dl_encoding_data_model import Move, Path, Visit, Arrive, DlArrive
 
 Ass=Assignment
 TSeq=TaskSequence
 Arr=DlArrive
-Exit=DlExit
 
 # -------------------------------------------------------------------------------
 # Input that is passed straight out: depends/3, assignment/2, task/2,
@@ -26,13 +24,12 @@ Exit=DlExit
 # -------------------------------------------------------------------------------
 
 def add_visits(G,fb):
-    qVisits = fb.query(Visit,Arr,Exit)\
-                .join(Visit.pid == Arr.a.pid, Visit.pid == Exit.e.pid,
-                      Visit.vertex == Arr.a.vertex,
-                      Visit.vertex == Exit.e.vertex)\
+    qVisits = fb.query(Visit,Arr)\
+                .join(Visit.pid == Arr.a.pid,
+                      Visit.vertex == Arr.a.vertex)\
                 .order_by(Visit.pid, Arr.t)\
                 .group_by()\
-                .select(Visit.vertex,Arr.t,Exit.t)
+                .select(Visit.vertex,Arr.t)
     for p, vis in qVisits.all():
         G.add_node(p,visits=list(vis))
 
@@ -84,10 +81,12 @@ def print_walks_and_actions(fb):
             visits = sg.nodes[pid]["visits"]
             numvisits=len(visits)
 #            print("Path {}\n".format(pid))
-            for vc,(v,a,e) in enumerate(visits):
+            for vc,(v,a) in enumerate(visits):
+                e=a
 #                print("visit {} {} :({},{},{}).".format(rid,pid,v,a,e))
                 if vc > 0 or pcount == 0: at = a
                 if vc == numvisits - 1 and pcount < numpaths -1:
+                    e=a+10
                     actions.append("action({},{},{},{}).".format(pid,v,a,e))
                 if pcount < numpaths - 1 and vc == numvisits -1: continue
                 print("walk({},{},{},{},{}).".format(rid,step,v,at,e))
@@ -104,7 +103,7 @@ def print_walks_and_actions(fb):
 # -------------------------------------------------------------------------------
 
 def main(ctrl_):
-    unifier=[ Task, Path, Ass, TSeq, Move, Visit, Arr, Exit ]
+    unifier=[ Task, Path, Ass, TSeq, Move, Visit, Arr ]
     ctrl=Control(control_=ctrl_,unifier=unifier)
 
 #    ctrl.configuration.solve.quiet = 2
