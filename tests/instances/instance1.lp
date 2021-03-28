@@ -1,3 +1,9 @@
+% ------------------------------------------------------------------------------
+% Example from the paper
+% ------------------------------------------------------------------------------
+
+#include "graph_rules.lp".
+
 edge(l1,w1,15).   edge(l2,w2,15).
 edge(p1,w3,15).   edge(h1,w4,15).
 edge(h2,w5,15).   edge(w1,w2,20).
@@ -21,6 +27,7 @@ robot(r2). home(r2,h2).  start(r2,h2).
 
 conflict(v,V,V;v,V',V')   :- edge(V,V',_).
 conflict(e,(V,V'),(V,V')) :- edge(V,V',_).
+conflict(e,(V,V'),(V',V)) :- edge(V,V',_).
 conflict(T,R',R)          :- conflict(T,R,R').
 
 conflict(v,s1,s2).    conflict(v,s3,s4).
@@ -42,3 +49,4 @@ depends(wait,t1,t4).
 depends(deliver,t5,t6).
 depends(deliver,t7,t8).
 depends(wait,t5,t8).
+

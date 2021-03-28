@@ -2,8 +2,6 @@
 % Robot task sequence asssignment: Definition 4(i) + Definition 5
 % ------------------------------------------------------------------------------
 
-% BUG clingo-dl is not checking relative path so for the moment have to include
-% task_sequencing.lp from the command line.
 #include "task_sequencing.lp".
 
 % ------------------------------------------------------------------------------
@@ -21,6 +19,8 @@ step(0..maxstep).
 :- walk(R,S,V), walk(R,S+1,V'), not edge(V,V',_).
 :- walk(R,S,V), not walk(R,S+1,_), not home(R,V).
 
+:- start(R,V), home(R,V'), V != V', not walk(R,_,_).
+
 % Cannot exit a vertex before you arrive at it. Travel time must satisfy the
 % edge weight.
 
@@ -35,11 +35,11 @@ step(0..maxstep).
 % Collision free: Definition 7
 % ------------------------------------------------------------------------------
 
-{ before(v, (R,S),(R',S')) } :- walk(R,S,V), walk(R',S',V'),
-                                conflict(v,V,V'), R < R'.
-before(v, (R',S'),(R,S))     :- walk(R,S,V), walk(R',S',V'),
-                                conflict(v,V,V'), R < R',
-                                not before(v,(R,S),(R',S')).
+{ before(v, (R,S),(R',S')) }   :- walk(R,S,V), walk(R',S',V'),
+                                  conflict(v,V,V'), R < R'.
+before(v, (R',S'),(R,S))       :- walk(R,S,V), walk(R',S',V'),
+                                  conflict(v,V,V'), R < R',
+                                  not before(v,(R,S),(R',S')).
 
 { before(e,(R,S),(R',S')) } :-  walk(R,S,V1), walk(R,S+1,V2),
                                 walk(R',S',V1'), walk(R',S'+1,V2'),
@@ -48,6 +48,23 @@ before(e,(R',S'),(R,S))     :-  walk(R,S,V1), walk(R,S+1,V2),
                                 walk(R',S',V1'), walk(R',S'+1,V2'),
                                 conflict(e,(V1,V2),(V1',V2')), R < R',
                                 not before(e,(R,S),(R',S')).
+
+
+% Start of walk must arrive first and end of walk must arrive last
+:- walk(R,0,_), before(v,(_,_),(R,0)).
+:- walk(R,0,_), before(e,(_,_),(R,0)).
+:- walk(R,S,_), not walk(R,S+1,_), before(v,(R,S),(_,_)).
+:- walk(R,S,_), not walk(R,S+1,_), before(e,(R,S),(_,_)).
+
+% arrival at vertices connected to conflicted edges must be consistent.
+%:- walk(R1,S1,V1), walk(R1,S1+1,V1'), walk(R2,S2,V2), walk(R2,S2+1,V2'),
+%   conflict(e,(V1,V1'),(V2,V2')), before(e,(R1,S1),(R2,S2)),
+%   not before(v,(R1,S1+1),(R2,S2+1)).
+%:- walk(R1,S1,V1), walk(R1,S1+1,V1'), walk(R2,S2,V2), walk(R2,S2+1,V2'),
+%   conflict(e,(V1,V1'),(V2,V2')), before(v,(R1,S1),(R2,S2)),
+%   not before(v,(R1,S1),(R2,S2)).
+
+
 
 &diff{ exit(R,S) - arrive(R',S') } <= -1  :- before(v,(R,S),(R',S')).
 &diff{ arrive(R,S+1) - exit(R',S') } <= -1  :- before(e,(R,S),(R',S')).

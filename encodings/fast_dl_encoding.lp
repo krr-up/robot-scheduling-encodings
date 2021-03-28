@@ -1,4 +1,9 @@
 % ------------------------------------------------------------------------------
+% A fast path DL encoding that only tracks the arrival time at a vertex and not
+% the departure time.
+% ------------------------------------------------------------------------------
+
+% ------------------------------------------------------------------------------
 % Robot task sequence assignment: Definition 4(i) + Definition 5
 % ------------------------------------------------------------------------------
 
@@ -65,28 +70,16 @@ visit(T,V')  :- visit(T,V), move(T,V,V').
    assignment(R,T), not first_visit(R,V).
 
 % ------------------------------------------------------------------------------
-% Travel times must satisfy edge weights and cannot leave a vertex before
-% arriving at it. Also create a 0 time transition between the end of one task
-% and the start of the next task in a task sequence.
+% Travel times must satisfy edge weights. Also create an epsilon time transition
+% between the end of one task and the start of the next task in a task sequence.
 % ------------------------------------------------------------------------------
 
 #const epsilon=10.
 
-&diff{ arrive(T,V) - exit(T,V) } <= 0        :- visit(T,V), not task(T,V).
-&diff{ arrive(T,V) - exit(T,V) } <= -epsilon :- visit(T,V), task(T,V).
-&diff{ exit(T,V) - arrive(T,V') } <= -W      :- move(T,V,V'), edge(V,V',W).
-
-% Transition between task paths
-&diff{ arrive(T',V) - exit(T,V) } <= 0       :- task_sequence(T,T'), task(T,V).
-&diff{ exit(T,V) - arrive(T',V) } <= 0       :- task_sequence(T,T'), task(T,V).
-
-% Transition from task path to home path
-&diff{ arrive(R,V) - exit(T,V) } <= 0        :- task_sequence(_,T),
-                                                not task_sequence(T,_),
-                                                task(T,V), assignment(R,T).
-&diff{ exit(T,V) - arrive(R,V) } <= 0        :- task_sequence(_,T),
-                                                not task_sequence(T,_),
-                                                task(T,V), assignment(R,T).
+&diff{ arrive(T,V) - arrive(T,V') } <= -W       :- move(T,V,V'), edge(V,V',W).
+&diff{ arrive(T,V) - arrive(T',V) } <= -epsilon :- task(T,V), task_sequence(T,T').
+&diff{ arrive(T,V) - arrive(R,V) } <= -epsilon  :- task(T,V), not task_sequence(T,_),
+                                                   assignment(R,T).
 
 % ------------------------------------------------------------------------------
 % Definition 7
@@ -108,19 +101,22 @@ before(v,(P',V'),(P,V))        :- visit(P,V), visit(P',V'),
                                   not same_walk(P',P),
                                   not before(v,(P,V),(P',V')).
 
-{ before(e,(P1,V1'),(P2,V2)) } :- move(P1,V1,V1'), move(P2,V2,V2'),
+{ before(e,(P1,(V1,V1')),(P2,(V2,V2'))) } :- move(P1,V1,V1'), move(P2,V2,V2'),
                                   conflict(e,(V1,V1'),(V2,V2')), P1 < P2,
                                   not same_walk(P1,P2),
                                   not same_walk(P2,P1).
-before(e,(P2,V2'),(P1,V1))      :- move(P1,V1,V1'), move(P2,V2,V2'),
+before(e,(P2,(V2,V2')),(P1,(V1,V1')))     :- move(P1,V1,V1'), move(P2,V2,V2'),
                                   conflict(e,(V1,V1'),(V2,V2')), P1 < P2,
                                   not same_walk(P1,P2),
                                   not same_walk(P2,P1),
-                                  not before(e,(P1,V1'),(P2,V2)).
+                                  not before(e,(P1,(V1,V1')),(P2,(V2,V2'))).
+
+:- before(e,(P1,(V1,V1')),(P2,(V2,V2'))), not before(v,(P1,V1),(P2,V2)).
+:- before(e,(P1,(V1,V1')),(P2,(V2,V2'))), not before(v,(P1,V1'),(P2,V2')).
+
 
 % Start of walk must arrive first and end of walk must arrive last
 :- path(P,V), not task(P,_), before(v,(P,V),(_,_)).
-:- path(P,V), not task(P,_), move(P,_,V), before(e,(P,V),(_,_)).
 :- path(R,_), not task(R,_), not assignment(R,_),
    start(R,V), before(v,(_,_),(R,V)).
 :- task_sequence(T,_), not task_sequence(_,T), assignment(R,T),
@@ -149,8 +145,7 @@ before(e,(P2,V2'),(P1,V1))      :- move(P1,V1,V1'), move(P2,V2,V2'),
    before(v,(P,V'),(T,V)), not before(v,(P,V'),(R,V)).
 
 
-&diff{ exit(P,V) - arrive(P',V') } <= -1  :- before(v,(P,V),(P',V')).
-&diff{ arrive(P,V) - exit(P',V') } <= -1  :- before(e,(P,V),(P',V')).
+&diff{ arrive(P,V) - arrive(P',V') } <= 0  :- before(v,(P,V),(P',V')).
 
 
 % ------------------------------------------------------------------------------
@@ -160,8 +155,8 @@ before(e,(P2,V2'),(P1,V1))      :- move(P1,V1,V1'), move(P2,V2,V2'),
 % deliver dependency is for a single robot and handled by task sequencing.
 % ------------------------------------------------------------------------------
 
-&diff{ exit(T,V) - exit(T',V')} <= 0  :- depends(_,T,T'),
-                                         task(T,V), task(T',V').
+&diff{ arrive(T,V) - arrive(T',V')} <= 0  :- depends(_,T,T'),
+                                             task(T,V), task(T',V').
 
 % ------------------------------------------------------------------------------
 % Show for post-processing
