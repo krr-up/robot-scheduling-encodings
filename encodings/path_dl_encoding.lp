@@ -18,11 +18,6 @@ path(T,V) :- task(T,V).
 path(R,V) :- home(R,V), not start(R,V).
 path(R,V) :- assignment(R,_), home(R,V).
 
-
-path_sequence(T,T') :- task_sequence(T,T').
-path_sequence(T,R)  :- task_sequence(_,T), not task_sequence(T,_),
-                       assignment(R,T), path(R,V).
-
 % ------------------------------------------------------------------------------
 
 % Establish a set of path destinations; one for each task and one to get each
@@ -49,6 +44,14 @@ last_visit(T,V) :-  move(T,_,V), not move(T,V,_).
 
 visit(T,V)   :- first_visit(T,V).
 visit(T,V')  :- visit(T,V), move(T,V,V').
+
+% Special case if no move is required to get to the path destination
+last_visit(P,V) :- path(P,V), not move(P,_,V).
+%visit(P,V) :- path(P,V), not move(P,_,V).
+first_visit(P,V) :- path(P,V), not move(P,_,V).
+
+% For a robot with no paths - no other robot can access that vertex
+:- start(R,V), not path(R,_), visit(_,V).
 
 % ------------------------------------------------------------------------------
 % Match the start and end of paths connected to the same robot

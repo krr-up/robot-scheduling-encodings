@@ -21,6 +21,9 @@ step(0..maxstep).
 
 :- start(R,V), home(R,V'), V != V', not walk(R,_,_).
 
+% For a robot with no walk - no other robot can access that vertex
+:- start(R,V), not walk(R,_,_), walk(_,_,V).
+
 % Cannot exit a vertex before you arrive at it. Travel time must satisfy the
 % edge weight.
 
@@ -71,7 +74,8 @@ before(e,(R',S'),(R,S))     :-  walk(R,S,V1), walk(R,S+1,V2),
 
 % ------------------------------------------------------------------------------
 % Choose a set of projections and make sure the assignment and projection set is
-% executable: Definitions 8 and 9.
+% executable: Definitions 8 and 9. Note: only one projection per robot, per step
+% is allowed.
 % ------------------------------------------------------------------------------
 
 #const epsilon=10.
@@ -80,6 +84,8 @@ before(e,(R',S'),(R,S))     :-  walk(R,S,V1), walk(R,S+1,V2),
 
 :- proj(T,S), task(T,V), assignment(R,T), not walk(R,S,V).
 :- proj(T,S), proj(T',S'), task_sequence(T,T'), S > S'.
+
+:- #count{ T : proj(T,S), assignment(R,T) } > 1, step(S), robot(R).
 
 &diff{ arrive(R,S) - exit(R,S) } <= -epsilon  :- proj(T,S), assignment(R,T).
 &diff{ exit(R',S') - exit(R,S) } <= 0         :- proj(T,S), assignment(R,T),

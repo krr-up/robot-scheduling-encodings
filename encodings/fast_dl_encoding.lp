@@ -23,11 +23,6 @@ path(T,V) :- task(T,V).
 path(R,V) :- home(R,V), not start(R,V).
 path(R,V) :- assignment(R,_), home(R,V).
 
-
-path_sequence(T,T') :- task_sequence(T,T').
-path_sequence(T,R)  :- task_sequence(_,T), not task_sequence(T,_),
-                       assignment(R,T), path(R,V).
-
 % ------------------------------------------------------------------------------
 
 % Establish a set of path destinations; one for each task and one to get each
@@ -54,6 +49,13 @@ last_visit(T,V) :-  move(T,_,V), not move(T,V,_).
 
 visit(T,V)   :- first_visit(T,V).
 visit(T,V')  :- visit(T,V), move(T,V,V').
+
+% Special case if no moves is required to get to the path destination
+last_visit(P,V) :- path(P,V), not move(P,_,V).
+first_visit(P,V) :- path(P,V), not move(P,_,V).
+
+% For a robot with no paths - no other robot can access that vertex
+:- start(R,V), not path(R,_), visit(_,V).
 
 % ------------------------------------------------------------------------------
 % Match the start and end of paths connected to the same robot
@@ -122,13 +124,6 @@ before(e,(P2,(V2,V2')),(P1,(V1,V1')))     :- move(P1,V1,V1'), move(P2,V2,V2'),
 :- task_sequence(T,_), not task_sequence(_,T), assignment(R,T),
    start(R,V), before(v,(_,_),(R,V)).
 
-% arrival at vertices connected to conflicted edges must be consistent.
-%:- conflict(e,(V1,V1'),(V2,V2')), before(e,(P1,V1),(P2,V2)),
-%   not before(v,(P1,V1'),(P2,V2')).
-%:- move(P1,V1,V1'), move(P2,V2,V2'), conflict(e,(V1,V1'),(V2,V2')),
-%   before(v,(P1,V1),(P2,V2)), not before(v,(P1,V1'),(P2,V2')).
-
-
 % Ensure that connected paths maintain the same ordering. Note: this is ugly
 % because must account for transition from task path to task path and task path
 % to home path. Maybe define a path_sequence/2 predicate?
@@ -146,7 +141,6 @@ before(e,(P2,(V2,V2')),(P1,(V1,V1')))     :- move(P1,V1,V1'), move(P2,V2,V2'),
 
 
 &diff{ arrive(P,V) - arrive(P',V') } <= 0  :- before(v,(P,V),(P',V')).
-
 
 % ------------------------------------------------------------------------------
 % Partial Definitions 9.
