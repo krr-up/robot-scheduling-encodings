@@ -24,10 +24,11 @@
 same_robot(T,T')  :- assignment(R,T), assignment(R,T'), T < T'.
 :- task_sequence(T,T'), not same_robot(T,T'), not same_robot(T',T).
 :- task_sequence(T',T), task_sequence(T'',T), T' < T''.
+:- task(T,_), not task_sequence(T,_), not task_sequence(_,T).
 
 :- robot(R), #count{ T : assignment(R,T), not task_sequence(_,T) } > 1.
-
-:- task(T,_), not task_sequence(T,_), not task_sequence(_,T).
+:- assignment(R,_),
+   #false : assignment(R,T), task_sequence(T,_), not task_sequence(_,T).
 
 :- depends(deliver,T,T'), not task_sequence(T,T').
 

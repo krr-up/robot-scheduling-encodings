@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 
+if [ "$1" != "" ]; then
+    INSTANCE="$1"
+else
+    #INSTANCE="instance1.lp"
+    INSTANCE="sat3.lp"
+    #INSTANCE="unsat4.lp"
+    INSTANCE="instances/${INSTANCE}"
+fi
 
 BASE="path_dl_encoding"
-INSTANCE="instance1.lp"
-INSTANCE="sat3.lp"
-#INSTANCE="unsat4.lp"
-#ASP="../encodings/task_sequencing.lp ../encodings/${BASE}.lp ${INSTANCE}"
-ASP="../encodings/${BASE}.lp instances/${INSTANCE}"
+ASP="../encodings/${BASE}.lp ${INSTANCE}"
 
 CLINGODLFACTS="../scripts/clingo-dl-facts.sh"
 CLINGOFACTS="../scripts/clingo-facts.sh"
