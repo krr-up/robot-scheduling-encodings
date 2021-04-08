@@ -4,9 +4,9 @@
 %
 % (r2:s) --------> (r2:e)
 %
-%        (r1:s/e)
+%          (r1:s)
 %   w1 ---- w2 ---- w3
-%           |
+% (r1:e)    |
 %           w4
 % -----------------------------------------------------------------------------
 #include "graph_rules.lp".
@@ -15,7 +15,7 @@ edge(w1,w2,15).
 edge(w2,w3,15).
 edge(w2,w4,15).
 
-robot(r1). start(r1,w2). home(r1,w2).
+robot(r1). start(r1,w2). home(r1,w1).
 robot(r2). start(r2,w1). home(r2,w3).
 
 

@@ -43,7 +43,6 @@ def print_nx_task_sequence(fb):
         v,a=next(iter(sg.nodes.data()))
         r = a["robot"]
         tasks = [ (v,sg.nodes[v]["vertex"]) for v in nx.topological_sort(sg)]
-        print("Robot tasks {} : {}".format(r,tasks))
 
 # -------------------------------------------------------------------------------
 # Print walk by robot
@@ -76,7 +75,6 @@ def print_walk(fb):
 def print_output(fb):
 #    print("HERE: {}".format(fb.asp_str()))
     print_walk(fb)
-#    print_task_sequence(fb)
     print_nx_task_sequence(fb)
 
 # -------------------------------------------------------------------------------
