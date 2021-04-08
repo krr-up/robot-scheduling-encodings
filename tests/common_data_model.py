@@ -2,19 +2,19 @@
 #
 # ------------------------------------------------------------------------------
 
-from clorm import Predicate, ConstantField, StringField, IntegerField
+from clorm import Predicate, ConstantField, StringField, IntegerField, RawField
 
 class Task(Predicate):
-    tid=ConstantField
-    vertex=ConstantField
+    tid=RawField
+    vertex=RawField
 
 class Assignment(Predicate):
-    rid=ConstantField
-    tid=ConstantField
+    rid=RawField
+    tid=RawField
 
 class TaskSequence(Predicate):
-    first=ConstantField
-    second=ConstantField
+    first=RawField
+    second=RawField
     class Meta: name="task_sequence"
 
 # ------------------------------------------------------------------------------

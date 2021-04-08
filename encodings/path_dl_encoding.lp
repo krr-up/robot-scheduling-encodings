@@ -121,24 +121,22 @@ before(e,(P2,V2'),(P1,V1))      :- move(P1,V1,V1'), move(P2,V2,V2'),
                                   not same_walk(P2,P1),
                                   not before(e,(P1,V1'),(P2,V2)).
 
-% Start of walk must arrive first and end of walk must arrive last
-:- path(P,V), not task(P,_), before(v,(P,V),(_,_)).
-:- path(P,V), not task(P,_), move(P,_,V), before(e,(P,V),(_,_)).
+
+% The start of a robot's walk must be first at the starting vertex (there are
+% two cases: robot with/without an assignment)
 :- path(R,_), not task(R,_), not assignment(R,_),
    start(R,V), before(v,(_,_),(R,V)).
-:- task_sequence(T,_), not task_sequence(_,T), assignment(R,T),
-   start(R,V), before(v,(_,_),(R,V)).
+:- assignment(R,T), task_sequence(T,_), not task_sequence(_,T),
+   start(R,V), before(v,(_,_),(T,V)).
 
-% arrival at vertices connected to conflicted edges must be consistent.
-%:- conflict(e,(V1,V1'),(V2,V2')), before(e,(P1,V1),(P2,V2)),
-%   not before(v,(P1,V1'),(P2,V2')).
-%:- move(P1,V1,V1'), move(P2,V2,V2'), conflict(e,(V1,V1'),(V2,V2')),
-%   before(v,(P1,V1),(P2,V2)), not before(v,(P1,V1'),(P2,V2')).
+% The end of a robot's walk must arrive at its destination last
+:- path(P,V), not task(P,_), move(P,_,V), before(e,(P,V),(_,_)).
+:- path(P,V), not task(P,_), before(v,(P,V),(_,_)).
 
 
 % Ensure that connected paths maintain the same ordering. Note: this is ugly
-% because must account for transition from task path to task path and task path
-% to home path. Maybe define a path_sequence/2 predicate?
+% because we have to account for the transition from task path to task path and
+% task path to home path. Maybe define a path_sequence/2 predicate?
 :- task(T,V), task_sequence(T,T'), visit(P,V'), conflict(v,V,V'),
    before(v,(T,V),(P,V')), not before(v,(T',V),(P,V')).
 :- task(T,V), task_sequence(T,T'), visit(P,V'), conflict(v,V,V'),

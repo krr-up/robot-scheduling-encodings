@@ -2,28 +2,28 @@
 #
 # ------------------------------------------------------------------------------
 
-from clorm import Predicate, ConstantField, StringField, IntegerField
+from clorm import Predicate, ConstantField, StringField, IntegerField, RawField
 
 class Path(Predicate):
-    pid=ConstantField
-    vertex=ConstantField
+    pid=RawField
+    vertex=RawField
 
 class Move(Predicate):
-    pid=ConstantField
-    fvertex=ConstantField
-    tvertex=ConstantField
+    pid=RawField
+    fvertex=RawField
+    tvertex=RawField
 
 class Visit(Predicate):
-    pid=ConstantField
-    vertex=ConstantField
+    pid=RawField
+    vertex=RawField
 
 class Arrive(Predicate):
-    pid=ConstantField
-    vertex=ConstantField
+    pid=RawField
+    vertex=RawField
 
 class Exit(Predicate):
-    pid=ConstantField
-    vertex=ConstantField
+    pid=RawField
+    vertex=RawField
 
 class DlArrive(Predicate):
     a=Arrive.Field

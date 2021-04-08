@@ -8,7 +8,10 @@
 % Robot timed walk assignment: Definition 4(ii) + Definition 6 (except 6(iii)).
 % ------------------------------------------------------------------------------
 
-#const maxstep=20.
+% ------------------------------------------------------------------------------
+% NOTE: 'maxstep' must be defined in the instance or on the command line
+% #const maxstep=10.
+% ------------------------------------------------------------------------------
 step(0..maxstep).
 
 0 { walk(R,S,V) : edge(V,_,_) } 1 :- robot(R), step(S).

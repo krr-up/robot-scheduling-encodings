@@ -2,23 +2,23 @@
 #
 # ------------------------------------------------------------------------------
 
-from clorm import Predicate, ConstantField, StringField, IntegerField
+from clorm import Predicate, ConstantField, StringField, IntegerField, RawField
 
 class Walk(Predicate):
-    rid=ConstantField
+    rid=RawField
     step=IntegerField
-    vertex=ConstantField
+    vertex=RawField
 
 class Proj(Predicate):
-    tid=ConstantField
+    tid=RawField
     step=IntegerField
 
 class Arrive(Predicate):
-    rid=ConstantField
+    rid=RawField
     step=IntegerField
 
 class Exit(Predicate):
-    rid=ConstantField
+    rid=RawField
     step=IntegerField
 
 class DlArrive(Predicate):
