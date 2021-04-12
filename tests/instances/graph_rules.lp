@@ -19,7 +19,8 @@ conflict(e,(V,V'),(V,V'))     :- edge(V,V',_).
 conflict(e,(V,V'),(V',V))     :- edge(V,V',_).
 
 % symmetry
-conflict(T,R',R)              :- conflict(T,R,R').
+conflict(T,Y,X)              :- conflict(T,X,Y).
+
 conflict(e,(V2,V1),(V3,V4))   :- conflict(e,(V1,V2),(V3,V4)).
 conflict(e,(V1,V2),(V4,V3))   :- conflict(e,(V1,V2),(V3,V4)).
 
@@ -32,4 +33,4 @@ conflict(e,(V1,V3),(V2,V4))   :- conflict(v,V1,V2), conflict(v,V3,V4),
 % show
 % ------------------------------------------------------------------------------
 
-#show conflict/3.
+%#show conflict/3.

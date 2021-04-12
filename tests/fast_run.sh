@@ -2,6 +2,7 @@
 
 if [ "$1" != "" ]; then
     INSTANCE="$1"
+    shift
 else
     #INSTANCE="instance1.lp"
     INSTANCE="sat3.lp"
@@ -18,13 +19,15 @@ CLINGOFACTS="../scripts/clingo-facts.sh"
 CLINGODL="clingo-dl"
 
 # To just solve
-#${CLINGODL} ${ASP}
-#${CLINGODLFACTS} ${ASP}
+#${CLINGODL} ${ASP} $@
+#${CLINGODLFACTS} ${ASP} $@
 
 # To pretty print the output
-${CLINGODLFACTS} ${ASP} | ${CLINGOFACTS} "${BASE}_user_output.lp" -
+${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS} "${BASE}_user_output.lp" -
 
 # To check the solution - make sure the plan is collision free
-#${CLINGODLFACTS} "${ASP}" | ${CLINGOFACTS} "${BASE}_walk_output.lp" -
-#${CLINGODLFACTS} "${ASP}" | ${CLINGOFACTS}  "${BASE}_walk_output.lp" - | clingo "${INSTANCE}" solution_checker.lp -
+#${CLINGODLFACTS} "${ASP}" $@ | ${CLINGOFACTS} "${BASE}_walk_output.lp" -
+
+#${CLINGODLFACTS} "${ASP}" $@ | ${CLINGOFACTS} "${BASE}_walk_output.lp" - | clingo "${INSTANCE}" user_output.lp -
+#${CLINGODLFACTS} "${ASP}" $@ | ${CLINGOFACTS}  "${BASE}_walk_output.lp" - | clingo "${INSTANCE}" solution_checker.lp -
 

@@ -6,7 +6,7 @@
 %
 % NOTE: this is a boundary case because it has the robot able to do two tasks at
 % the same node, one directly after the other. It is not clear if this should be
-% allowable, is it would not be allowable under the original DoraBot
+% allowable, as it would not be allowable under the original DoraBot
 % requirements (because new items can't be made available at occupied
 % cells). One way to allow for this special case is with a 0-time reflexive edge
 % in the graph.

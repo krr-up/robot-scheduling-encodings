@@ -5,7 +5,7 @@
 #script(python)
 import sys
 import networkx as nx
-from clorm import func, simple_predicate, alias, notin_, in_, ph1_
+from clorm import func, simple_predicate, alias, notin_, in_, ph1_, ph2_
 from clorm.clingo import Control
 from common_data_model import Task, Assignment, TaskSequence
 from path_dl_encoding_data_model import Move, Path, Visit, Arrive, Exit,\
@@ -26,15 +26,25 @@ Exit=DlExit
 # -------------------------------------------------------------------------------
 
 def add_visits(G,fb):
-    qVisits = fb.query(Visit,Arr,Exit)\
-                .join(Visit.pid == Arr.a.pid, Visit.pid == Exit.e.pid,
-                      Visit.vertex == Arr.a.vertex,
-                      Visit.vertex == Exit.e.vertex)\
-                .order_by(Visit.pid, Arr.t)\
-                .group_by()\
-                .select(Visit.vertex,Arr.t,Exit.t)
-    for p, vis in qVisits.all():
-        G.add_node(p,visits=list(vis))
+    qArrivals = fb.query(Visit,Arr)\
+                  .join(Visit.pid == Arr.a.pid, Visit.vertex == Arr.a.vertex)\
+                  .order_by(Visit.pid, Arr.t)\
+                  .group_by()\
+                  .select(Visit.vertex,Arr.t)
+
+    qExits = fb.query(Visit,Exit)\
+                .join(Visit.pid == Exit.e.pid, Visit.vertex == Exit.e.vertex)\
+                .where(Visit.pid == ph1_, Visit.vertex == ph2_)\
+                .select(Exit.t)
+
+    for p, vis in qArrivals.all():
+        nlist = []
+        for v,a in vis:
+            tmp = list(qExits.bind(p,v).all())
+            if tmp: nlist.append((v,a,tmp[0]))
+            else: nlist.append((v,a,-1))
+
+        G.add_node(p,visits=nlist)
 
 # -------------------------------------------------------------------------------
 # Add everything else from into the task graph
@@ -58,6 +68,11 @@ def add_others(G,fb):
                   .where(notin_(TSeq.second, fb.query(TSeq).select(TSeq.first)))\
                   .select(Ass.tid, Ass.rid)
     G.add_edges_from(qLastTask.all())
+
+
+# -------------------------------------------------------------------------------
+#
+# -------------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------
 # Turn the task graph into walk by robot - Need to turn the visits into a walk
@@ -97,6 +112,7 @@ def print_walks_and_actions(fb):
     # Print the actions
     print()
     for a in actions: print(a)
+
 
 
 # -------------------------------------------------------------------------------

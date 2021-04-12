@@ -83,6 +83,7 @@ check_walk_dl(){
     check_unsat $WALK_DL instances/unsat2.lp $args10
     check_unsat $WALK_DL instances/unsat3.lp $args10
     check_unsat $WALK_DL instances/unsat4.lp $args10
+    check_unsat $WALK_DL instances/unsat5.lp $args10
 
     check_solution $WALK_DL instances/sat1.lp $args10
     check_solution $WALK_DL instances/sat2.lp $args10
@@ -92,6 +93,7 @@ check_walk_dl(){
     check_solution $WALK_DL instances/sat6.lp $args10
     check_solution $WALK_DL instances/sat7.lp $args10
     check_solution $WALK_DL instances/sat8.lp $args10
+    check_solution $WALK_DL instances/sat9.lp $args10
 
     check_solution $WALK_DL instances/walksat_pathunsat1.lp $args10
     check_solution $WALK_DL instances/walksat_pathunsat2.lp $args10
@@ -111,6 +113,7 @@ check_path_dl(){
     check_unsat $PATH_DL instances/unsat2.lp
     check_unsat $PATH_DL instances/unsat3.lp
     check_unsat $PATH_DL instances/unsat4.lp
+    check_unsat $PATH_DL instances/unsat5.lp
 
     check_unsat $PATH_DL instances/walksat_pathunsat1.lp
     check_unsat $PATH_DL instances/walksat_pathunsat2.lp
@@ -123,6 +126,7 @@ check_path_dl(){
     check_solution $PATH_DL instances/sat6.lp
     check_solution $PATH_DL instances/sat7.lp
     check_solution $PATH_DL instances/sat8.lp
+    check_solution $PATH_DL instances/sat9.lp
 
     check_solution $PATH_DL instances/instance1.lp
 }
@@ -137,6 +141,7 @@ check_fast_dl(){
     check_unsat $FAST_DL instances/unsat2.lp
     check_unsat $FAST_DL instances/unsat3.lp
     check_unsat $FAST_DL instances/unsat4.lp
+    check_unsat $FAST_DL instances/unsat5.lp
 
     check_unsat $FAST_DL instances/walksat_pathunsat1.lp
     check_unsat $FAST_DL instances/walksat_pathunsat2.lp
@@ -149,6 +154,7 @@ check_fast_dl(){
     check_solution $FAST_DL instances/sat6.lp
     check_solution $FAST_DL instances/sat7.lp
     check_solution $FAST_DL instances/sat8.lp
+    check_solution $FAST_DL instances/sat9.lp
 
     check_solution $FAST_DL instances/instance1.lp
 }
