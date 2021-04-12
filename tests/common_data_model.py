@@ -2,7 +2,7 @@
 #
 # ------------------------------------------------------------------------------
 
-from clorm import Predicate, ConstantField, StringField, IntegerField, RawField
+from clorm import Predicate, ConstantField, IntegerField, RawField
 
 class Task(Predicate):
     tid=RawField

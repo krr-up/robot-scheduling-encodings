@@ -5,7 +5,7 @@
 #script(python)
 import sys
 import networkx as nx
-from clorm import func, simple_predicate, alias, notin_, in_, ph1_
+from clorm import func, simple_predicate, alias, notin_, in_, ph1_, ph2_
 from clorm.clingo import Control
 from common_data_model import Task, Assignment, TaskSequence
 from walk_dl_encoding_data_model import Walk, Proj, Arrive, Exit, DlArrive, DlExit
@@ -26,6 +26,27 @@ Exit=DlExit
 # -------------------------------------------------------------------------------
 
 def print_walk(fb):
+    qArrivals = fb.query(Walk,Arr)\
+                  .join(Walk.rid == Arr.a.rid, Walk.step == Arr.a.step)\
+                  .order_by(Walk.rid, Arr.t)\
+                  .group_by()\
+                  .select(Walk.step,Walk.vertex,Arr.t)
+
+    qExits = fb.query(Walk,Exit)\
+                .join(Walk.rid == Exit.e.rid, Walk.step == Exit.e.step)\
+                .where(Walk.rid == ph1_, Walk.step == ph2_)\
+                .select(Exit.t)
+
+    for r, walk in qArrivals.all():
+#        print("Robot: {}".format(r))
+        for s,v,a in walk:
+            tmp = list(qExits.bind(r,s).all())
+            if tmp: e = tmp[0]
+            else: e = -1
+            print("walk({},{},{},{},{}).".format(r,s,v,a,e))
+
+    return
+
     qWalks = fb.query(Walk,Arr,Exit)\
                .join(Walk.rid == Arr.a.rid, Walk.rid == Exit.e.rid,
                      Walk.step == Arr.a.step,Walk.step == Exit.e.step)\

@@ -42,17 +42,22 @@ err(bad_delivery(T,T'))       :- depends(deliver,T,T'), not task_sequence(T,T').
 % - Robot start: start(R,V)
 % ------------------------------------------------------------------------------
 
-err(noedge(R,S,V,V'))               :- walk(R,S,V,A,E), walk(R,S+1,V',A',E'),
+% Note: using -1 to indicate a walk step that never exits the vertex
+twalk(R,S,V,A,E)      :- walk(R,S,V,A,E), E >=0.
+twalk(R,S,V,A,#sup)   :- walk(R,S,V,A,E), E < 0.
+
+
+err(noedge(R,S,V,V'))               :- twalk(R,S,V,A,E), twalk(R,S+1,V',A',E'),
                                        not edge(V,V',_).
 
-err(timing(R,S,V,V',A'-E))          :- walk(R,S,V,A,E), walk(R,S+1,V',A',E'),
+err(timing(R,S,V,V',A'-E))          :- twalk(R,S,V,A,E), twalk(R,S+1,V',A',E'),
                                        edge(V,V',W), A'-E < W.
 
-err(conflict(v,(R,S,V),(R',S',V'))) :- walk(R,S,V,A,Ex), walk(R',S',V',A',Ex'), R != R',
+err(conflict(v,(R,S,V),(R',S',V'))) :- twalk(R,S,V,A,Ex), twalk(R',S',V',A',Ex'), R != R',
                                        conflict(v,V,V'), A <= A', Ex >= Ex'.
 
-err(conflict(e,(R,S,E),(R',S',E'))) :- walk(R,S,V1,A1,Ex1), walk(R,S+1,V2,A2,Ex2),
-                                       walk(R',S',V1',A1',Ex1'), walk(R',S'+1,V2',A2',Ex2'),
+err(conflict(e,(R,S,E),(R',S',E'))) :- twalk(R,S,V1,A1,Ex1), twalk(R,S+1,V2,A2,Ex2),
+                                       twalk(R',S',V1',A1',Ex1'), twalk(R',S'+1,V2',A2',Ex2'),
                                        E=(V1,V2), E'=(V1',V2'), R != R',
                                        conflict(e,E,E'), Ex1 <= Ex1', A2 >= A2'.
 
@@ -74,7 +79,7 @@ err(unknown_action(T,V,S,E))             :- action(T,V,S,E), not task(T,V).
 err(missing_task_action(T,V))            :- task(T,V), not action(T,V,_,_).
 err(bad_task_timing(T,E-S))              :- action(T,_,S,E), E-S < epsilon.
 err(bad_task_dependency((T,E),(T',S')))  :- action(T,V,S,E), action(T',V',S',E'),
-                                            depends(_,T,T'), S' <= E.
+                                            depends(_,T,T'), S' < E.
 
 % ------------------------------------------------------------------------------
 % Check that the action generation matches the walk for the robot.
@@ -83,7 +88,7 @@ err(bad_task_dependency((T,E),(T',S')))  :- action(T,V,S,E), action(T',V',S',E')
 % - action(Task,Vertex,StartTime,EndTime)
 % ------------------------------------------------------------------------------
 err(bad_walk_action(R,T,V,S,E))   :- action(T,V,S,E), assignment(R,T),
-                                     #false : walk(R,_,V,S',E'), S' <= S, E <= E'.
+                                     #false : twalk(R,_,V,S',E'), S' <= S, E <= E'.
 
 % ------------------------------------------------------------------------------
 % Output
@@ -94,5 +99,6 @@ walk_length(R,S) :- walk(R,S,_,_,_), not walk(R,S+1,_,_,_).
 #show.
 #show err/1.
 #show walk_length/2.
+#show dl(bound,B) : dl(bound,B).
 #defined action/4.
 
