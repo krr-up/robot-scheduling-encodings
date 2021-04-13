@@ -23,11 +23,12 @@ CLINGODL="clingo-dl"
 #${CLINGODLFACTS} ${ASP} $@
 
 # To pretty print the output
-${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS} "${BASE}_user_output.lp" -
+#${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS} "${BASE}_user_output.lp" -
 
 # To check the solution - make sure the plan is collision free
-#${CLINGODLFACTS} "${ASP}" $@ | ${CLINGOFACTS} "${BASE}_walk_output.lp" -
+#${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS} "${BASE}_walk_output.lp" -
 
-#${CLINGODLFACTS} "${ASP}" $@ | ${CLINGOFACTS} "${BASE}_walk_output.lp" - | clingo "${INSTANCE}" user_output.lp -
-#${CLINGODLFACTS} "${ASP}" $@ | ${CLINGOFACTS}  "${BASE}_walk_output.lp" - | clingo "${INSTANCE}" solution_checker.lp -
+#${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS} "${BASE}_walk_output.lp" - | ${CLINGOFACTS} "${INSTANCE}" user_output.lp solution_checker.lp -
+
+${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS}  "${BASE}_walk_output.lp" - | ${CLINGOFACTS} "${INSTANCE}" solution_checker.lp -
 
