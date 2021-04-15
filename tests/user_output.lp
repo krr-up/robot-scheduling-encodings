@@ -177,5 +177,9 @@ walkconflict(edge,walk(R,S,V1,A1,Ex1), walk(R',S',V1',A1',Ex1')) :-
 
 #show.
 %#show walkconflict/3.
-#show before/3.
-#show dl/2.
+%#show before/3.
+%#show dl/2.
+
+%#show on_minpath/3.
+%#show path_min_dist/2.
+%#show shortest_path/4.

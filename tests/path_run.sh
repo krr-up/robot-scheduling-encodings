@@ -10,7 +10,7 @@ else
     INSTANCE="instances/${INSTANCE}"
 fi
 
-BASE="path_dl_encoding"
+BASE="path_encoding"
 ASP="../encodings/${BASE}.lp ${INSTANCE}"
 
 CLINGODLFACTS="../scripts/clingo-dl-facts.sh"
@@ -27,7 +27,7 @@ CLINGODL="clingo-dl"
 # To check the solution - make sure the plan is collision free
 #${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS} "${BASE}_walk_output.lp" -
 
-#${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS} "${BASE}_walk_output.lp" - | ${CLINGOFACTS} "${INSTANCE}" user_output.lp solution_checker.lp -
+${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS} "${BASE}_walk_output.lp" - | ${CLINGOFACTS} "${INSTANCE}" user_output.lp solution_checker.lp -
 
-${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS}  "${BASE}_walk_output.lp" - | ${CLINGOFACTS} "${INSTANCE}" solution_checker.lp -
+#${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS}  "${BASE}_walk_output.lp" - | ${CLINGOFACTS} "${INSTANCE}" solution_checker.lp -
 
