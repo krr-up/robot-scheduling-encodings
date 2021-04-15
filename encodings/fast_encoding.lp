@@ -4,17 +4,6 @@
 % ------------------------------------------------------------------------------
 
 % ------------------------------------------------------------------------------
-% Robot task sequence assignment: Definition 4(i) + Definition 5
-% ------------------------------------------------------------------------------
-
-#include "task_sequencing.lp".
-
-% ------------------------------------------------------------------------------
-% Partial merging of Definition 4(ii) + Definition 6 (except 6(iii)) +
-% Definitions 8 and 9.
-% ------------------------------------------------------------------------------
-
-% ------------------------------------------------------------------------------
 % A walk consists of a sequence of paths for a robot; one for each task as well
 % as a return home for each robot.
 % ------------------------------------------------------------------------------
@@ -187,18 +176,5 @@ next_move((P,V),(P',V')) :- path(P,V),  passign(R,P), path_seqnum(P,X),
                                              task(T,V), task(T',V').
 
 % ------------------------------------------------------------------------------
-% Show for post-processing
 % ------------------------------------------------------------------------------
 
-
-#show task/2.
-#show path/2.
-#show assignment/2.
-#show task_sequence/2.
-#show visit/2.
-#show move/3.
-
-#show before/3.
-#show same_walk/2.
-
-conflict(e,(V2,V1),(V3,V4);e,(V1,V2),(V4,V3);e,(V2,V1),(V4,V3)) :- conflict(e,(V1,V2),(V3,V4)).

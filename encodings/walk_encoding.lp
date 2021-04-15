@@ -2,8 +2,6 @@
 % Robot task sequence asssignment: Definition 4(i) + Definition 5
 % ------------------------------------------------------------------------------
 
-#include "task_sequencing.lp".
-
 % ------------------------------------------------------------------------------
 % Robot timed walk assignment: Definition 4(ii) + Definition 6 (except 6(iii)).
 % ------------------------------------------------------------------------------
@@ -133,16 +131,5 @@ before(e,(R,S),(R',S'))  :-  walk(R,S,V1), walk(R,S+1,V2),
 
 
 % ------------------------------------------------------------------------------
-% Show for post-processing
 % ------------------------------------------------------------------------------
 
-
-#show task/2.
-#show assignment/2.
-#show task_sequence/2.
-#show walk/3.
-#show proj/2.
-#show before/3.
-
-
-conflict(e,(V2,V1),(V3,V4);e,(V1,V2),(V4,V3);e,(V2,V1),(V4,V3)) :- conflict(e,(V1,V2),(V3,V4)).
