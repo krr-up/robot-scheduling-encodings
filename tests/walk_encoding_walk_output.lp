@@ -8,7 +8,7 @@ import networkx as nx
 from clorm import func, simple_predicate, alias, notin_, in_, ph1_, ph2_
 from clorm.clingo import Control
 from common_data_model import Task, Assignment, TaskSequence
-from walk_dl_encoding_data_model import Walk, Proj, Arrive, Exit, DlArrive, DlExit
+from walk_encoding_data_model import Walk, Proj, Arrive, Exit, DlArrive, DlExit
 
 Ass=Assignment
 TSeq=TaskSequence

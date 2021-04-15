@@ -9,13 +9,11 @@ import networkx as nx
 from clorm import func, simple_predicate, alias, notin_, in_, ph1_
 from clorm.clingo import Control
 from common_data_model import Task, Assignment, TaskSequence
-from path_dl_encoding_data_model import Path, Move, Visit, Arrive, Exit, \
-    DlArrive, DlExit
+from fast_encoding_data_model import Path, Move, Visit, Arrive, DlArrive
 
 Ass=Assignment
 TSeq=TaskSequence
 Arr=DlArrive
-Exit=DlExit
 
 # -------------------------------------------------------------------------------
 # Global variables
@@ -59,7 +57,7 @@ def print_nx_task_sequence(G,fb):
         for t in nx.topological_sort(sg):
             print("\tPath {}".format(t))
             for visit in sg.nodes[t]["visits"]:
-                print("\t\t({},{},{})".format(*visit))
+                print("\t\t({},{})".format(*visit))
     return G
 
 # -------------------------------------------------------------------------------
@@ -67,13 +65,12 @@ def print_nx_task_sequence(G,fb):
 # -------------------------------------------------------------------------------
 
 def add_visits(G,fb):
-    qVisits = fb.query(Visit,Arr,Exit)\
-                .join(Visit.pid == Arr.a.pid, Visit.pid == Exit.e.pid,
-                      Visit.vertex == Arr.a.vertex,
-                      Visit.vertex == Exit.e.vertex)\
+    qVisits = fb.query(Visit,Arr)\
+                .join(Visit.pid == Arr.a.pid,
+                      Visit.vertex == Arr.a.vertex)\
                 .order_by(Visit.pid, Arr.t)\
                 .group_by()\
-                .select(Visit.vertex,Arr.t,Exit.t)
+                .select(Visit.vertex,Arr.t)
     for t, vis in qVisits.all():
         G.add_node(t,visits=list(vis))
 
@@ -90,7 +87,7 @@ def print_output(fb):
 # -------------------------------------------------------------------------------
 
 def main(ctrl_):
-    unifier=[ Task, Path, Ass, TSeq, Move, Visit, Arr, Exit ]
+    unifier=[ Task, Path, Ass, TSeq, Move, Visit, Arr ]
     ctrl=Control(control_=ctrl_,unifier=unifier)
 
 #    ctrl.configuration.solve.quiet = 2
