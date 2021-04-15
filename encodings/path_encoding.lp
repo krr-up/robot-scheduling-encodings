@@ -3,17 +3,6 @@
 % ------------------------------------------------------------------------------
 
 % ------------------------------------------------------------------------------
-% Robot task sequence assignment: Definition 4(i) + Definition 5
-% ------------------------------------------------------------------------------
-
-#include "task_sequencing.lp".
-
-% ------------------------------------------------------------------------------
-% Partial merging of Definition 4(ii) + Definition 6 (except 6(iii)) +
-% Definitions 8 and 9.
-% ------------------------------------------------------------------------------
-
-% ------------------------------------------------------------------------------
 % A walk consists of a sequence of paths for a robot; one for each task as well
 % as a return home for each robot.
 % ------------------------------------------------------------------------------
@@ -214,54 +203,6 @@ next_move((P,V),(P',V')) :- path(P,V),  passign(R,P), path_seqnum(P,X),
 
 &diff{ exit(T,V) - exit(T',V')} <= 0  :- depends(_,T,T'),
                                          task(T,V), task(T',V').
-
-% ------------------------------------------------------------------------------
-% If we have precomputed shortest path information (in the form of the
-% shortest_path/4 predicate) then we can calculate the minimum path for each
-% path as well as a minimum duration/distance. These can be used by the domain
-% heuristics.
-% ------------------------------------------------------------------------------
-
-% The next edge between vertices along the shortest path from src to dst.
-on_minpath(R,Src,Via)    :- start(R,Src), not path_sequence(_,R), path(R,Dest),
-                            shortest_path(Src,Dest,_,Via).
-on_minpath(P',Src,Via)   :- path_sequence(P,P'), path(P,Src), path(P',Dest),
-                            shortest_path(Src,Dest,_,Via).
-on_minpath(P,Src,Via)    :- on_minpath(P,_,Src), path(P,Dest),
-                            shortest_path(Src,Dest,_,Via).
-
-%%%on_minpath(P,Src,V)         :- first_visit(P,Src), last_visit(P,Dst),
-%%%                              shortest_path(Src,Dst,_,V).
-%%%on_minpath(P,V,V')           :- on_minpath(P,_,V), last_visit(P,Dst),
-%%%                                shortest_path(V,Dst,_,V').
-%%%
-
-% ------------------------------------------------------------------------------
-% Domain heuristic for moves based on being on the shortest path
-% ------------------------------------------------------------------------------
-
-#heuristic move(P,V,V')      : on_minpath(P,V,V').           [1,true]
-#heuristic move(P,V,V')      : path(P,_), edge(V,V',_),
-                               not on_minpath(P,V,V').       [1,false]
-
-% ------------------------------------------------------------------------------
-% Show for post-processing
-% ------------------------------------------------------------------------------
-
-
-#show task/2.
-#show path/2.
-#show assignment/2.
-#show task_sequence/2.
-#show visit/2.
-#show move/3.
-
-%#show before/3.
-%#show same_walk/2.
-
-%#show shortest_path/4.
-%#show on_minpath/3.
-%#show path_min_dist/2.
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------

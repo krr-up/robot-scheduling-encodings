@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-WALK_DL="walk_dl"
-PATH_DL="path_dl"
-FAST_DL="fast_dl"
+WALK_DL="walk"
+PATH_DL="path"
+FAST_DL="fast"
 
 CLINGODLFACTS="../scripts/clingo-dl-facts.sh"
 CLINGOFACTS="../scripts/clingo-facts.sh"
