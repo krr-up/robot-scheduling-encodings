@@ -4,20 +4,44 @@ SCRIPT="$( readlink -f ${BASH_SOURCE[0]} )"
 THIS_DIR="$( cd "$( dirname ${SCRIPT} )" && pwd )"
 export PYTHONPATH="$THIS_DIR:${PYTHONPATH}"
 
+RAWSOLVE=""
 VARIANT="basic"
 POSITIONAL=()
+OPTIONS=""
+
+usage(){
+    echo "usage: $0 [-h] [-d] [-v <variant>] <instance>"
+    echo "       -h            help"
+    echo "       -d            enable domain heuristics"
+    echo "       -r            raw solve with no post-processing"
+    echo "       -t            generate ground text output only"
+    echo "       -v <variant>  different variant"
+    exit 1
+}
 
 while [[ $# -gt 0 ]]; do
     key=$1
 
     case $key in
         -h)
-            echo "usage: $0 [-h] [-v <variant>]"
-            exit 1
+            usage
+            ;;
+        -d)
+            OPTIONS="${OPTIONS} --heuristic=Domain"
+            shift
             ;;
         -v)
             VARIANT="$2"
             shift ; shift
+            ;;
+        -t)
+            RAWSOLVE="true"
+            OPTIONS="${OPTIONS} --text"
+            shift
+            ;;
+        -r)
+            RAWSOLVE="true"
+            shift
             ;;
         *)
             POSITIONAL+=("$1")
@@ -27,6 +51,10 @@ while [[ $# -gt 0 ]]; do
 done
 set -- "${POSITIONAL[@]}" # restore positional arguments
 
+if [ "$1" == "" ]; then
+    usage
+fi
+
 BASE="fast_encoding"
 ASP="${THIS_DIR}/../encodings/${BASE}_${VARIANT}.lp"
 
@@ -34,21 +62,23 @@ CLINGODLFACTS="${THIS_DIR}/../scripts/clingo-dl-facts.sh"
 CLINGOFACTS="${THIS_DIR}/../scripts/clingo-facts.sh"
 CLINGODL="clingo-dl"
 
-echo "Running clingo-dl ${ASP} $@ "
-echo ""
+>&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
+>&2 echo ""
 
-# To just solve
-#${CLINGODL} ${ASP} $@
-#${CLINGODLFACTS} ${ASP} $@
+#Just run the solver
+if [ "${RAWSOLVE}" != "" ]; then
+    ${CLINGODL} ${OPTIONS} ${ASP} $@
+    exit 1
+fi
 
 # To pretty print the output
-#${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_debug.lp" -
+#${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_debug.lp" -
 
 # To check the solution - make sure the plan is collision free
-#${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_to_plan.lp" -
+#${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_to_plan.lp" -
 
-#${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS}  "${THIS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${THIS_DIR}/solution_checker.lp -
+#${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS}  "${THIS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${THIS_DIR}/solution_checker.lp -
 
-${CLINGODLFACTS} ${ASP} $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${THIS_DIR}/user_output.lp ${THIS_DIR}/solution_checker.lp -
+${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${THIS_DIR}/user_output.lp ${THIS_DIR}/solution_checker.lp -
 
 

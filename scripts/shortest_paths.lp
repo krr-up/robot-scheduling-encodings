@@ -46,12 +46,17 @@ nearest(V,V',D)       :- edge(V,V',D), #false : edge(V,_,D'), D' < D.
 % N'.
 % ------------------------------------------------------------------------------
 
+maxdist(MD) :- MD = #sum { D,V,V' : edge(V,V',D) }.
+
 _vertex(oneedge,V)      :- vertex(V), 1 { edge(V,_,_) } 1.
 _vertex(twoedge,V)      :- vertex(V), 2 { edge(V,_,_) } 2.
 _ep_to_next(V,V',D)     :- endpoint(V), _vertex(oneedge,V),
                            edge(V,V',D), not endpoint(V').
-_ep_to_next(V,V'',D+D') :- _ep_to_next(V,V',D), _vertex(twoedge,V'),
-                             edge(V',V'',D'), V'' != V.
+
+_ep_to_next(V,V'',D+D') :- _ep_to_next(V,V',D), edge(V',V'',D'),
+                           V' != V'', V != V'', V != V',
+                           maxdist(MD), D < MD,
+                           _vertex(twoedge,V''), not endpoint(V'') .
 
 entrypoint(V,V,0)       :- endpoint(V), _vertex(oneedge,V),
                            edge(V,V',_), endpoint(V').
@@ -65,11 +70,10 @@ on_deadend(V,V')        :- _vertex(twoedge,V), edge(V,V'',_), on_deadend(V'',V')
 endpoint_access(V,V')   :- on_deadend(V,V').
 endpoint_access(V,V')   :- entrypoint(V,V',_).
 
-
 % ------------------------------------------------------------------------------
 % For calculating the shortest path from every node to the endpoints
 % ------------------------------------------------------------------------------
-%#program min_path.
+#program min_path.
 
 edge_gathered        :- edge(V1,V2,D), @gather_edge(V1,V2,D) == 1.
 endpoint_gathered    :- endpoint(V), @gather_endpoint(V) == 1.
@@ -86,5 +90,6 @@ shortest_path(V,EP,V',D) :- (V,EP,V',D) = @shortest_paths(),
 
 %%#show endpoint/1.
 %%#show entrypoint/3.
-%%#show _ep_to_next/3.
+%#show _vertex/2.
+%#show _ep_to_next/3.
 %%
