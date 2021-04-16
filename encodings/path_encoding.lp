@@ -3,8 +3,9 @@
 % ------------------------------------------------------------------------------
 
 % ------------------------------------------------------------------------------
-% A walk consists of a sequence of paths for a robot; one for each task as well
-% as a return home for each robot.
+% A walk consists of a sequence of paths for a robot; there must be a path for
+% each task as well as a return home path for each robot that is not already
+% home or has assignments.
 % ------------------------------------------------------------------------------
 
 path(T,V)           :- task(T,V).
@@ -23,14 +24,8 @@ path_seqnum(P',N+1) :- path_seqnum(P,N), path_sequence(P,P'),
                        #count{ 1 : task(_,_) } = TN, N <= TN.
 
 % ------------------------------------------------------------------------------
-% Establish a set of path destinations; one for each task and one to get each
-% robot home. Note, if a robot is already home and has no tasks it will have no
-% homing path. Then generate an acyclic path for each path destination that ends
-% at the path destination's vertex. Then match the first and last vertex visits
-% to task sequences, robot start positions, and return home positions.
-%
-% Note: this encoding doesn't need a separate projection set because we track
-% acyclic paths so know exactly when the path ends.
+% Generate a set of moves for each path. The path is acyclic and the start and
+% end must matchthe expected start and end positions to satisfy the task.
 % ------------------------------------------------------------------------------
 
 0 { move(P,V,V') : edge(V,V',_) } 1 :- path(P,_), edge(V,_,_).
@@ -53,11 +48,11 @@ first_visit(P,V) :- path(P,V), not move(P,_,_).
 visit(P,V) :- path(P,V), not move(P,_,_).
 
 % For a robot with no paths (so starts at its home vertex and has no
-% assignments) - there should be no visits to this home vertex.
+% assignments) - there should be no visits to its home vertex.
 :- start(R,V), not path(R,_), visit(_,V).
 
 % ------------------------------------------------------------------------------
-% Match the start and end of paths connected to the same robot
+% Match the start and end of paths that are part of a sequence.
 % ------------------------------------------------------------------------------
 
 % First visit for the first path - two cases if robot has assigments or not.
@@ -70,8 +65,7 @@ visit(P,V) :- path(P,V), not move(P,_,_).
 
 % ------------------------------------------------------------------------------
 % Travel times must satisfy edge weights and cannot leave a vertex before
-% arriving at it. Also create a 0 time transition between the end of one task
-% and the start of the next task in a task sequence.
+% arriving at it. Maintain an upper-bound.
 % ------------------------------------------------------------------------------
 
 #const epsilon=10.
@@ -86,11 +80,15 @@ visit(P,V) :- path(P,V), not move(P,_,_).
 % Action time
 &diff{ arrive(T,V) - exit(T,V) } <= -epsilon :- visit(T,V), task(T,V).
 
-% Transition between task paths
-&diff{ arrive(P',V) - exit(P,V) } <= 0       :- path_sequence(P,P'), path(P,V).
+% Match end of one task and start of next - NOTE: FOR CORRECTNESS AN EXACT MATCH
+% DOESN'T MATTER. BUT DOES IT HELP SOLVING? MAYBE FOR DECIDING UNSAT???
+
+%&diff{ arrive(P',V) - exit(P,V) } <= 0       :- path_sequence(P,P'), path(P,V).
 &diff{ exit(P,V) - arrive(P',V) } <= 0       :- path_sequence(P,P'), path(P,V).
 
-% Start at time 0 - maybe not strictly necessary? - THIS CAN BE SLOW FOR SOME INSTANCES
+% Start at time 0 - NOTE: FOR CORRECTNESS NOT NECESSARY SINCE WE FORCE before/3
+% CONSTRAINTS FOR THE START LOCATIONS - ALSO SEEMS TO SLOW SOLVING.
+
 %&diff{ 0 - arrive(P,V) } <= 0          :- start(R,V), passign(R,P), path_seqnum(P,0).
 %&diff{ arrive(P,V) - 0 } <= 0          :- start(R,V), passign(R,P), path_seqnum(P,0).
 
@@ -98,7 +96,7 @@ visit(P,V) :- path(P,V), not move(P,_,_).
 % negative arrival times.
 &diff{ 0 - arrive(P,V) } <= 0          :- visit(P,V).
 
-% Returning home before some bound.
+% Returning home before the upper bound.
 &diff{ arrive(R,V) - bound } <= 0      :- robot(R), path(R,V).
 &diff{ exit(R,V) - bound } <= 0        :- robot(R), path(R,V).
 &diff{ bound - exit(R,V) } <= 0        :- robot(R), path(R,V).
@@ -124,14 +122,28 @@ before(v,(P',V'),(P,V))        :- visit(P,V), visit(P',V'),
                                   not same_walk(P,P'),
                                   not before(v,(P,V),(P',V')).
 
+
+%% NOTE: still not sure what we need to do in terms of the edges. Since edge
+%% conflicts are reflected in vertex conflicts maybe we don't need to directly
+%% deal with edge conflicts?
+
 % P1 must arrive at V1' before P2 can leave V2
-{ before(e,(P1,V1'),(P2,V2)) } :- move(P1,V1,V1'), move(P2,V2,V2'),
-                                  conflict(e,(V1,V1'),(V2,V2')), P1 < P2,
-                                  not same_walk(P1,P2).
-before(e,(P2,V2'),(P1,V1))     :- move(P1,V1,V1'), move(P2,V2,V2'),
-                                  conflict(e,(V1,V1'),(V2,V2')), P1 < P2,
-                                  not same_walk(P1,P2),
-                                  not before(e,(P1,V1'),(P2,V2)).
+before(e,(P1,V1'),(P2,V2))     :-  move(P1,V1,V1'), move(P2,V2,V2'),
+                                   conflict(e,(V1,V1'),(V2,V2')),
+                                   before(v,(P1,V1'),(P2,V2')).
+
+
+
+%%%%{ before(e,(P1,V1'),(P2,V2)) } :- move(P1,V1,V1'), move(P2,V2,V2'),
+%%%%                                  conflict(e,(V1,V1'),(V2,V2')), P1 < P2,
+%%%%                                  not same_walk(P1,P2).
+%%%%before(e,(P2,V2'),(P1,V1))     :- move(P1,V1,V1'), move(P2,V2,V2'),
+%%%%                                  conflict(e,(V1,V1'),(V2,V2')), P1 < P2,
+%%%%                                  not same_walk(P1,P2),
+%%%%                                  not before(e,(P1,V1'),(P2,V2)).
+%%%%
+
+
 
 % The start of a robot's walk must be first at the starting vertex (there are
 % two cases: robot with/without an assignment)
@@ -148,14 +160,14 @@ before(e,(P2,V2'),(P1,V1))     :- move(P1,V1,V1'), move(P2,V2,V2'),
    not before(v,(P'',V),(P',V')).
 
 % ------------------------------------------------------------------------------
-% NOTE: We are modelling a vertex as taking up some space that is enough to
-% contain a robot. Therefore we can have a robot exit a node at the same
-% instance that another robot arrives at that node. But we are also allowing a
-% robot to arrive and exit a node at the same instant. This creates a problem
-% that before(v,(P,V),(P',V)) allows P and P' to both arrive and exit the node
-% at the same instant without violating the constraint. We could add a delay
-% between arriving and exiting, but instead make sure two robots cannot arrive
-% at the same time.
+% NOTE: We are modelling a vertex as taking up space enough to contain a
+% robot. Therefore we can have a robot exit a node at the same instance that
+% another robot arrives at that node. But we are also allowing a robot to arrive
+% and exit a node at the same instant. This creates a problem that
+% before(v,(P,V),(P',V)) allows P and P' to both arrive and exit the node at the
+% same instant without violating the constraint. We could add a delay between
+% arriving and exiting, but instead make sure two robots cannot arrive at the
+% same time.
 % ------------------------------------------------------------------------------
 
 &diff{ arrive(P,V) - arrive(P',V') } <= -1  :- before(v,(P,V),(P',V')).
@@ -187,12 +199,14 @@ next_move((P,V),(P',V')) :- path(P,V),  passign(R,P), path_seqnum(P,X),
    not before(v,(P2,V2),(P1',V1')).
 
 % ------------------------------------------------------------------------------
-% Ensure that connected paths maintain the same ordering.
+% Explicitly enforce some of the orderings for paths visiting a vertex. NOTE:
+% this will also be enforced by the DL constraints, so does this help with
+% solving? It has a significant impact on grounding.
 % ------------------------------------------------------------------------------
 
-:- before(v,(P,V),(P',V')), passign(R,P), path_seqnum(P,N),
-   visit(P'',V), passign(R,P''), path_seqnum(P'',N''), N'' < N,
-   not before(v,(P'',V),(P',V')).
+%:- before(v,(P,V),(P',V')), passign(R,P), path_seqnum(P,N),
+%   visit(P'',V), passign(R,P''), path_seqnum(P'',N''), N'' < N,
+%   not before(v,(P'',V),(P',V')).
 
 % ------------------------------------------------------------------------------
 % Partial Definitions 9.

@@ -22,15 +22,26 @@ step(0..maxstep).
 
 :- start(R,V), home(R,V'), V != V', not walk(R,_,_).
 
+% An assigned robot must at least visit the task vertex
+%:- assignment(R,T), task(T,V), not walk(R,_,V).
+
+% A robot that is at home and has no assignments shouldn't go anywhere
+:- start(R,V), home(R,V), walk(R,_,_), not assignment(R,_).
+
 % For a robot with no walk - no other robot can access that vertex
 :- start(R,V), not walk(R,_,_), walk(_,_,V).
 
 % Cannot exit a vertex before you arrive at it. Travel time must satisfy the
 % edge weight.
 
+%% NOTE: FOR CORRECTNESS DON'T NEED TO FORCE EXACT START AT TIME 0
+%%&diff{ arrive(R,0) - 0 } <= 0               :- walk(R,0,_).
+
 &diff{ 0 - arrive(R,0) } <= 0               :- walk(R,0,_).
-&diff{ arrive(R,0) - 0 } <= 0               :- walk(R,0,_).
-&diff{ arrive(R,S) - exit(R,S) } <= 0       :- walk(R,S,_), walk(R,S+1,V').
+
+&diff{ arrive(R,S) - exit(R,S) } <= 0       :- walk(R,S,_).
+%&diff{ arrive(R,S) - exit(R,S) } <= 0       :- walk(R,S,_), walk(R,S+1,_).
+
 &diff{ exit(R,S) - arrive(R,S+1) } <= -W    :- walk(R,S,V), walk(R,S+1,V'),
                                                edge(V,V',W).
 % Returning home before some bound.
