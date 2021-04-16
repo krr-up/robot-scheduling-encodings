@@ -15,7 +15,7 @@ CLINGODL="clingo-dl"
 check_unsat() {
     local base="$1"
     local instance="$2"
-    local encoding="../encodings/${base}_encoding.lp"
+    local encoding="../encodings/${base}_encoding_basic.lp"
     shift ; shift
 
     RESULT=$($CLINGODL $encoding $instance $@ 2>/dev/null | sed -e 's/^.*\(UNSATISFIABLE\).*/BLAH/;t;d')
@@ -31,7 +31,7 @@ check_unsat() {
 check_sat() {
     local base="$1"
     local instance="$2"
-    local encoding="../encodings/${base}_encoding.lp"
+    local encoding="../encodings/${base}_encoding_basic.lp"
     shift ; shift
 
 #    echo "RUNNING: clingo-dl $encoding $instance"
@@ -50,9 +50,9 @@ check_sat() {
 check_solution() {
     local base="$1"
     local instance="$2"
-    local encoding="../encodings/${base}_encoding.lp"
+    local encoding="../encodings/${base}_encoding_basic.lp"
     local checker="solution_checker.lp"
-    local filter="${base}_encoding_walk_output.lp"
+    local filter="${base}_encoding_to_plan.lp"
     shift ; shift
 
 #    echo "RUNNING: $CLINGODLFACTS $encoding $instance 2>/dev/null | $CLINGOFACTS $filter - | clingo $instance ${checker} -"

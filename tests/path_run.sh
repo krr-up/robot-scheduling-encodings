@@ -14,7 +14,7 @@ usage(){
     echo "       -h            help"
     echo "       -d            enable domain heuristics"
     echo "       -r            raw solve with no post-processing"
-    echo "       -t            generate ground text output only"
+    echo "       -g            generate ground text output only"
     echo "       -v <variant>  different variant"
     exit 1
 }
@@ -34,7 +34,7 @@ while [[ $# -gt 0 ]]; do
             VARIANT="$2"
             shift ; shift
             ;;
-        -t)
+        -g)
             RAWSOLVE="true"
             OPTIONS="${OPTIONS} --text"
             shift

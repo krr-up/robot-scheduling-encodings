@@ -13,7 +13,7 @@
 
 
 #show task/2.
-#show path/2.
+%#show path/2.
 #show assignment/2.
 #show task_sequence/2.
 #show walk/3.

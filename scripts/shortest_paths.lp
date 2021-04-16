@@ -73,7 +73,7 @@ endpoint_access(V,V')   :- entrypoint(V,V',_).
 % ------------------------------------------------------------------------------
 % For calculating the shortest path from every node to the endpoints
 % ------------------------------------------------------------------------------
-#program min_path.
+%#program min_path.
 
 edge_gathered        :- edge(V1,V2,D), @gather_edge(V1,V2,D) == 1.
 endpoint_gathered    :- endpoint(V), @gather_endpoint(V) == 1.
