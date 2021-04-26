@@ -41,6 +41,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         -r)
             RAWSOLVE="true"
+            OPTIONS="${OPTIONS} --stats"
             shift
             ;;
         *)

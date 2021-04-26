@@ -102,3 +102,8 @@ walk_length(R,S) :- walk(R,S,_,_,_), not walk(R,S+1,_,_,_).
 #show dl(bound,B) : dl(bound,B).
 #defined action/4.
 
+
+#defined task/2.
+#defined depends/3.
+#defined assignment/2.
+#defined task_sequence/2.

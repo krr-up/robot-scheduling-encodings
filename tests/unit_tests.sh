@@ -63,7 +63,7 @@ check_solution() {
         echo "Failure due to unsat problem: $CLINGODLFACTS $encoding $instance $@"
         return 1
     fi
-    RESULT2=$(echo $RESULT1 | $CLINGOFACTS $filter - | clingo $instance ${checker} - )
+    RESULT2=$(echo $RESULT1 | $CLINGOFACTS $filter - | clingo user_output.lp ${checker} - )
     TMP=$(echo "$RESULT2" | sed -e 's/^.*\(SATISFIABLE\).*/BLAH/;t;d')
     if [ "$TMP" != "BLAH" ] ; then
         echo "Solution checker failure: $encoding $instance $@"
@@ -72,6 +72,7 @@ check_solution() {
     fi
     return 0
 }
+
 
 #------------------------------------------------------------------
 # The Walk DL encoding - unsatisfiable problems
@@ -95,8 +96,9 @@ check_walk_dl(){
     check_solution $WALK_DL instances/sat8.lp $args10
     check_solution $WALK_DL instances/sat9.lp $args10
 
-    check_solution $WALK_DL instances/walksat_pathunsat1.lp $args10
-    check_solution $WALK_DL instances/walksat_pathunsat2.lp $args10
+    check_solution $WALK_DL instances/walk_sat_pathfast_unsat1.lp $args10
+    check_solution $WALK_DL instances/walk_sat_pathfast_unsat2.lp $args10
+    check_solution $WALK_DL instances/walkpath_sat_fast_unsat1.lp $args10
 
     check_solution $WALK_DL instances/instance1.lp $args20
 
@@ -115,8 +117,8 @@ check_path_dl(){
     check_unsat $PATH_DL instances/unsat4.lp
     check_unsat $PATH_DL instances/unsat5.lp
 
-    check_unsat $PATH_DL instances/walksat_pathunsat1.lp
-    check_unsat $PATH_DL instances/walksat_pathunsat2.lp
+    check_unsat $PATH_DL instances/walk_sat_pathfast_unsat1.lp
+    check_unsat $PATH_DL instances/walk_sat_pathfast_unsat2.lp
 
     check_solution $PATH_DL instances/sat1.lp
     check_solution $PATH_DL instances/sat2.lp
@@ -127,6 +129,8 @@ check_path_dl(){
     check_solution $PATH_DL instances/sat7.lp
     check_solution $PATH_DL instances/sat8.lp
     check_solution $PATH_DL instances/sat9.lp
+
+    check_solution $PATH_DL instances/walkpath_sat_fast_unsat1.lp
 
     check_solution $PATH_DL instances/instance1.lp
 }
@@ -143,8 +147,16 @@ check_fast_dl(){
     check_unsat $FAST_DL instances/unsat4.lp
     check_unsat $FAST_DL instances/unsat5.lp
 
-    check_unsat $FAST_DL instances/walksat_pathunsat1.lp
-    check_unsat $FAST_DL instances/walksat_pathunsat2.lp
+    # Problems with added timing restrictions
+    check_unsat $FAST_DL instances/walkpath_sat_fast_unsat1.lp
+
+    # Two boundary cases for fast encoding
+    check_unsat $FAST_DL instances/fast_unsat_edgeconflict1.lp
+    check_unsat $FAST_DL instances/fast_unsat_edgeconflict2.lp
+
+    check_unsat $FAST_DL instances/walk_sat_pathfast_unsat1.lp
+    check_unsat $FAST_DL instances/walk_sat_pathfast_unsat2.lp
+
 
     check_solution $FAST_DL instances/sat1.lp
     check_solution $FAST_DL instances/sat2.lp
@@ -164,7 +176,7 @@ check_fast_dl(){
 # main
 #------------------------------------------------------------------
 
-check_walk_dl
+#check_walk_dl
 check_path_dl
 check_fast_dl
 

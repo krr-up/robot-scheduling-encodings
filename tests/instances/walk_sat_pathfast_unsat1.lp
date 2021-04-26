@@ -1,5 +1,5 @@
 %------------------------------------------------------------------------------
-% Satisfiable for the walk encoding but unsat for path encodings because r1
+% Satisfiable for the walk encoding but unsat for path/fast encodings because r1
 % needs to first get out of the way of r2 before it can double back.
 %
 % (r2:s) --------> (r2:e)
