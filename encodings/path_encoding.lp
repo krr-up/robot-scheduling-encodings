@@ -2,6 +2,8 @@
 % A path DL encoding that tracks both the arrival and exit times from vertices.
 % ------------------------------------------------------------------------------
 
+encoding(path).
+
 % ------------------------------------------------------------------------------
 % A walk consists of a sequence of paths for a robot; there must be a path for
 % each task as well as a return home path for each robot that is not already

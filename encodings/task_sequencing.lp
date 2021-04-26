@@ -7,24 +7,19 @@
 % Auxilary output facts: same_robot/2.
 % ------------------------------------------------------------------------------
 
-
-
-
-
-
-
 % ------------------------------------------------------------------------------
-% Choose the assignment of robots to tasks and the task_sequences
+% This version improves grounding - don't choose putdown task assignments since
+% they are completely determined by the pickup assignments. Similarly for
+% task_sequence don't choose pickup-putdown sequences.
 % ------------------------------------------------------------------------------
 
-1 { assignment(R,T) : robot(R) } 1 :- task(T,_).
+1 { assignment(R,T) : robot(R) } 1 :- task(T,_), not depends(deliver,_,T).
+assignment(R,T')                   :- assignment(R,T), depends(deliver,T,T'),
+                                      not depends(deliver,_,T).
 
-:- depends(deliver,T,T'), assignment(R,T), not assignment(R,T').
-:- depends(deliver,T,T'), assignment(R,T'), not assignment(R,T).
-
-0 { task_sequence(T,T') : task(T',_), T != T' } 1 :- task(T,_).
-
-:- depends(deliver,T,T'), not task_sequence(T,T').
+0 { task_sequence(T,T') : task(T',_), not depends(deliver,_,T'), T != T' } 1 :-
+                          task(T,_), not depends(deliver,T,_).
+task_sequence(T,T')     :- depends(deliver,T,T').
 
 % ------------------------------------------------------------------------------
 % Make sure the assignment and task sequences are correct
@@ -46,6 +41,13 @@ same_robot(T,T')  :- assignment(R,T), assignment(R,T'), T < T'.
 
 #show assignment/2.
 #show task_sequence/2.
+
+
+
+
+
+
+
 
 
 

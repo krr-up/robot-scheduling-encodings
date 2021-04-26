@@ -1,27 +1,23 @@
 %------------------------------------------------------------------------------
 %
-%          (r2:s) (r1:e)
-%           w2
-%          /  \
-%         /    \
-% (r1:s) w1----w3 (r3:s)
-% (r3:e)          (r2:e)
+% (r1:s) w1 --- w2
+%                \     (r2:e)   (r1:e)
+%                 w5 --- w6 ---- w7
+%                /
+% (r2:s) w3 --- w4
 %
-% Three robots need to shift positions
+% Conflict edge (w2,w4) and (w3,w4)
 %------------------------------------------------------------------------------
 #include "graph_rules.lp".
 
-edge(w1,w2,15).
-edge(w2,w3,15).
-edge(w3,w1,15).
+edge(w1,w2,15). edge(w2,w5,15).
+edge(w3,w4,15). edge(w4,w5,15). edge(w5,w6,15). edge(w6,w7,15).
 
-robot(r1). start(r1,w1). home(r1,w2).
-robot(r2). start(r2,w2). home(r2,w3).
-robot(r3). start(r3,w3). home(r3,w1).
+robot(r1). start(r1,w1). home(r1,w7).
+robot(r2). start(r2,w3). home(r2,w6).
 
-%task(t1,w2). task(t2,w3).
+conflict(e,(w2,w5),(w4,w5)).
 
-%depends(deliver,t1,t2).
 
 %#minimize{ S : walk(R,S,_), not walk(R,S+1,_) }. % Walk DL
 

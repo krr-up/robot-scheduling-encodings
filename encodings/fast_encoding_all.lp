@@ -6,6 +6,8 @@
 #include "task_sequencing_heur.lp".
 #include "fast_encoding.lp".
 #include "fast_encoding_heur.lp".
+#include "fast_encoding_extra.lp".
+#include "fast_encoding_constrained.lp".
 
 % ------------------------------------------------------------------------------
 % Show for post-processing to generate the plan
