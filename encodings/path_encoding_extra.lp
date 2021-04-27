@@ -3,9 +3,14 @@
 % search space) but may help with solving.
 % ------------------------------------------------------------------------------
 
+% Ensure that the transition from one task to the next is exactly 0 duration
 
-%&diff{ 0 - arrive(T,V) } <= 0   :- task(T,_), start(_,V).
-%&diff{ 0 - arrive(P,V) } <= 0   :- visit(P,V).
+&diff{ arrive(P',V) - exit(P,V) } <= 0       :- path_sequence(P,P'), path(P,V).
+
+% This is needed if we want to minimize the bound - otherwise it generates
+% negative arrival times.
+%%%&diff{ 0 - arrive(P,V) } <= 0          :- visit(P,V).
+
 
 % ------------------------------------------------------------------------------
 % If P visit V before P' visit V' then and previous path to P that visit's V
@@ -28,8 +33,8 @@ path_seqnum(P',N+1) :- path_seqnum(P,N), path_sequence(P,P'),
 % sequence.
 % ------------------------------------------------------------------------------
 
-&diff{ arrive(T,V) - arrive(T',V')} <= 0  :- depends(deliver,T,T'),
-                                             task(T,V), task(T',V').
+&diff{ exit(T,V) - arrive(T',V')} <= 0  :- depends(deliver,T,T'),
+                                           task(T,V), task(T',V').
 
 
 %%&diff{ arrive(P,V'') - arrive(T',V')} <= 0  :- depends(wait,T,T'),

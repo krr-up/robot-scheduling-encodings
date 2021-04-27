@@ -1,13 +1,12 @@
 % ------------------------------------------------------------------------------
-% Path encoding with all options enabled.
+% Fast encoding with domain heuristics and shortest paths but no added
+% constraints
 % ------------------------------------------------------------------------------
 
 #include "task_sequencing.lp".
 #include "task_sequencing_heur.lp".
-#include "path_encoding.lp".
-#include "path_encoding_heur.lp".
-#include "path_encoding_extra.lp".
-#include "path_encoding_constrained.lp".
+#include "fast_encoding.lp".
+#include "fast_encoding_heur.lp".
 
 % ------------------------------------------------------------------------------
 % Show for post-processing to generate the plan
@@ -40,3 +39,4 @@
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
+

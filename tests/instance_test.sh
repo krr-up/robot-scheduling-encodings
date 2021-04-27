@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+SCRIPT="$( readlink -f ${BASH_SOURCE[0]} )"
+THIS_DIR="$( cd "$( dirname ${SCRIPT} )" && pwd )"
+
+usage(){
+    echo "usage: $0 <instance>"
+    exit 1
+}
+
+if [ "$1" == "" ]; then
+    usage
+fi
+
+ASP="${THIS_DIR}/instance_checker.lp"
+
+CLINGOFACTS="${THIS_DIR}/../scripts/clingo-facts.sh"
+CLINGO="clingo"
+
+>&2 echo "Executing: clingo ${OPTIONS} ${ASP} $@ "
+>&2 echo ""
+
+#Just run the solver
+${CLINGOFACTS} ${ASP} $@

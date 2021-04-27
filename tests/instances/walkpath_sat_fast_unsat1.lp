@@ -19,9 +19,9 @@ robot(r2). start(r2,w1). home(r2,w3).
 % Timing restriction that is not satisfiable for the fast encoding (because we
 % don't track exit times so have to have more restrictive arrival times) but is
 % satisfiable for the path and walk encodings.
+
 dlf(arrive(r1,w3),45).
 dlf(arrive(r2,w2),44).
-
 
 %#minimize{ S : walk(R,S,_), not walk(R,S+1,_) }. % Walk DL
 #defined walk/3.
