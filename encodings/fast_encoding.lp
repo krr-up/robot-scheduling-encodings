@@ -34,6 +34,8 @@ path_assignment(R,R)  :- home(R,V), not start(R,V).
 0 { move(R,V,V') : edge(V,V',_) } 1 :- robot(R), edge(V',_,_).
 :- robot(R), not path(R,_), move(R,_,_).
 
+%%% PROGRAM IS TIGHT BUT IS THIS ALWAYS A GOOD THING?
+
 visit(P,V) :- move(P,V,_).
 visit(P,V) :- move(P,_,V).
 first_visit(P,V) :- move(P,V,_), not move(P,_,V).
@@ -48,8 +50,6 @@ visit(P,V) :- path(P,V), not move(P,_,_).
 
 :- path(P,V), not last_visit(P,V).
 :- path(P,_), not first_visit(P,_).
-
-%%% CHECK ENCODING DOESN'T PRODUCE STRONGLY CONNECTED COMPONENTS - CHECK TIGHTNESS --stats 
 
 % For a robot with no paths (so starts at its home vertex and has no
 % assignments) - there should be no visits to its home vertex.
@@ -89,8 +89,6 @@ visit(P,V) :- path(P,V), not move(P,_,_).
                                     path_assignment(R,P), start(R,V).
 &diff{ arrive(P,V) - 0 } <= 0    :- path(P,_), not path_sequence(_,P),
                                     path_assignment(R,P), start(R,V).
-
-%&diff{ 0 - arrive(T,V) } <= 0   :- task(T,_), start(_,V).
 
 % All robots must return home before the upper bound.
 &diff{ arrive(R,V) - bound } <= 0      :- home(R,V).
@@ -171,18 +169,15 @@ before(v,(P',V'),(P,V))        :- visit(P,V), visit(P',V'),
    not before(v,(P,V2),(P',V1')).
 
 % ------------------------------------------------------------------------------
-% Partial Definitions 9.
-%
-% Assignment dependency checking. - Strictly, only required for wait dependency
-% because deliver dependency is for a single robot and handled by task
-% sequencing.
+% Assignment dependency checking only required for wait dependency because
+% deliver dependency is for a single robot and handled by task sequencing.
+% Note: the following relies on replacement/wait dependency being at the same
+% vertex so the before/3 constraints will ensure that the two robots cannot be
+% on the vertex at the same time.
 % ------------------------------------------------------------------------------
 
-&diff{ arrive(T,V) - arrive(T',V')} <= 0  :- depends(_,T,T'),
-                                             task(T,V), task(T',V').
-
-%%&diff{ arrive(T,V) - arrive(T',V')} <= 0  :- depends(wait,T,T'),
-%%                                             task(T,V), path_sequence(T,P), task(T',V').
+&diff{ arrive(T,V) - arrive(T',V')} <= -1  :- depends(wait,T,T'),
+                                              task(T,V), task(T',V').
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------

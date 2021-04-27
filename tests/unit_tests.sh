@@ -116,7 +116,6 @@ check_path_dl(){
     check_unsat $PATH_DL instances/unsat3.lp
     check_unsat $PATH_DL instances/unsat4.lp
     check_unsat $PATH_DL instances/unsat5.lp
-
     check_unsat $PATH_DL instances/walk_sat_pathfast_unsat1.lp
     check_unsat $PATH_DL instances/walk_sat_pathfast_unsat2.lp
 

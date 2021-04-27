@@ -6,8 +6,6 @@
 #include "task_sequencing_heur.lp".
 #include "path_encoding.lp".
 #include "path_encoding_heur.lp".
-#include "path_encoding_extra.lp".
-#include "path_encoding_constrained.lp".
 
 % ------------------------------------------------------------------------------
 % Show for post-processing to generate the plan
