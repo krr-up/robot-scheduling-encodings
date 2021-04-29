@@ -1,13 +1,23 @@
 % ------------------------------------------------------------------------------
-% Path encoding with all options enabled.
+% The "full" path encoding with no options.
 % ------------------------------------------------------------------------------
 
-#include "task_sequencing.lp".
-#include "task_sequencing_heur.lp".
-#include "path_encoding.lp".
-#include "path_encoding_heur.lp".
-#include "path_encoding_extra.lp".
-#include "path_encoding_constrained.lp".
+#include "path/show.lp".
+
+#include "common/task_sequencing.lp".
+
+#include "path/task_to_path.lp".
+
+#include "path/move_choice_domain.lp".
+
+#include "path/move_sequencing.lp".
+
+#include "path/visit_ordering.lp".
+
+#include "path/visit_tracker_tight.lp".
+
+#include "path/full_encoding.lp".
+
 
 % ------------------------------------------------------------------------------
 % Show for post-processing to generate the plan

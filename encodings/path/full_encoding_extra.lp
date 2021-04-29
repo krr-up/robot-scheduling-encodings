@@ -11,22 +11,6 @@
 % negative arrival times.
 %%%&diff{ 0 - arrive(P,V) } <= 0          :- visit(P,V).
 
-
-% ------------------------------------------------------------------------------
-% If P visit V before P' visit V' then and previous path to P that visit's V
-% will do so before P' visits V'. Similarly with any task after P' will visit V'
-% after P visits V. This is enforced by the DL constraints.
-% ------------------------------------------------------------------------------
-
-path_seqnum(R,0)    :- path_assignment(R,R), not assignment(R,_).
-path_seqnum(P,0)    :- path_sequence(P,_), not path_sequence(_,P).
-path_seqnum(P',N+1) :- path_seqnum(P,N), path_sequence(P,P'),
-                       #count{ 1 : task(_,_) } = TN, N <= TN.
-
-:- before(v,(P,V),(P',V')), path_assignment(R,P), path_assignment(R,P''),
-   path_seqnum(P,N), path_seqnum(P'',M), M < N, visit(P'',V),
-   not before(v,(P'',V),(P',V')).
-
 % ------------------------------------------------------------------------------
 % The putdown of a delivery task must happen after the pickup. Because a
 % delivery is performed by the same robot this is already enforced by the task

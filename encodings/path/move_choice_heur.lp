@@ -1,5 +1,6 @@
 % ------------------------------------------------------------------------------
-% Domain heuristics for the fast encoding.
+% Domain heuristics for improving move selection based on precomputed shortest
+% path relations.
 % ------------------------------------------------------------------------------
 
 % ------------------------------------------------------------------------------
