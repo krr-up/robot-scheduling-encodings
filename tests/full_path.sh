@@ -56,7 +56,7 @@ if [ "$1" == "" ]; then
     usage
 fi
 
-BASE="path_encoding"
+BASE="full_path"
 ASP="${THIS_DIR}/../encodings/${BASE}_${VARIANT}.lp"
 
 CLINGODLFACTS="${THIS_DIR}/../scripts/clingo-dl-facts.sh"
