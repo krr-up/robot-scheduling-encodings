@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 WALK_DL="walk"
-PATH_DL="path"
-FAST_DL="fast"
+PATH_DL="full_path"
+FAST_DL="fast_path"
 
 CLINGODLFACTS="../scripts/clingo-dl-facts.sh"
 CLINGOFACTS="../scripts/clingo-facts.sh"
@@ -15,7 +15,7 @@ CLINGODL="clingo-dl"
 check_unsat() {
     local base="$1"
     local instance="$2"
-    local encoding="../encodings/${base}_encoding_basic.lp"
+    local encoding="../encodings/${base}_basic.lp"
     shift ; shift
 
     RESULT=$($CLINGODL $encoding $instance $@ 2>/dev/null | sed -e 's/^.*\(UNSATISFIABLE\).*/BLAH/;t;d')
@@ -31,7 +31,7 @@ check_unsat() {
 check_sat() {
     local base="$1"
     local instance="$2"
-    local encoding="../encodings/${base}_encoding_basic.lp"
+    local encoding="../encodings/${base}_basic.lp"
     shift ; shift
 
 #    echo "RUNNING: clingo-dl $encoding $instance"
@@ -50,9 +50,9 @@ check_sat() {
 check_solution() {
     local base="$1"
     local instance="$2"
-    local encoding="../encodings/${base}_encoding_basic.lp"
+    local encoding="../encodings/${base}_basic.lp"
     local checker="solution_checker.lp"
-    local filter="${base}_encoding_to_plan.lp"
+    local filter="${base}_to_plan.lp"
     shift ; shift
 
 #    echo "RUNNING: $CLINGODLFACTS $encoding $instance 2>/dev/null | $CLINGOFACTS $filter - | clingo $instance ${checker} -"
@@ -156,7 +156,6 @@ check_fast_dl(){
     check_unsat $FAST_DL instances/walk_sat_pathfast_unsat1.lp
     check_unsat $FAST_DL instances/walk_sat_pathfast_unsat2.lp
 
-
     check_solution $FAST_DL instances/sat1.lp
     check_solution $FAST_DL instances/sat2.lp
     check_solution $FAST_DL instances/sat3.lp
@@ -175,7 +174,7 @@ check_fast_dl(){
 # main
 #------------------------------------------------------------------
 
-#check_walk_dl
+check_walk_dl
 check_path_dl
 check_fast_dl
 

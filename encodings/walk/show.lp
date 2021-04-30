@@ -1,16 +1,10 @@
 % ------------------------------------------------------------------------------
-% Fase encoding with all options enabled.
-% ------------------------------------------------------------------------------
-
-#include "task_sequencing.lp".
-#include "walk_encoding.lp".
-
-% ------------------------------------------------------------------------------
 % Show for post-processing to generate the plan
 % ------------------------------------------------------------------------------
 
 
 #show task/2.
+%#show path/2.
 #show assignment/2.
 #show task_sequence/2.
 #show walk/3.
