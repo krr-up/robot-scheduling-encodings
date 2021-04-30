@@ -66,7 +66,7 @@ if [ "$MAXSTEP" == "" ]; then
     OPTIONS="${OPTIONS} -c maxstep=30"
 fi
 
-BASE="walk_encoding"
+BASE="walk"
 ASP="${THIS_DIR}/../encodings/${BASE}_${VARIANT}.lp"
 
 CLINGODLFACTS="${THIS_DIR}/../scripts/clingo-dl-facts.sh"
