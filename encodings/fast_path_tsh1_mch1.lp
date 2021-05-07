@@ -15,12 +15,10 @@
 #include "path/move_sequencing.lp".
 
 #include "path/visit_ordering.lp".
-#include "path/visit_ordering_extra.lp".
 
 #include "path/visit_tracker_tight.lp".
 
 #include "path/fast_encoding.lp".
-#include "path/fast_encoding_extra.lp".
 
 
 % ------------------------------------------------------------------------------
