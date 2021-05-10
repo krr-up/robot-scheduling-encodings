@@ -10,7 +10,7 @@ encoding(walk).
 % ------------------------------------------------------------------------------
 
 %#include "common/task_sequencing.lp".
-%#include "common/task_sequencing_heur.lp".
+%#include "common/task_sequencing_heur1.lp".
 
 
 % ------------------------------------------------------------------------------
