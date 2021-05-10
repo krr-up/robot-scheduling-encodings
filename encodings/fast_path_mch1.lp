@@ -6,12 +6,11 @@
 #include "path/show.lp".
 
 #include "common/task_sequencing.lp".
-#include "common/task_sequencing_heur.lp".
 
 #include "path/task_to_path.lp".
 
 #include "path/move_choice_domain.lp".
-#include "path/move_choice_heur.lp".
+#include "path/move_choice_heur1.lp".
 
 #include "path/move_sequencing.lp".
 
