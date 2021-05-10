@@ -25,15 +25,17 @@ step(0..maxstep).
 
 :- start(R,V), home(R,V'), V != V', not walk(R,_,_).
 
-% An assigned robot must at least visit the task vertex
-%:- assignment(R,T), task(T,V), not walk(R,_,V).
+% An assigned robot must at least visit the task vertex. This will already be
+%impossed by the projection.
+% :- assignment(R,T), task(T,V), not walk(R,_,V).
 
 % For a robot that doesn't move - no other robot can access that vertex
 :- start(R,V), not walk(R,_,_), walk(_,_,V).
 
 % Note: a robot that is at home and has no assignments could still be required
-% to move to get out of the way.
-% :- start(R,V), home(R,V), walk(R,_,_), not assignment(R,_).
+% to move to get out of the way in order to let another robot to pass.  Because
+% of this we DON'T want a constraint like the following: ":- start(R,V),
+% home(R,V), walk(R,_,_), not assignment(R,_)."
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
