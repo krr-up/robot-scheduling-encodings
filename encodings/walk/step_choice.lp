@@ -26,7 +26,7 @@ step(0..maxstep).
 :- start(R,V), home(R,V'), V != V', not walk(R,_,_).
 
 % An assigned robot must at least visit the task vertex. This will already be
-%impossed by the projection.
+% impossed by the projection.
 % :- assignment(R,T), task(T,V), not walk(R,_,V).
 
 % For a robot that doesn't move - no other robot can access that vertex

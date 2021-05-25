@@ -7,7 +7,7 @@
 %
 % -----------------------------------------------------------------------------
 #include "graph_rules.lp".
-#include "dldebug.lp".
+#include "../dl_constraints.lp".
 
 edge(w1,w2,15).
 edge(w2,w3,15).
@@ -20,8 +20,8 @@ robot(r2). start(r2,w1). home(r2,w3).
 % don't track exit times so have to have more restrictive arrival times) but is
 % satisfiable for the path and walk encodings.
 
-dlf(arrive(r1,w3),45).
-dlf(arrive(r2,w2),44).
+dl_eq(arrive(r1,w3),45).
+dl_eq(arrive(r2,w2),44).
 
 %#minimize{ S : walk(R,S,_), not walk(R,S+1,_) }. % Walk DL
 #defined walk/3.
