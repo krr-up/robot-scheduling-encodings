@@ -46,4 +46,3 @@ For testing the encoding install `networkx` and you need the dev version of `clo
     conda install networkx
     conda install -c potassco/label/dev clorm
 
-

@@ -2,7 +2,7 @@
 % Show for post-processing to generate the plan
 % ------------------------------------------------------------------------------
 
-
+#show.
 #show task/2.
 %#show path/2.
 #show assignment/2.

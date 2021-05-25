@@ -37,10 +37,10 @@ same_robot(T,T')  :- assignment(R,T), assignment(R,T'), T < T'.
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
 
-#show.
+%#show.
 
-#show assignment/2.
-#show task_sequence/2.
+%#show assignment/2.
+%#show task_sequence/2.
 
 
 

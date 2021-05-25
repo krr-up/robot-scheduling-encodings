@@ -1,22 +1,25 @@
 % ------------------------------------------------------------------------------
-% The walk encoding with added heuristics
+% The "fast" path encoding with no options.
 % ------------------------------------------------------------------------------
 
-#include "walk/show.lp".
+#include "path/show_benchmarking.lp".
 
 #include "common/task_sequencing.lp".
-#include "common/task_sequencing_heur1.lp".
 
-#include "walk/step_choice.lp".
+#include "path/task_to_path.lp".
 
-#include "walk/step_ordering.lp".
+#include "path/move_choice_domain.lp".
 
-#include "walk/projection_choice.lp".
+#include "path/move_sequencing.lp".
 
-#include "walk/walk_encoding.lp".
-#include "walk/walk_encoding_heur1.lp".
+#include "path/visit_ordering.lp".
+
+#include "path/visit_tracker_tight.lp".
+
+#include "path/fast_encoding.lp".
 
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
 
+#minimize{ 1,R,P,V' : path_assignment(R,P), move(P,V,V') }.

@@ -1,13 +1,15 @@
-% ------------------------------------------------------------------------------
+ % ------------------------------------------------------------------------------
 % Show for post-processing to generate the plan
 % ------------------------------------------------------------------------------
 
+
 #show.
-#show task/2.
-#show path/2.
+
+%#show task/2.
+%#show path/2.
 #show assignment/2.
-#show task_sequence/2.
-#show visit/2.
+%#show task_sequence/2.
+%#show visit/2.
 #show move/3.
 
 %#show before/3.
@@ -21,11 +23,11 @@
 % Show for post-processing for the solution checker
 % ------------------------------------------------------------------------------
 
-#show depends/3.
-#show conflict/3.
-#show edge/3.
-#show start/2.
-#show home/2.
+%#show depends/3.
+%#show conflict/3.
+%#show edge/3.
+%#show start/2.
+%#show home/2.
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------

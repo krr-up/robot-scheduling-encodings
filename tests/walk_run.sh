@@ -86,7 +86,7 @@ fi
 #${CLINGODLFACTS} ${OPTIONS} ${ASP}  $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_debug.lp" -
 
 # To check the solution - make sure the plan is collision free
-#${CLINGODLFACTS} ${OPTIONS} ${ASP}  $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_to_plan.lp" -
+${CLINGODLFACTS} ${OPTIONS} ${ASP}  $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_to_plan.lp" -
 
 #${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS}  "${THIS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${THIS_DIR}/solution_checker.lp -
 
