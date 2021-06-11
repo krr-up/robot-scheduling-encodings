@@ -186,12 +186,13 @@ Conflict       = simple_predicate("conflict",3)
 Task           = simple_predicate("task",2)
 Depends        = simple_predicate("depends",3)
 
-
+EndPoint       = simple_predicate("endpoint",1)
 Nearest        = simple_predicate("nearest",3)
 EntryPoint     = simple_predicate("entrypoint",3)
 OnDeadEnd      = simple_predicate("on_deadend",2)
 EndpointAccess = simple_predicate("endpoint_access",2)
 ShortestPath   = simple_predicate("shortest_path",4)
+AllShortestPath   = simple_predicate("all_shortest_path",4)
 
 # -------------------------------------------------------------------------------
 # ASP callable functions
@@ -234,8 +235,10 @@ SPFILE=os.path.join(SCRIPT_DIR,"shortest_paths.lp")
 def main():
 
     # Setup the clingo control object
-    ctrl = Control(unifier=[Edge,Robot,Home,Start,Conflict,Task,Depends,
-                            Nearest,EntryPoint,OnDeadEnd,EndpointAccess,ShortestPath])
+    ctrl = Control(unifier=[Edge,Robot,Home,Start,Conflict,Task,Depends, ShortestPath])
+#    ctrl = Control(unifier=[Edge,Robot,Home,Start,Conflict,Task,Depends,
+#                            EndPoint,Nearest,EntryPoint,OnDeadEnd,EndpointAccess,
+#                            AllShortestPath,ShortestPath])
     ctrl.load(SPFILE)
 
     # Load the instance
@@ -255,7 +258,7 @@ def main():
     ctrl.ground([("base",[])])
     with ctrl.solve(yield_=True) as sh:
         for model in sh:
-            fb = model.facts(atoms=True)
+            fb = model.facts(shown=True)
             print("{}".format(fb.asp_str()))
             return
 

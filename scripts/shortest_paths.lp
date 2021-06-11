@@ -80,15 +80,45 @@ endpoint_gathered    :- endpoint(V), @gather_endpoint(V) == 1.
 
 % Shortest path from vertex V to end EP is distance D and via vertex V'
 
-shortest_path(V,EP,V',D) :- (V,EP,V',D) = @shortest_paths(),
-                            not edge_gathered, not endpoint_gathered.
+all_shortest_path(V,EP,D,V') :- (V,EP,D,V') = @shortest_paths(),
+                                not edge_gathered, not endpoint_gathered.
+
+% ------------------------------------------------------------------------------
+% Calculate the shortest path between endpoints
+% ------------------------------------------------------------------------------
+
+startpoint(V)                   :- start(_,V).
+startpoint(V)                   :- task(_,V).
+
+rel_shortest_path(SP,EP,D,V)    :- startpoint(SP), endpoint(EP),
+                                   all_shortest_path(SP,EP,D,V).
+rel_shortest_path(V',EP,D',V'') :- rel_shortest_path(V,EP,D,V'),
+                                   all_shortest_path(V',EP,D',V'').
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
+
 
 #show.
+#show edge/3.
+#show robot/1.
+#show home/2.
+#show start/2.
+#show conflict/3.
+#show task/2.
+#show depends/3.
 
-%%#show endpoint/1.
+#show endpoint/1.
+#show nearest/3.
+#show entrypoint/3.
+#show on_deadend/2.
+#show endpoint_access/2.
+
+#show all_shortest_path/4.
+
+#show shortest_path(V,V',V'',D) : rel_shortest_path(V,V',V'',D).
+%#show shortest_path(V,V',V'',D) : all_shortest_path(V,V',V'',D).
+
 %%#show entrypoint/3.
 %#show _vertex/2.
 %#show _ep_to_next/3.
