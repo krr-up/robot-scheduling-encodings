@@ -33,7 +33,9 @@ while [[ $# -gt 0 ]]; do
             ;;
         -m)
             MAXSTEP="true"
-            OPTIONS="${OPTIONS} -c maxstep=$2"
+            if [ "$2" != "0" ]; then
+                OPTIONS="${OPTIONS} -c maxstep=$2"
+            fi
             shift ; shift
             ;;
         -v)
@@ -86,7 +88,7 @@ fi
 #${CLINGODLFACTS} ${OPTIONS} ${ASP}  $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_debug.lp" -
 
 # To check the solution - make sure the plan is collision free
-${CLINGODLFACTS} ${OPTIONS} ${ASP}  $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_to_plan.lp" -
+#${CLINGODLFACTS} ${OPTIONS} ${ASP}  $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_to_plan.lp" -
 
 #${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS}  "${THIS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${THIS_DIR}/solution_checker.lp -
 
