@@ -1,12 +1,18 @@
 % ------------------------------------------------------------------------------
-% Domain heuristics for improving move selection based on precomputed shortest
-% path relations.
+% The walk encoding for no options
 % ------------------------------------------------------------------------------
 
-#include "minpath2.lp".
+#include "walk/show.lp".
 
-% Set any move not on the shortest path to false
-#heuristic move(P,V,V')  : path(P,_), edge(V,V',_), not on_minpath(P,V,V'). [1,false]
+#include "common/task_sequencing.lp".
+
+#include "walk/step_fixed.lp".
+
+#include "walk/step_ordering.lp".
+
+#include "walk/projection_fixed.lp".
+
+#include "walk/walk_encoding.lp".
 
 
 % ------------------------------------------------------------------------------

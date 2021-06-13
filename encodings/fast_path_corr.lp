@@ -1,12 +1,22 @@
 % ------------------------------------------------------------------------------
-% Domain heuristics for improving move selection based on precomputed shortest
-% path relations.
+% The "fast" path encoding with no options.
 % ------------------------------------------------------------------------------
 
-#include "minpath2.lp".
+#include "path/show.lp".
 
-% Set any move not on the shortest path to false
-#heuristic move(P,V,V')  : path(P,_), edge(V,V',_), not on_minpath(P,V,V'). [1,false]
+#include "common/task_sequencing.lp".
+
+#include "path/task_to_path.lp".
+
+#include "path/move_choice_corr.lp".
+
+#include "path/move_sequencing.lp".
+
+#include "path/visit_ordering.lp".
+
+#include "path/visit_tracker_tight.lp".
+
+#include "path/fast_encoding.lp".
 
 
 % ------------------------------------------------------------------------------
