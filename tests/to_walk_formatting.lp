@@ -51,6 +51,8 @@ def main(ctrl_):
 #        print("{} {} {}\n".format(swalk,sarr,sexit))
 
     print()
+    sys.stdout.flush()
+    sys.stderr.flush()
 
 #end.
 

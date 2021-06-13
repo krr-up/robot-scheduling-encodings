@@ -33,7 +33,9 @@ while [[ $# -gt 0 ]]; do
             ;;
         -m)
             MAXSTEP="true"
-            OPTIONS="${OPTIONS} -c maxstep=$2"
+            if [ "$2" != "0" ]; then
+                OPTIONS="${OPTIONS} -c maxstep=$2"
+            fi
             shift ; shift
             ;;
         -v)

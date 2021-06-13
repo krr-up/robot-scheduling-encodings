@@ -3,7 +3,7 @@
 % path relations.
 % ------------------------------------------------------------------------------
 
-#include "move_choice_minpath.lp".
+#include "minpath2.lp".
 
 % Higher factor values for vertices on the minpath the closer they are to the
 % start or end of a path.

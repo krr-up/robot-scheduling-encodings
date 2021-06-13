@@ -3,14 +3,13 @@
 % path relations.
 % ------------------------------------------------------------------------------
 
-#include "move_choice_minpath.lp".
+#include "minpath.lp".
 
-#heuristic move(P,V,V')      : on_minpath(P,V,V').           [1,true]
-#heuristic move(P,V,V')      : path(P,_), edge(V,V',_),
-                               not on_minpath(P,V,V').       [1,false]
+#heuristic move(P,V,V')  : path_minpath(P,V), path(P,V''),
+                           shortest_path(V,V'',_,V').               [1,true]
+
+#heuristic move(P,V,V')  : edge(V,V',_), path(P,V''),
+                           not shortest_path(V,V'',_,V').           [1,false]
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
-
-
-%%%%% Use depends(T,T') and does this part statically.

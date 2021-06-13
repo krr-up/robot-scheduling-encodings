@@ -8,4 +8,7 @@ CLINGO=clingo
 
 # FACT_OUTPUT=--out-atomf="%s."
 FACT_OUTPUT="--out-atomf="%s.""
+
 ${CLINGO} $@ --verbose=0 --quiet=1,2,2 ${FACT_OUTPUT} | sed '$s/^UNSATISFIABLE/% Unsatisfiable problem\n\n#false.\n/' | sed 's/^SATISFIABLE//' | sed 's/^OPTIMUM FOUND//' | sed 's/\. /\.\n'/g
+
+
