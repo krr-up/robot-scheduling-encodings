@@ -8,7 +8,7 @@
 
 #include "path/task_to_path.lp".
 
-#include "path/move_choice_domain.lp".
+#include "path/move_choice_fixed.lp".
 
 #include "path/move_sequencing.lp".
 
