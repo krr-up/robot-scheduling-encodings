@@ -5,7 +5,7 @@
 % - assignment(Robot,Task)
 % - walk(Robot,Step,Vertex)
 % - proj(Task,Step)
-% - dl_eq(Variable,Value)
+% - dl(Variable,Value)
 %
 % ----------------------------------------------------------------------------
 
@@ -100,5 +100,5 @@ walk(R,S,V,T,T')     :- walk_arrive(R,S,V,T), not walk_exit(R,S,V,_),
 #show assignment/2.
 #show walk/3.
 #show proj/2.
-#show dl_eq(Var,Val) : dl(Var,Val).
+#show dl/2.
 

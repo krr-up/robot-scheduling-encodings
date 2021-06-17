@@ -2,7 +2,7 @@
 % The "fast" path encoding with no options.
 % ------------------------------------------------------------------------------
 
-#include "path/show_benchmarking.lp".
+#include "path/show.lp".
 
 #include "common/task_sequencing.lp".
 
