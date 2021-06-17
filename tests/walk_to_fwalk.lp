@@ -6,7 +6,7 @@
 % - assignment(Robot,Task)
 % - walk(Robot,Step,Vertex)
 % - proj(Task,Step)
-% - dl_eq(Variable,Value)
+% - dl(Variable,Value)
 %
 % ----------------------------------------------------------------------------
 
@@ -18,10 +18,10 @@ from clorm.clingo import Control
 Assignment = simple_predicate("assignment",2)
 Walk = simple_predicate("walk",3)
 Proj = simple_predicate("proj",2)
-DlEq = simple_predicate("dl_eq",2)
+Dl = simple_predicate("dl",2)
 def main(ctrl_):
 
-    unifier=[Assignment,Walk,Proj,DlEq]
+    unifier=[Assignment,Walk,Proj,Dl]
     ctrl=Control(control_=ctrl_,unifier=unifier)
     ctrl.ground([("base",[])])
 
@@ -39,7 +39,7 @@ def main(ctrl_):
     for f in fb.query(Walk).order_by(Walk[0],Walk[1]).all():  print("{}.".format(f))
     for f in fb.query(Proj).order_by(Proj[1]).all():  print("{}.".format(f))
     print()
-    for f in fb.query(DlEq).order_by(DlEq[1]).all():
+    for f in fb.query(Dl).order_by(Dl[1]).all():
         lestr = "&diff{{ {} - 0 }} <= {}. ".format(f[0],f[1])
         gestr = "&diff{{ 0 - {} }} <= -{}. ".format(f[0],f[1])
         print("{}{}".format(lestr,gestr))
@@ -60,6 +60,5 @@ def main(ctrl_):
 %#show walk/3.
 %#show assignment/2.
 %#show proj/2.
-%#show dl_eq/2.
 
 

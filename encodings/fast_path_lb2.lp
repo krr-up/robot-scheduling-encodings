@@ -2,7 +2,7 @@
 % The "fast" path encoding with lower-bound DL constraints between task sequences.
 % ------------------------------------------------------------------------------
 
-#include "path/show_benchmarking.lp".
+#include "path/show.lp".
 
 #include "common/task_sequencing.lp".
 

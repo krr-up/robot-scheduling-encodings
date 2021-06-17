@@ -1,23 +1,20 @@
 % ------------------------------------------------------------------------------
-% The "fast" path encoding with no options.
+% The walk encoding for no options
 % ------------------------------------------------------------------------------
 
-#include "path/show_benchmarking.lp".
+#include "walk/show.lp".
 
 #include "common/task_sequencing.lp".
 
-#include "path/task_to_path.lp".
+#include "walk/step_choice.lp".
 
-#include "path/move_choice_domain.lp".
+#include "walk/step_ordering.lp".
 
-#include "path/move_sequencing.lp".
+#include "walk/projection_choice.lp".
 
-#include "path/visit_ordering.lp".
+#include "walk/walk_encoding.lp".
 
-#include "path/visit_tracker_tight.lp".
-
-#include "path/fast_encoding.lp".
-
+#include "walk/step_minimize.lp".
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------

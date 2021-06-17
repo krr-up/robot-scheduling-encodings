@@ -3,7 +3,7 @@
 % constraints. Can handle both the fast and full encodings.
 %
 % Input/Output facts:
-% - dl_eq(Variable,Value)
+% - dl(Variable,Value)
 %
 % - define a constant output=[noexit|all]
 % ----------------------------------------------------------------------------
@@ -56,9 +56,5 @@ def main(ctrl_):
 #show assignment/2.
 #show task_sequence/2.
 
-%#show walk/3.
-%#show assignment/2.
-%#show proj/2.
-%#show dl_eq/2.
 
 

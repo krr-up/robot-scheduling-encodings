@@ -2,6 +2,7 @@
 
 SCRIPT="$( readlink -f ${BASH_SOURCE[0]} )"
 THIS_DIR="$( cd "$( dirname ${SCRIPT} )" && pwd )"
+TESTS_DIR="$( cd "${THIS_DIR}/../tests" && pwd )"
 
 usage(){
     echo "usage: $0 <instance>"
@@ -12,9 +13,9 @@ if [ "$1" == "" ]; then
     usage
 fi
 
-ASP="${THIS_DIR}/instance_checker.lp"
+ASP="${TESTS_DIR}/instance_checker.lp"
 
-CLINGOFACTS="${THIS_DIR}/../scripts/clingo-facts.sh"
+CLINGOFACTS="${THIS_DIR}/clingo-facts.sh"
 CLINGO="clingo"
 
 >&2 echo "Executing: clingo ${OPTIONS} ${ASP} $@ "

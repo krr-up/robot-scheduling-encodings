@@ -2,13 +2,13 @@
 % The "fast" path encoding with no options.
 % ------------------------------------------------------------------------------
 
-#include "path/show_benchmarking.lp".
+#include "path/show.lp".
 
 #include "common/task_sequencing.lp".
 
 #include "path/task_to_path.lp".
 
-#include "path/move_choice_minpath.lp".
+#include "path/move_choice_domain.lp".
 
 #include "path/move_sequencing.lp".
 
@@ -18,8 +18,8 @@
 
 #include "path/fast_encoding.lp".
 
-#include "path/fast_encoding_extra_lb2.lp".
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
 
+#minimize{ 1,R,P,V' : path_assignment(R,P), move(P,V,V') }.

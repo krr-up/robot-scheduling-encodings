@@ -2,11 +2,15 @@
 
 SCRIPT="$( readlink -f ${BASH_SOURCE[0]} )"
 THIS_DIR="$( cd "$( dirname ${SCRIPT} )" && pwd )"
-export PYTHONPATH="$THIS_DIR:${PYTHONPATH}"
+TESTS_DIR="$( cd "${THIS_DIR}/../tests" && pwd )"
+ENCODING_DIR="$( cd "${THIS_DIR}/../encodings" && pwd )"
+
+#export PYTHONPATH="$THIS_DIR:${PYTHONPATH}"
 
 VARIANT="basic"
 POSITIONAL=()
 OPTIONS=""
+FPATHS_FILTER=""
 
 usage(){
     echo "usage: $0 [-h] [-d] [-v <variant>] <instance>"
@@ -14,6 +18,7 @@ usage(){
     echo "       -d              enable domain heuristics"
     echo "       -o <output>     output options: raw|text|paths|fpaths|walk|fwalk  [raw]"
     echo "       -v <variant>    different variant"
+    echo "       -f              filter out the dl exit facts when outputting formatted paths"
     exit 1
 }
 
@@ -36,6 +41,10 @@ while [[ $# -gt 0 ]]; do
             OUTPUT="$2"
             shift ; shift
             ;;
+        -f)
+            FPATHS_FILTER="-c output=noexit"
+            shift
+            ;;
         *)
             POSITIONAL+=("$1")
             shift
@@ -48,12 +57,11 @@ if [ "$1" == "" ]; then
     usage
 fi
 
-BASE="fast_path"
-ENCODING_DIR="${THIS_DIR}/../encodings"
+BASE="full_path"
 ASP="${ENCODING_DIR}/${BASE}_${VARIANT}.lp"
 
-CLINGODLFACTS="${THIS_DIR}/../scripts/clingo-dl-facts.sh"
-CLINGOFACTS="${THIS_DIR}/../scripts/clingo-facts.sh"
+CLINGODLFACTS="${THIS_DIR}/clingo-dl-facts.sh"
+CLINGOFACTS="${THIS_DIR}/clingo-facts.sh"
 CLINGODL="clingo-dl"
 
 # If no output option specified then default to "raw"
@@ -76,12 +84,12 @@ elif [ "${OUTPUT}" == "walk" ]; then
     ASP="$ENCODING_DIR/path/show_all.lp ${ASP}"
     >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
-    ${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${THIS_DIR}/to_walk.lp" -
+    ${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${TESTS_DIR}/paths_to_walk.lp" -
 elif [ "${OUTPUT}" == "fwalk" ]; then
     ASP="$ENCODING_DIR/path/show_all.lp ${ASP}"
     >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
-    ${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${THIS_DIR}/to_walk.lp" - | ${CLINGOFACTS} "${THIS_DIR}/to_walk_formatted.lp" -
+    ${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${TESTS_DIR}/paths_to_walk.lp" - | ${CLINGOFACTS} "${TESTS_DIR}/walk_to_fwalk.lp" -
 elif [ "${OUTPUT}" == "paths" ]; then
     >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
@@ -89,12 +97,11 @@ elif [ "${OUTPUT}" == "paths" ]; then
 elif [ "${OUTPUT}" == "fpaths" ]; then
     >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
-    ${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} ${FPATHS_FILTER} "${THIS_DIR}/to_paths_formatted.lp" -
+    ${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} ${FPATHS_FILTER} "${TESTS_DIR}/paths_to_fpaths.lp" -
 else
     echo "Unrecognised output option $OUTPUT"
     usage
 fi
-
 
 # To pretty print the output
 #${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_debug.lp" -
