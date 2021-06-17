@@ -2,7 +2,7 @@
 % The "full" path encoding with some lower-bound DL constraints for path_sequences.
 % ------------------------------------------------------------------------------
 
-#include "path/show.lp".
+#include "path/show_benchmarking.lp".
 
 #include "common/task_sequencing.lp".
 

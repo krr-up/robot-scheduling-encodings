@@ -1,5 +1,5 @@
 % ----------------------------------------------------------------------------
-% Python wrapper for output
+% Takes a walk (produced by the walk encoding) and outputs in a nice way.
 % ----------------------------------------------------------------------------
 
 #script(python)

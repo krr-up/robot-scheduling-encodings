@@ -6,9 +6,49 @@
 import sys
 import networkx as nx
 from clorm import func, simple_predicate, alias, notin_, in_, ph1_, ph2_
+from clorm import Predicate, ConstantField, StringField, IntegerField, RawField
 from clorm.clingo import Control
-from common_data_model import Task, Assignment, TaskSequence
-from walk_data_model import Walk, Proj, Arrive, Exit, DlArrive, DlExit
+
+class Task(Predicate):
+    tid=RawField
+    vertex=RawField
+
+class Assignment(Predicate):
+    rid=RawField
+    tid=RawField
+
+class TaskSequence(Predicate):
+    first=RawField
+    second=RawField
+    class Meta: name="task_sequence"
+
+class Walk(Predicate):
+    rid=RawField
+    step=IntegerField
+    vertex=RawField
+
+class Proj(Predicate):
+    tid=RawField
+    step=IntegerField
+
+class Arrive(Predicate):
+    rid=RawField
+    step=IntegerField
+
+class Exit(Predicate):
+    rid=RawField
+    step=IntegerField
+
+class DlArrive(Predicate):
+    a=Arrive.Field
+    t=IntegerField
+    class Meta: name = "dl"
+
+class DlExit(Predicate):
+    e=Exit.Field
+    t=IntegerField
+    class Meta: name = "dl"
+
 
 Ass=Assignment
 TSeq=TaskSequence
