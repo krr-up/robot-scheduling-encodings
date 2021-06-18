@@ -100,5 +100,9 @@ walk(R,S,V,T,T')     :- walk_arrive(R,S,V,T), not walk_exit(R,S,V,_),
 #show assignment/2.
 #show walk/3.
 #show proj/2.
-#show dl/2.
+
+#show dl(bound,T) : dl(bound,T).
+#show dl(arrive(R,S),T) : walk(R,S,_,T,_).
+#show dl(exit(R,S),T) : walk(R,S,_,_,T).
+
 
