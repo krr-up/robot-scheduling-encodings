@@ -12,6 +12,13 @@ MAXSTEP=""
 VARIANT="basic"
 POSITIONAL=()
 
+flags(){
+    local line=$(head -n 1 $1)
+    local flags=$(echo $line | sed -n "s/^%!flags!\s*\(.*\)$/\1/p")
+    echo "$flags"
+    return 0
+}
+
 usage(){
     echo "usage: $0 [-h] [-d] [-m <n> ] [-v <variant>]  <instance>"
     echo "       -h            help"
@@ -36,9 +43,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         -m)
             MAXSTEP="true"
-            if [ "$2" != "0" ]; then
-                OPTIONS="${OPTIONS} -c maxstep=$2"
-            fi
+            OPTIONS="${OPTIONS} -c maxstep=$2"
             shift ; shift
             ;;
         -v)
@@ -67,12 +72,17 @@ if [ "$1" == "" ]; then
     usage
 fi
 
-if [ "$MAXSTEP" == "" ]; then
-    OPTIONS="${OPTIONS} -c maxstep=30"
-fi
+#if [ "$MAXSTEP" == "" ]; then
+#    OPTIONS="${OPTIONS} -c maxstep=30"
+#fi
 
 BASE="walk"
 ASP="${ENCODING_DIR}/${BASE}_${VARIANT}.lp"
+
+FLAGS=$(flags ${ASP})
+if [ "$FLAGS" != "" ]; then
+    OPTIONS="${FLAGS} ${OPTIONS}"
+fi
 
 CLINGODLFACTS="${THIS_DIR}/clingo-dl-facts.sh"
 CLINGOFACTS="${THIS_DIR}/clingo-facts.sh"
