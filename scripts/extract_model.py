@@ -11,15 +11,18 @@ import sys
 import re
 import codecs
 import argparse
+import time
+from datetime import timedelta
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("rawfile", type=str, help="Clingo generated raw file or - for stdin")
-argparser.add_argument("--count", action='store_true', help='Return the number of models')
 argparser.add_argument("--id", type=int, help="Id of answer to output")
 argparser.add_argument("--rawonerror", action='store_true',
-                       help="Print the raw output to stderr on error")
-argparser.add_argument("--progress", action='store_true',
-                       help="Print a progress count")
+                       help="Print the raw output to stderr on error (eg. UNSAT)")
+argparser.add_argument("--count", action='store_true',
+                       help='Progressively print a model count to stderr')
+argparser.add_argument("--fregex", type=str,
+                       help="Progressively print to stderr any facts satisfying the regex")
 
 #from numpy import array, asarray, inf, zeros, minimum, diagonal, newaxis
 
@@ -27,13 +30,15 @@ argparser.add_argument("--progress", action='store_true',
 #-------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-g_progress=False
+g_starttime=None
+g_fregex=None
+g_count=False
 g_rawonerror=False
 g_lines = []
 #-------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------
 def extract_models(file):
-    global g_progress, g_rawonerror, g_lines
+    global g_starttime, g_fregex, g_count, g_rawonerror, g_lines
     answer_re = re.compile(r"^Answer:\s+(?P<val>[0-9]+).*$")
 
     answers = []
@@ -46,10 +51,33 @@ def extract_models(file):
         line = file.readline()
         if g_rawonerror: g_lines.append(line)
         answers.append(line)
-        if g_progress: sys.stderr.write("Model count: {}\n".format(len(answers)))
+        if g_fregex or g_count:
+            sys.stderr.write("------------------------------------------\n")
+            elapsed=time.time()-g_starttime
+            sys.stderr.write("Elapsed time: {} ({:.2f}s)\n".format(
+                timedelta(seconds=elapsed),elapsed))
+        if g_count: sys.stderr.write("Model count: {}\n".format(len(answers)))
+        if g_fregex: regex_facts(line)
+        if g_fregex or g_count:
+            sys.stderr.write("------------------------------------------\n")
     return answers
 
 # ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+def factify(model):
+    tmp = model.strip() + "."
+    tmp2 = tmp.replace(") ",").\n")
+    return tmp2.splitlines()
+
+# ------------------------------------------------------------------------------
+# find facts that match the regex
+# ------------------------------------------------------------------------------
+def regex_facts(model):
+    global g_fregex
+    for f in factify(model):
+        m = g_fregex.match(f)
+        if not m: continue
+        sys.stderr.write("{}\n".format(f))
 
 # ------------------------------------------------------------------------------
 
@@ -59,11 +87,16 @@ def extract_models(file):
 SCRIPT_DIR=os.path.dirname(os.path.abspath(__file__))
 
 def main():
-    global g_progress, g_rawonerror, g_lines
+    global g_starttime, g_fregex, g_count, g_rawonerror, g_lines
+    g_starttime = time.time()
     args = argparser.parse_args()
 
     if args.rawonerror: g_rawonerror = True
-    if args.progress: g_progress = True
+    if args.count: g_count = True
+    if args.fregex: g_fregex = re.compile(args.fregex)
+    if args.id is None: answer_id=-1
+    else: answer_id=args.id
+
     answers=None
     if args.rawfile == "-":
         answers = extract_models(sys.stdin)
@@ -71,12 +104,6 @@ def main():
         with open(args.rawfile, errors='ignore', encoding='utf-8') as file:
             answers = extract_models(file)
 
-    if args.count:
-        print("There are {} models".format(len(answers)))
-        return
-
-    if args.id is None: answer_id=-1
-    else: answer_id=args.id
     try:
         answer = answers[answer_id]
     except IndexError:
@@ -87,9 +114,8 @@ def main():
         else:
             argparser.print_help(sys.stderr)
         return
+    for f in factify(answer): print(f)
 
-    tmp = answer.strip() + "."
-    print(tmp.replace(") ",").\n"))
 # ------------------------------------------------------------------------------
 # main
 # ------------------------------------------------------------------------------
