@@ -14,8 +14,7 @@
 % ------------------------------------------------------------------------------
 
 1 { assignment(R,T) : robot(R) } 1 :- task(T,_), not depends(deliver,_,T).
-assignment(R,T')                   :- assignment(R,T), depends(deliver,T,T'),
-                                      not depends(deliver,_,T).
+assignment(R,T')                   :- assignment(R,T), depends(deliver,T,T').
 
 0 { task_sequence(T,T') : task(T',_), not depends(deliver,_,T'), T != T' } 1 :-
                           task(T,_), not depends(deliver,T,_).
@@ -37,10 +36,6 @@ same_robot(T,T')  :- assignment(R,T), assignment(R,T'), T < T'.
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
 
-%#show.
-
-%#show assignment/2.
-%#show task_sequence/2.
 
 
 
