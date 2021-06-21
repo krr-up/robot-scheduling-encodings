@@ -87,7 +87,6 @@ fi
 CLINGODLFACTS="${THIS_DIR}/clingo-dl-facts.sh"
 CLINGOFACTS="${THIS_DIR}/clingo-facts.sh"
 CLINGODL="clingo-dl"
-GETMODEL="${THIS_DIR}/extract_model.py"
 
 >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
 >&2 echo ""

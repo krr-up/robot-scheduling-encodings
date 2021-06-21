@@ -69,7 +69,7 @@ fi
 CLINGODLFACTS="${THIS_DIR}/clingo-dl-facts.sh"
 CLINGOFACTS="${THIS_DIR}/clingo-facts.sh"
 CLINGODL="clingo-dl"
-GETMODEL="${THIS_DIR}/extract_model.py --id -1 --rawonerror --progress -"
+GETMODEL="${THIS_DIR}/extract_model.py --id -1 --rawonerror --count --fregex dl\(bound -"
 
 # If no output option specified then default to "raw"
 if [ "${OUTPUT}" == "" ]; then

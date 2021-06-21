@@ -61,7 +61,7 @@ ASP="${ENCODING_DIR}/${BASE}_${VARIANT}.lp"
 
 CLINGOFACTS="${THIS_DIR}/../scripts/clingo-facts.sh"
 CLINGO="clingo"
-GETMODEL="${THIS_DIR}/extract_model.py"
+GETMODEL="${THIS_DIR}/extract_model.py --id -1 --rawonerror --count --fregex 'dl\(bound' -"
 
 # If no output option specified then default to "raw"
 if [ "${OUTPUT}" == "" ]; then
@@ -82,7 +82,7 @@ elif [ "${OUTPUT}" == "text" ]; then
 elif [ "${OUTPUT}" == "tasks" ]; then
     >&2 echo "Executing: clingo ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
-    ${CLINGO} ${OPTIONS} ${ASP} $@ | ${GETMODEL} --id -1 --rawonerror -
+    ${CLINGO} ${OPTIONS} ${ASP} $@ | ${GETMODEL}
 else
     echo "Unrecognised output option $OUTPUT"
     usage
