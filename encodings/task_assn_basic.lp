@@ -1,10 +1,11 @@
 % ------------------------------------------------------------------------------
-% Solve the task sequence problem without extra options.
+% Solve the task sequence problem without any DL routing.
 % ------------------------------------------------------------------------------
 
 #include "common/show.lp".
 
 #include "common/task_sequencing.lp".
+#include "common/task_proper_ordering.lp".
 
 
 

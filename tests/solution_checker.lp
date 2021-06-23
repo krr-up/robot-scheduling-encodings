@@ -28,6 +28,11 @@ err(bad_assignment(R,T,T'))   :- depends(deliver,T,T'), assignment(R,T'),
                                  not assignment(R,T).
 err(bad_delivery(T,T'))       :- depends(deliver,T,T'), not task_sequence(T,T').
 
+in_sequence(T)                :- task_sequence(T,_), not task_sequence(_,T).
+in_sequence(T')               :- in_sequence(T), task_sequence(T,T').
+err(not_in_sequence(T))       :- task(T,_), not in_sequence(T).
+
+
 % ------------------------------------------------------------------------------
 % Check the walks of the robots to make sure that it satisfies the graph (edges
 % and timing) and that the combined walks are collision free. Also make sure
@@ -43,7 +48,7 @@ err(bad_delivery(T,T'))       :- depends(deliver,T,T'), not task_sequence(T,T').
 % ------------------------------------------------------------------------------
 
 % Note: using -1 to indicate a walk step that never exits the vertex
-twalk(R,S,V,A,E)      :- walk(R,S,V,A,E), E >=0.
+twalk(R,S,V,A,E)      :- walk(R,S,V,A,E), E >= 0.
 twalk(R,S,V,A,#sup)   :- walk(R,S,V,A,E), E < 0.
 
 

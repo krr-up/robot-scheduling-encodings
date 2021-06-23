@@ -20,7 +20,7 @@ usage(){
     echo "usage: $0 [-h] [-d] [-v <variant>] <instance>"
     echo "       -h            help"
     echo "       -d            enable domain heuristics"
-    echo "       -o <output>     output options: raw|text|tasks  [raw]"
+    echo "       -o <output>     output options: raw|text|tasks|rdisplay|display  [raw]"
     echo "       -v <variant>    different variant"
     exit 1
 }
@@ -83,6 +83,14 @@ elif [ "${OUTPUT}" == "tasks" ]; then
     >&2 echo "Executing: clingo ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
     ${CLINGO} ${OPTIONS} ${ASP} $@ | ${GETMODEL}
+elif [ "${OUTPUT}" == "display" ]; then
+    >&2 echo "Executing: clingo ${OPTIONS} ${ASP} $@ "
+    >&2 echo ""
+    ${CLINGO} ${OPTIONS} ${ASP} $@ | ${GETMODEL} | ${CLINGO} $@ ${TESTS_DIR}/tasks_to_output.lp -
+elif [ "${OUTPUT}" == "rdisplay" ]; then
+    >&2 echo "Executing: clingo ${OPTIONS} ${ASP} $@ "
+    >&2 echo ""
+    ${CLINGO} ${OPTIONS} ${ASP} $@ | ${GETMODEL} | ${CLINGO} -c robots="true" $@ ${TESTS_DIR}/tasks_to_output.lp -
 else
     echo "Unrecognised output option $OUTPUT"
     usage
