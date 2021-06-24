@@ -84,13 +84,15 @@ elif [ "${OUTPUT}" == "tasks" ]; then
     >&2 echo ""
     ${CLINGO} ${OPTIONS} ${ASP} $@ | ${GETMODEL}
 elif [ "${OUTPUT}" == "display" ]; then
+    ASP="${ASP} ${ENCODING_DIR}/common/show_all.lp"
     >&2 echo "Executing: clingo ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
-    ${CLINGO} ${OPTIONS} ${ASP} $@ | ${GETMODEL} | ${CLINGO} $@ ${TESTS_DIR}/tasks_to_output.lp -
+    ${CLINGO} ${OPTIONS} ${ASP} $@ | ${GETMODEL} | ${CLINGO} ${TESTS_DIR}/tasks_to_output.lp -
 elif [ "${OUTPUT}" == "rdisplay" ]; then
+    ASP="${ASP} ${ENCODING_DIR}/common/show_all.lp"
     >&2 echo "Executing: clingo ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
-    ${CLINGO} ${OPTIONS} ${ASP} $@ | ${GETMODEL} | ${CLINGO} -c robots="true" $@ ${TESTS_DIR}/tasks_to_output.lp -
+    ${CLINGO} ${OPTIONS} ${ASP} $@ | ${GETMODEL} | ${CLINGO} -c robots="true" ${TESTS_DIR}/tasks_to_output.lp -
 else
     echo "Unrecognised output option $OUTPUT"
     usage
