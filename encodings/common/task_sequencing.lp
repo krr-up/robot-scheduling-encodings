@@ -44,16 +44,8 @@ same_robot(T,T')  :- assignment(R,T), assignment(R,T'), T < T'.
 :- robot(R), #count{ T : assignment(R,T), not task_sequence(_,T) } > 1.
 
 % I think this is redundant????
-%:- assignment(R,_),
-%   #false : assignment(R,T), task_sequence(T,_), not task_sequence(_,T).
+:- assignment(R,_),
+   #false : assignment(R,T), task_sequence(T,_), not task_sequence(_,T).
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
-
-
-
-%#edge (T,T')  : task_sequence(T,T').
-%#edge ((T,T'),(T'',T'''))  : task_sequence(T,T'), depends(_,T'',T''').
-
-%#include "task_proper_ordering.lp".
-%#include "task_sequencing_heur1.lp".

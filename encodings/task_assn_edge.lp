@@ -5,7 +5,7 @@
 #include "common/show.lp".
 
 #include "common/task_sequencing.lp".
-#include "common/task_proper_ordering.lp".
+#include "common/task_ordering_edge.lp".
 
 
 
