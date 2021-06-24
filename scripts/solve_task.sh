@@ -5,7 +5,7 @@ THIS_DIR="$( cd "$( dirname ${SCRIPT} )" && pwd )"
 TESTS_DIR="$( cd "${THIS_DIR}/../tests" && pwd )"
 ENCODING_DIR="$( cd "${THIS_DIR}/../encodings" && pwd )"
 
-VARIANT="basic"
+VARIANT="pre"
 POSITIONAL=()
 OPTIONS=""
 
@@ -21,7 +21,7 @@ usage(){
     echo "       -h            help"
     echo "       -d            enable domain heuristics"
     echo "       -o <output>     output options: raw|text|tasks|rdisplay|display  [raw]"
-    echo "       -v <variant>    different variant"
+    echo "       -v <variant>    different variant [pre]"
     exit 1
 }
 
