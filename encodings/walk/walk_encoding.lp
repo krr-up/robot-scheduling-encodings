@@ -9,9 +9,8 @@ encoding(walk).
 % Assign tasks to robots and generate a task sequence for each robot.
 % ------------------------------------------------------------------------------
 
-%#include "common/task_sequencing.lp".
-%#include "common/task_sequencing_heur1.lp".
-
+%#include "common/task_assignment.lp".
+%#include "common/task_sequencing_direct.lp".
 
 % ------------------------------------------------------------------------------
 % Construct the walk for each robot

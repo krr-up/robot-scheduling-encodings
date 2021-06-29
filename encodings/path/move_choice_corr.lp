@@ -19,8 +19,9 @@
 
 path_corr(P,V) :- path(P,V).
 path_corr(P,V) :- path_minpath(P,V).
-path_corr(P,V) :- path_minpath(P,V), edge(V,V',_), path(P,V''),
-                  shortest_path(V,V'',N,_), shortest_path(V',V'',N',_), N' <= N.
+
+path_corr(P,V') :- path_minpath(P,V), edge(V,V',_), path(P,V''),
+                   shortest_path(V,V'',N,_), shortest_path(V',V'',N',_), N' <= N.
 
 % ------------------------------------------------------------------------------
 % Pick moves on the corridor
@@ -29,7 +30,7 @@ path_corr(P,V) :- path_minpath(P,V), edge(V,V',_), path(P,V''),
 0 { move(P,V,V') : edge(V,V',_), path_corr(P,V') } 1 :-
                                                  path_corr(P,V), edge(V,_,_).
 0 { move(P,V,V') : edge(V,V',_), path_corr(P,V) } 1 :-
-                                                 path_corr(P,V'), edge(V',_,_).
+                                                 path_corr(P,V'), edge(_,V',_).
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
