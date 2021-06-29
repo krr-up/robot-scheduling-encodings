@@ -22,7 +22,7 @@ usage(){
     echo "usage: $0 [-h] [-d] [-v <variant>] <instance>"
     echo "       -h              help"
     echo "       -d              enable domain heuristics"
-    echo "       -o <output>     output options: raw|text|paths|fpaths|walk|fwalk  [raw]"
+    echo "       -o <output>     output options: raw|text|meta|paths|fpaths|walk|fwalk  [raw]"
     echo "       -v <variant>    different variant"
     exit 1
 }
@@ -87,6 +87,11 @@ elif [ "${OUTPUT}" == "text" ]; then
     >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
     ${CLINGODL} ${OPTIONS} ${ASP} $@
+elif [ "${OUTPUT}" == "meta" ]; then
+    ASP="$ENCODING_DIR/path/show_all.lp ${ASP}"
+    >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
+    >&2 echo ""
+    ${CLINGODL} ${OPTIONS} ${ASP} $@ | ${GETMODEL} > /dev/null
 elif [ "${OUTPUT}" == "walk" ]; then
     ASP="$ENCODING_DIR/path/show_all.lp ${ASP}"
     >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "

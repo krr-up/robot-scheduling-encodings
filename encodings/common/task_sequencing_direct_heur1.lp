@@ -10,7 +10,8 @@
 
 % First assign the main delivery tasks - then prefer the associated replacement
 % tasks to be assigned to a different robot from the delivery task.
-%#heuristic assignment(R,T) : depends(wait,T,_), robot(R).            [3,sign]
+#heuristic assignment(R,T) : depends(wait,T,_), robot(R).             [3,level]
+#heuristic assignment(R,T') : assignment(R,T), depends(wait,T,T').    [2,false]
 
 %#heuristic assignment(R,T') : assignment(R,T), depends(wait,T,T').   [2,false]
 
@@ -70,21 +71,21 @@
 %%%                                 N''' < N''.                           [3,sign]
 %%%
 
-% Minimize the distance between tasks in a sequence.
-#minimize { N,T,T' : task_sequence(T,T'), depends(deliver,_,T), depends(deliver,T',_),
-                     task(T,V), task(T',V'), shortest_path(V,V',N,_)}.
+% % Minimize the distance between tasks in a sequence.
+% #minimize { N,T,T' : task_sequence(T,T'), depends(deliver,_,T), depends(deliver,T',_),
+%                      task(T,V), task(T',V'), shortest_path(V,V',N,_)}.
 
-%%%% Once you have the task robot assignment then decide on back-to-back putdown
-%%%% and pickup tasks based on shortest distances.
-%%%#heuristic task_sequence(T,T') : assignment(R,T), assignment(R,T'),
-%%%                                 depends(deliver,_,T),depends(deliver,T',_),
-%%%                                 task(T,V), task(T',V'),
-%%%                                 shortest_path(V,V',N',_),
-%%%                                 #false :  assignment(R,T''), task(T'',V''),
-%%%                                 depends(deliver,T'',_),
-%%%                                 shortest_path(V,V'',N'',_),
-%%%                                 N'' < N'.                            [2,sign]
-%%%
+% % Once you have the task robot assignment then decide on back-to-back putdown
+% % and pickup tasks based on shortest distances.
+% #heuristic task_sequence(T,T') : assignment(R,T), assignment(R,T'),
+%                                  depends(deliver,_,T),depends(deliver,T',_),
+%                                  task(T,V), task(T',V'),
+%                                  shortest_path(V,V',N',_),
+%                                  #false :  assignment(R,T''), task(T'',V''),
+%                                  depends(deliver,T'',_),
+%                                  shortest_path(V,V'',N'',_),
+%                                  N'' < N'.                            [2,sign]
+
 
 
 %%%

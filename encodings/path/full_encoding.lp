@@ -9,8 +9,8 @@ encoding(path).
 % Assign tasks to robots and generate a task sequence for each robot.
 % ------------------------------------------------------------------------------
 
-%#include "common/task_sequencing.lp".
-%#include "common/task_sequencing_heur.lp".
+%#include "common/task_assignment.lp".
+%#include "common/task_sequencing_direct.lp".
 
 % ------------------------------------------------------------------------------
 % Map each task, task assignment, and task sequence to paths.

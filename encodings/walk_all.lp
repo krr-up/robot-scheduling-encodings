@@ -4,8 +4,9 @@
 
 #include "walk/show.lp".
 
-#include "common/task_sequencing.lp".
-#include "common/task_sequencing_heur1.lp".
+#include "common/task_assignment.lp".
+#include "common/task_sequencing_direct.lp".
+#include "common/task_sequencing_direct_heur1.lp".
 
 #include "walk/step_choice.lp".
 

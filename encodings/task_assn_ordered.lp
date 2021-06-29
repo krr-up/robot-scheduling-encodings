@@ -4,8 +4,8 @@
 
 #include "common/show.lp".
 
-#include "common/task_sequencing.lp".
-#include "common/task_ordering_pure.lp".
+#include "common/task_assignment.lp".
+#include "common/task_sequencing_ordered.lp".
 
 
 

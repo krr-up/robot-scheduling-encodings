@@ -4,8 +4,9 @@
 
 #include "path/show.lp".
 
-#include "common/task_sequencing.lp".
-#include "common/task_ordering_edge.lp".
+#include "common/task_assignment.lp".
+#include "common/task_sequencing_direct.lp".
+#include "common/task_sequencing_extra_edge.lp".
 
 #include "path/task_to_path.lp".
 
