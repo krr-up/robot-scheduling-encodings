@@ -29,8 +29,6 @@ task_level(0..C) :- task_count(C).
 
 :- robot(R), task_level(N), #count{ T : assignment(R,T), task_num(T,N) } > 1.
 
-%:- task_sequence(T,T'), task_num(T,N), task_num(T',N'), N' <= N.
-
 task_sequence(T,T') :- depends(deliver,_,T), depends(deliver,T',_),
                        assignment(R,T), assignment(R,T'),
                        task_num(T,N), task_num(T',N'), N < N',
@@ -38,12 +36,17 @@ task_sequence(T,T') :- depends(deliver,_,T), depends(deliver,T',_),
                                 assignment(R,T''), task_num(T'',N''),
                                 N < N'', N'' < N'.
 
-
 task_sequence(T,T')     :- depends(deliver,T,T').
 
+% Only one starting sequence per robot
+:- robot(R), #count{ T : assignment(R,T), not task_sequence(_,T) } > 1.
+
+
+
+
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
 
-%#show task_num/2.
+#show task_num/2.
 %#show task_count/1.
 %#show task_sequence/2.

@@ -29,10 +29,10 @@ path_minpath_d(T,V'')   :- path_minpath_d(T,V), task(T,V'),
 % ------------------------------------------------------------------------------
 
 path_minpath(R,R,V)     :- start(R,V).
+
 path_minpath(T,R,V)     :- robot(R), depends(deliver,_,T), task(T,V).
 path_minpath(P,R,V'')   :- path_minpath(P,R,V), home(R,V'),
                             shortest_path(V,V',_,V'').
-
 path_minpath(R,T,V)     :- start(R,V), depends(deliver,T,_).
 path_minpath(T',T'',V') :- depends(deliver,T,T'), task(T',V'),
                             depends(deliver,T'',_), T != T''.
