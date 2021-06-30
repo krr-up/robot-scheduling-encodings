@@ -23,6 +23,11 @@ class TaskSequence(Predicate):
     tid2=RawField
     class Meta: name="task_sequence"
 
+class FirstTask(Predicate):
+    rid=RawField
+    tid=RawField
+    class Meta: name="first_task"
+
 class Depends(Predicate):
     dtype=ConstantField
     tid1=RawField
@@ -33,10 +38,13 @@ class TaskNum(Predicate):
     num=IntegerField
     class Meta: name="task_num"
 
+class Robot(Predicate):
+    rid=RawField
+
 Ass=Assignment
 TSeq=TaskSequence
 TNum=TaskNum
-
+FTsk=FirstTask
 
 # -------------------------------------------------------------------------------
 # Print the task sequences for each robot
@@ -47,43 +55,42 @@ g_robots="false"
 def build_task_graph(fb):
     global g_robots
     G=nx.DiGraph()
-    qAss   = fb.query(Ass).select(Ass.rid,Ass.tid)
-    qTasks = fb.query(Task).select(Task.tid)
+    qRobot = fb.query(Robot).select(lambda r : str(r.rid))
+    qAss   = fb.query(Ass).select(lambda a: (str(a.rid),str(a.tid)))
+    qFTsk   = fb.query(FTsk).select(lambda ft: (str(ft.rid),str(ft.tid)))
+    qTasks = fb.query(Task).select(lambda t: str(t.tid))
     qWaits = fb.query(Depends).where(Depends.dtype == "wait")\
-                              .select(Depends.tid1,Depends.tid2)
+                              .select(lambda d: (str(d.tid1),str(d.tid2)))
     qDels  = fb.query(Depends).where(Depends.dtype == "deliver")\
-                              .select(Depends.tid1,Depends.tid2)
-    tmp = [TSeq(tid1,tid2) for tid1,tid2 in qDels.all()]
-    qTSeqs = fb.query(TSeq).where(notin_(path(TSeq), tmp))
+                              .select(lambda d: (str(d.tid1),str(d.tid2)))
+    qTSeqs = fb.query(TSeq)\
+               .where(notin_(path(TSeq),
+                             fb.query(Depends).where(Depends.dtype == "deliver")))\
+               .select(lambda ts: (str(ts.tid1),str(ts.tid2)))
 
-    G.add_nodes_from([str(n) for n in list(qTasks.all())])
-    G.add_edges_from(
-        [(str(n1),str(n2)) for n1,n2 in list(qTSeqs.all())],
-        color="green",label="next",width=4)
-    G.add_edges_from(
-        [(str(n1),str(n2)) for n1,n2 in list(qDels.all())],
-        weight=1.0,color="blue",label="deliver",width=4)
-    G.add_edges_from(
-        [(str(n1),str(n2)) for n1,n2 in list(qWaits.all())],
-        color="red",label="wait",width=1)
+    G.add_nodes_from(list(qRobot.all()),color="green")
+    G.add_nodes_from(list(qTasks.all()),color="blue")
+    G.add_edges_from(list(qTSeqs.all()),color="black",label="next",width=4)
+    G.add_edges_from(list(qDels.all()),weight=1.0,color="grey",label="deliver",width=4)
+    G.add_edges_from(list(qWaits.all()),color="green",label="wait",width=2)
 
-    if g_robots != "true": return G
-    G.add_edges_from(
-        [(str(n1),str(n2)) for n1,n2 in list(qAss.all())],
-        weight=1.0,color="yellow",label="assignment",width=1)
+    if g_robots != "true": tmp = list(qFTsk.all())
+    else: tmp = list(qAss.all())
+    G.add_edges_from(tmp,weight=1.0,color="cyan",label="assignment",width=1)
     return G
 
 def show_task_graph(fb):
     G = build_task_graph(fb)
     pos = nx.nx_agraph.graphviz_layout(G, prog="dot")
 
+    nodes = G.nodes()
+    ncolors = [ G.nodes[u]['color'] for u in nodes]
     edges = G.edges()
-#    edges = [ (u,v) for u,v in G.edges if G[u][v]['label'] == "next"]
-    colors = [ G[u][v]['color'] for u,v in edges]
-    widths = [ G[u][v]['width'] for u,v in edges]
-#    weights = [ G[u][v]['weight'] for u,v in edges]
+    ecolors = [ G.edges[u,v]['color'] for u,v in edges]
+    widths = [ G.edges[u,v]['width'] for u,v in edges]
 
-    nx.draw(G,pos,edges=edges,edge_color=colors,width=widths,with_labels=True)
+    nx.draw(G,pos,nodes=nodes,node_color=ncolors,
+            edges=edges,edge_color=ecolors,width=widths,with_labels=True)
     plt.show()
 
 # -------------------------------------------------------------------------------
@@ -92,7 +99,7 @@ def show_task_graph(fb):
 
 def main(ctrl_):
     global g_robots
-    unifier=[Task,Ass,TSeq,Depends,TNum]
+    unifier=[Task,Ass,FTsk,TSeq,Depends,TNum,Robot]
     ctrl=Control(control_=ctrl_,unifier=unifier)
 
     robots = ctrl.get_const("robots")
@@ -120,4 +127,15 @@ def main(ctrl_):
     sys.stdout.flush()
 
 #end.
+
+% ----------------------------------------------------------------------------
+% Work out the first task for a robot
+% ----------------------------------------------------------------------------
+
+first_task(R,T) :- robot(R), assignment(R,T), not task_sequence(_,T).
+
+% ----------------------------------------------------------------------------
+%
+% ----------------------------------------------------------------------------
+
 #show.

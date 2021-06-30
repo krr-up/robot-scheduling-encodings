@@ -68,8 +68,20 @@ fi
 
 CLINGODLFACTS="${THIS_DIR}/clingo-dl-facts.sh"
 CLINGOFACTS="${THIS_DIR}/clingo-facts.sh"
+CLINGO="clingo"
 CLINGODL="clingo-dl"
-GETMODEL="${THIS_DIR}/extract_model.py --id -1 --rawonerror --count --fregex dl\(bound -"
+ASPSTATS="${TESTS_DIR}/soln_to_stats.lp"
+
+getmodelallstats(){
+    output=$(${THIS_DIR}/extract_model.py --id -1 --rawonerror --count --fregex makespan --fregex replacement - --exec "${CLINGOFACTS} ${ASPSTATS} -")
+    echo "$output"
+}
+
+getmodelbasic(){
+    output=$(${THIS_DIR}/extract_model.py --id -1 --rawonerror --count --fregex makespan --fregex replacement_ - --exec "${CLINGOFACTS} ${ASPSTATS} -")
+    echo "$output"
+}
+
 
 # If no output option specified then default to "raw"
 if [ "${OUTPUT}" == "" ]; then
@@ -82,48 +94,47 @@ if [ "${OUTPUT}" == "raw" ]; then
     >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
     ${CLINGODL} ${OPTIONS} ${ASP} $@
+
 elif [ "${OUTPUT}" == "text" ]; then
     OPTIONS="${OPTIONS} --text"
     >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
     ${CLINGODL} ${OPTIONS} ${ASP} $@
+
+elif [ "${OUTPUT}" == "stats" ]; then
+    ASP="$ENCODING_DIR/path/show_all.lp ${ASP}"
+    >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
+    >&2 echo ""
+    ${CLINGODL} ${OPTIONS} ${ASP} $@ | getmodelallstats  > /dev/null
+
 elif [ "${OUTPUT}" == "meta" ]; then
     ASP="$ENCODING_DIR/path/show_all.lp ${ASP}"
     >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
-    ${CLINGODL} ${OPTIONS} ${ASP} $@ | ${GETMODEL} > /dev/null
+    ${CLINGODL} ${OPTIONS} ${ASP} $@ | getmodelbasic > /dev/null
+
 elif [ "${OUTPUT}" == "walk" ]; then
     ASP="$ENCODING_DIR/path/show_all.lp ${ASP}"
     >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
-    ${CLINGODL} ${OPTIONS} ${ASP} $@ | ${GETMODEL} | ${CLINGOFACTS} "${TESTS_DIR}/paths_to_walk.lp" -
+    ${CLINGODL} ${OPTIONS} ${ASP} $@ |getmodelbasic | ${CLINGOFACTS} "${TESTS_DIR}/paths_to_walk.lp" -
+
 elif [ "${OUTPUT}" == "fwalk" ]; then
     ASP="$ENCODING_DIR/path/show_all.lp ${ASP}"
     >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
-    ${CLINGODL} ${OPTIONS} ${ASP} $@ | ${GETMODEL} | ${CLINGOFACTS} "${TESTS_DIR}/paths_to_walk.lp" - | ${CLINGOFACTS} "${TESTS_DIR}/walk_to_fwalk.lp" -
+    ${CLINGODL} ${OPTIONS} ${ASP} $@ | getmodelbasic | ${CLINGOFACTS} "${TESTS_DIR}/paths_to_walk.lp" - | ${CLINGOFACTS} "${TESTS_DIR}/walk_to_fwalk.lp" -
+
 elif [ "${OUTPUT}" == "paths" ]; then
     >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
-    ${CLINGODL} ${OPTIONS} ${ASP} $@ | ${GETMODEL}
+    ${CLINGODL} ${OPTIONS} ${ASP} $@ | getmodelbasic | ${CLINGOFACTS} "${TESTS_DIR}/paths.lp" -
 elif [ "${OUTPUT}" == "fpaths" ]; then
     >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
-    ${CLINGODL} ${OPTIONS} ${ASP} $@ | ${GETMODEL} | ${CLINGOFACTS} ${FPATHS_FILTER} "${TESTS_DIR}/paths_to_fpaths.lp" -
+    ${CLINGODL} ${OPTIONS} ${ASP} $@ | getmodelbasic | ${CLINGOFACTS} ${FPATHS_FILTER} "${TESTS_DIR}/paths_to_fpaths.lp" -
+
 else
     echo "Unrecognised output option $OUTPUT"
     usage
 fi
-
-
-# To pretty print the output
-#${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_debug.lp" -
-
-# To check the solution - make sure the plan is collision free
-#${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_to_plan.lp" -
-
-#${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS}  "${THIS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${THIS_DIR}/solution_checker.lp -
-
-#${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${THIS_DIR}/user_output.lp ${THIS_DIR}/solution_checker.lp -
-
-
