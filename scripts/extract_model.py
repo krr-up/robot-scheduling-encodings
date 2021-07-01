@@ -39,12 +39,15 @@ g_fregex=[]
 g_count=False
 g_rawonerror=False
 g_lines = []
+g_idx=-1
+
 #-------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------
 def extract_models(file):
     global g_starttime, g_fregex, g_count, g_rawonerror, g_lines
-    answer_re = re.compile(r"^Answer:\s+(?P<val>[0-9]+).*$")
 
+    answer_re = re.compile(r"^Answer:\s+(?P<val>[0-9]+).*$")
+    count=0
     answers = []
     while True:
         line = file.readline()
@@ -64,6 +67,8 @@ def extract_models(file):
         if g_fregex: regex_facts(line)
         if g_fregex or g_count:
             sys.stderr.write("------------------------------------------\n")
+        count += 1
+        if g_idx >= 0 and count > g_idx: break
     return answers
 
 # ------------------------------------------------------------------------------
@@ -115,7 +120,9 @@ def regex_facts(model):
 SCRIPT_DIR=os.path.dirname(os.path.abspath(__file__))
 
 def main():
-    global g_starttime, g_fregex, g_count, g_rawonerror, g_lines, g_exec
+    global g_starttime, g_fregex, g_count, g_rawonerror
+    global g_lines, g_exec, g_idx
+
     g_starttime = time.time()
     args = argparser.parse_args()
 
@@ -123,8 +130,8 @@ def main():
     if args.count: g_count = True
     if args.fregex:
         for rstr in args.fregex: g_fregex.append(re.compile(rstr))
-    if args.id is None: answer_id=-1
-    else: answer_id=args.id
+    if args.id is None: g_idx=-1
+    else: g_idx=args.id
     if args.exec:
         g_exec = shlex.split(args.exec)
     answers=None
@@ -135,16 +142,18 @@ def main():
             answers = extract_models(file)
 
     try:
-        answer = answers[answer_id]
+        answer = answers[g_idx]
+
     except IndexError:
         print("\nerror: index {} is not valid for a list of {} elements\n".format(
-            answer_id,len(answers)),file=sys.stderr)
+            g_idx,len(answers)),file=sys.stderr)
         if g_rawonerror:
             for l in g_lines: sys.stderr.write(l)
         else:
             argparser.print_help(sys.stderr)
         return
     asp_facts = to_asp(answer)
+
     if g_exec: asp_facts = exec(asp_facts)
     for f in factify(asp_facts): print(f)
 
