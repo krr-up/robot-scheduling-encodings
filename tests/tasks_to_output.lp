@@ -89,8 +89,10 @@ def show_task_graph(fb):
     ecolors = [ G.edges[u,v]['color'] for u,v in edges]
     widths = [ G.edges[u,v]['width'] for u,v in edges]
 
-    nx.draw(G,pos,nodes=nodes,node_color=ncolors,
-            edges=edges,edge_color=ecolors,width=widths,with_labels=True)
+#    nx.draw(G,pos,nodes=nodes,node_color=ncolors,
+#            edges=edges,edge_color=ecolors,width=widths,with_labels=True)
+    nx.draw(G,pos,node_color=ncolors,
+            edge_color=ecolors,width=widths,with_labels=True)
     plt.show()
 
 # -------------------------------------------------------------------------------
