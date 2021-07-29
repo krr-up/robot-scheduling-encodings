@@ -57,7 +57,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         -r)
             RAWSOLVE="true"
-            OPTIONS="${OPTIONS} --stats"
+            OPTIONS="${OPTIONS} --stats=2"
             shift
             ;;
         *)

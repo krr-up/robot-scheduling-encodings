@@ -23,7 +23,6 @@ encoding(fast).
 % ------------------------------------------------------------------------------
 
 %#include "path/move_choice_domain.lp".
-%#include "path/move_choice_nondomain.lp".
 %#include "path/move_choice_heur.lp".
 
 % ------------------------------------------------------------------------------
