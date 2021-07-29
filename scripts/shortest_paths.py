@@ -12,9 +12,10 @@ import numpy as np
 #from numpy import array, asarray, inf, zeros, minimum, diagonal, newaxis
 
 from clorm import Predicate, StringField, IntegerField, ConstantField, \
-    RawField, make_function_asp_callable, simple_predicate
+    RawField, make_function_asp_callable, simple_predicate, ContextBuilder
 
 from clorm.clingo import Control
+import clingo
 
 # Module level logger
 g_logger = logging.getLogger(__name__)
@@ -198,19 +199,20 @@ AllShortestPath   = simple_predicate("all_shortest_path",4)
 # ASP callable functions
 # -------------------------------------------------------------------------------
 
+g_cb = ContextBuilder()
 g_ttmap = TTMap()
 
 SF=StringField; IF=IntegerField; CF=ConstantField; RF=RawField
 
 # Gather the connections (edges) in the graph
-@make_function_asp_callable
+@g_cb.register
 def gather_edge(v1 : RF, v2 : RF, d : IF) -> IF:
     global g_ttmap
     g_ttmap.add_conn(v1,v2,d)
     return 0
 
 # Gather the nodes
-@make_function_asp_callable
+@g_cb.register
 def gather_endpoint(v : RF) -> IF:
     global g_ttmap
     g_ttmap.register_endpoint(v)
@@ -219,7 +221,7 @@ def gather_endpoint(v : RF) -> IF:
 # Populate the shortest paths from every vertex to every endpoint vertex.
 # Returns a list of tuples (V,EP,V',D) where the shortest path from vertex V to
 # end EP is distance D and via vertex V'.
-@make_function_asp_callable
+@g_cb.register
 def shortest_paths() -> [(RF,RF,IF,RF)]:
     global g_ttmap
     mat = g_ttmap.make_adjacency_matrix()
@@ -255,7 +257,7 @@ def main():
 
     # Ground, solve and print the output
     fb=None
-    ctrl.ground([("base",[])])
+    ctrl.ground([("base",[])],context=g_cb.make_context())
     with ctrl.solve(yield_=True) as sh:
         for model in sh:
             fb = model.facts(shown=True)

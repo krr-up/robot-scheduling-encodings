@@ -8,7 +8,7 @@
 % Input facts: shortest_path(Src,Dest,N,Next), path(T,V), task(T,V).
 %              depends(deliver,T,T'), path_sequence(P,P'), task_sequence(T,T').
 %
-% Output: dl constraints
+% Output: sets dl constraints
 %
 % ------------------------------------------------------------------------------
 

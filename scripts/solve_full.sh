@@ -96,7 +96,7 @@ fi
 
 # Solve and output correctly
 if [ "${OUTPUT}" == "raw" ]; then
-    OPTIONS="${OPTIONS} --stats"
+    OPTIONS="${OPTIONS} --stats=2"
     >&2 echo "Executing: clingo-dl ${OPTIONS} ${ASP} $@ "
     >&2 echo ""
     ${CLINGODL} ${OPTIONS} ${ASP} $@

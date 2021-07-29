@@ -6,9 +6,9 @@
 % predicate.
 %
 % Input facts: shortest_path(Src,Dest,N,Next), path(T,V), task(T,V).
-%              depends(deliver,T,T'), path_sequence(P,P').
+%              start(R,V), assignment(R,T), path_sequence(P,P').
 %
-% Output: path_sequence(P,P',N).
+% Output: sets DL constraints
 %
 % ------------------------------------------------------------------------------
 
