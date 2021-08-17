@@ -105,7 +105,9 @@ fi
 
 #${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS}  "${THIS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${THIS_DIR}/solution_checker.lp -
 
-${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${TESTS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${TESTS_DIR}/user_output.lp ${TESTS_DIR}/solution_checker.lp -
+#${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${TESTS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${TESTS_DIR}/user_output.lp ${TESTS_DIR}/solution_checker.lp -
+
+${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${TESTS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${TESTS_DIR}/user_output.lp -
 
 
 

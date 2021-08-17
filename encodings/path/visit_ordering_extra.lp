@@ -15,13 +15,13 @@ path_seqnum(P,0)    :- path_sequence(P,_), not path_sequence(_,P).
 path_seqnum(P',N+1) :- path_seqnum(P,N), path_sequence(P,P'),
                        #count{ 1 : task(_,_) } = TN, N <= TN.
 
-:- before(v,(P,V),(P',V')), path_assignment(R,P), path_assignment(R,P''),
+:- before((P,V),(P',V')), path_assignment(R,P), path_assignment(R,P''),
    path_seqnum(P,N), path_seqnum(P'',M), M < N, visit(P'',V),
-   not before(v,(P'',V),(P',V')).
+   not before((P'',V),(P',V')).
 
-:- before(v,(P,V),(P',V')), path_assignment(R,P'), path_assignment(R,P''),
+:- before((P,V),(P',V')), path_assignment(R,P'), path_assignment(R,P''),
    path_seqnum(P',M), path_seqnum(P'',N), M < N, visit(P'',V'),
-   not before(v,(P,V),(P'',V')).
+   not before((P,V),(P'',V')).
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
