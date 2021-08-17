@@ -1,6 +1,15 @@
 % ----------------------------------------------------------------------------
 % Turn path encoding output into a walk output.
 %
+% Input facts:
+% - visit/2.
+% - task/2.
+% - assignment/2.
+% - task_sequence/2.
+% - start/2.
+% - home/2.
+% - move/3.
+%
 % Output facts:
 % - assignment(Robot,Task)
 % - walk(Robot,Step,Vertex)

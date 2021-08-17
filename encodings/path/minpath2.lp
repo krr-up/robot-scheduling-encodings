@@ -18,7 +18,7 @@
 
 path_minpath_d(T',V)    :- depends(deliver,T,T'), task(T,V).
 path_minpath_d(T,V'')   :- path_minpath_d(T,V), task(T,V'),
-                            shortest_path(V,V',_,V'').
+                           shortest_path(V,V',_,V'').
 
 % ------------------------------------------------------------------------------
 % Domain predicate of possible minimum paths that tracks the to-from
@@ -29,15 +29,14 @@ path_minpath_d(T,V'')   :- path_minpath_d(T,V), task(T,V'),
 % ------------------------------------------------------------------------------
 
 path_minpath(R,R,V)     :- start(R,V).
-
 path_minpath(T,R,V)     :- robot(R), depends(deliver,_,T), task(T,V).
 path_minpath(P,R,V'')   :- path_minpath(P,R,V), home(R,V'),
-                            shortest_path(V,V',_,V'').
+                           shortest_path(V,V',_,V'').
 path_minpath(R,T,V)     :- start(R,V), depends(deliver,T,_).
 path_minpath(T',T'',V') :- depends(deliver,T,T'), task(T',V'),
-                            depends(deliver,T'',_), T != T''.
+                           depends(deliver,T'',_), T != T''.
 path_minpath(P,T,V'')   :- path_minpath(P,T,V), task(T,V'),
-                            shortest_path(V,V',_,V'').
+                           shortest_path(V,V',_,V'').
 
 
 % ------------------------------------------------------------------------------
@@ -50,7 +49,7 @@ path_minpath(P,T,V'')   :- path_minpath(P,T,V), task(T,V'),
 path_minpath_nd(R,V)     :- path_minpath(R,R,V), not assignment(R,_), path(R,_).
 path_minpath_nd(R,V)     :- path_minpath(T,R,V), path_sequence(T,R), not path_sequence(R,_).
 path_minpath_nd(T,V)     :- path_minpath(R,T,V), assignment(R,T),
-                             task_sequence(T,_), not task_sequence(_,T).
+                            task_sequence(T,_), not task_sequence(_,T).
 path_minpath_nd(T',V)    :- path_minpath(T,T',V), task_sequence(T,T'), task(T',_).
 
 % ------------------------------------------------------------------------------
