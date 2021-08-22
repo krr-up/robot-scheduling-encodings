@@ -7,6 +7,7 @@ ENCODING_DIR="$( cd "${THIS_DIR}/../encodings" && pwd )"
 
 #export PYTHONPATH="$THIS_DIR:${PYTHONPATH}"
 
+BASE="full_path"
 VARIANT="basic"
 POSITIONAL=()
 OPTIONS=""
@@ -19,19 +20,29 @@ flags(){
     return 0
 }
 
+list_variants(){
+    for v in "${ENCODING_DIR}/${BASE}_"*.lp; do
+        v="${v##*/${BASE}_}"
+        v="${v%.lp}"
+        echo "          ${v} "
+    done
+}
+
 usage(){
     echo "usage: $0 [-h] [-d] [-v <variant>] <instance>"
     echo "       -h              help"
     echo "       -d              enable domain heuristics"
     echo "       -o <output>     output options: raw|text|meta|paths|fpaths|walk|fwalk  [raw]"
-    echo "       -v <variant>    different variant"
+    echo "       -v <variant>    different variant (default: ${VARIANT})"
     echo "       -f              filter out the dl exit facts when outputting formatted paths"
+    echo ""
+    echo "       Variants:"
+    list_variants
     exit 1
 }
 
 while [[ $# -gt 0 ]]; do
     key=$1
-
     case $key in
         -h)
             usage
@@ -64,7 +75,6 @@ if [ "$1" == "" ]; then
     usage
 fi
 
-BASE="full_path"
 ASP="${ENCODING_DIR}/${BASE}_${VARIANT}.lp"
 
 FLAGS=$(flags ${ASP})

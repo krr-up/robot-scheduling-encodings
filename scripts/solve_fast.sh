@@ -10,6 +10,7 @@ ENCODING_DIR="$( cd "${THIS_DIR}/../encodings" && pwd )"
 VARIANT="basic"
 POSITIONAL=()
 OPTIONS=""
+BASE="fast_path"
 
 flags(){
     local line=$(head -n 1 $1)
@@ -18,12 +19,23 @@ flags(){
     return 0
 }
 
+list_variants(){
+    for v in "${ENCODING_DIR}/${BASE}_"*.lp; do
+        v="${v##*/${BASE}_}"
+        v="${v%.lp}"
+        echo "          ${v} "
+    done
+}
+
 usage(){
     echo "usage: $0 [-h] [-d] [-v <variant>] <instance>"
     echo "       -h              help"
     echo "       -d              enable domain heuristics"
     echo "       -o <output>     output options: raw|text|meta|paths|fpaths|walk|fwalk  [raw]"
     echo "       -v <variant>    different variant"
+    echo ""
+    echo "       Variants:"
+    list_variants
     exit 1
 }
 
@@ -58,7 +70,6 @@ if [ "$1" == "" ]; then
     usage
 fi
 
-BASE="fast_path"
 ASP="${ENCODING_DIR}/${BASE}_${VARIANT}.lp"
 
 FLAGS=$(flags ${ASP})
