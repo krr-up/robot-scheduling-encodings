@@ -23,20 +23,20 @@
 % the pickup.  Make sure each robot with assignments has a linear task sequences
 % are linear (see note above that there could still be a secondary cyclic task
 % sequence).
+%
+% Method suggested py @phil.wanko that uses two choice rules to generate the
+% task sequence (mirroring the route generation)
 % ------------------------------------------------------------------------------
 
 0 { task_sequence(T,T') : depends(deliver,T',_) } 1 :- depends(deliver,_,T).
+0 { task_sequence(T,T') : depends(deliver,_,T)  } 1 :- depends(deliver,T',_).
 task_sequence(T,T')                                 :- depends(deliver,T,T').
 
 :- task_sequence(T,T'),
    not same_robot(T,T'), not same_robot(T',T), not depends(deliver,T,T').
 
-% Make sure a task can't have more than one predecessor.
-
-:- task(T,_), 2 #count{ T' : task_sequence(T',T) }.
-
 % Each assigned robot must have exactly one linear sequence; hence must have
-% only a single first task.  Note: could have some cyclic sequences as well but
+% only a single first task. Note: could have some cyclic sequences as well but
 % we don't prevent that here.
 
 :- assignment(R,_), not #count{ T : assignment(R,T), not task_sequence(_,T) } = 1.
