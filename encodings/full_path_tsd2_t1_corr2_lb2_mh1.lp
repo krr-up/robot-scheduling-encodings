@@ -1,4 +1,4 @@
-%!flags! --heuristic=Domain --configuration=handy
+%!flags! --heuristic=Domain
 % ------------------------------------------------------------------------------
 % The "fast" path encoding with no options.
 % ------------------------------------------------------------------------------
