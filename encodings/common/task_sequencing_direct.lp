@@ -3,12 +3,16 @@
 % is now separate from the assignment code so that we can look at different
 % sequencing mechanisms.
 %
-% Note: this code by itself doesn't generate proper sequences and relies on the
-% DL timing constraints to enforce proper sequencing. In particular without the
-% DL constraints we can have: 1) a robot with a cyclic task_sequence (provided
-% there is also a non-cyclic task sequence for that robot), 2) wait dependencies
-% are not guaranteed to be satisfied (both for wait dependencies assigned to the
-% same robot and for wait dependencies assigned between different robots).
+% For any robot with a task we want to enforce that there must be exactly one
+% linear task sequence.
+%
+% Note: however, the following code by itself doesn't generate proper sequences
+% and relies on the DL timing constraints (or some othere cyclicity detection)
+% to enforce proper sequencing. In particular without the DL constraints we can
+% have: 1) a robot with a one or more cyclic task_sequences (provided there is
+% also a non-cyclic task sequence for that robot), 2) wait dependencies are not
+% guaranteed to be satisfied (both for wait dependencies assigned to the same
+% robot and for wait dependencies assigned between different robots).
 %
 % Input facts: robot/1, tasks/2, same_robot/2, assignment/2.
 % Output facts: task_sequence/2
@@ -21,24 +25,22 @@
 % sequence).
 % ------------------------------------------------------------------------------
 
-0 { task_sequence(T,T') : task(T',_), not depends(deliver,_,T'), T != T' } 1 :-
-                          task(T,_), not depends(deliver,T,_).
-task_sequence(T,T')     :- depends(deliver,T,T').
+0 { task_sequence(T,T') : depends(deliver,T',_) } 1 :- depends(deliver,_,T).
+task_sequence(T,T')                                 :- depends(deliver,T,T').
 
+:- task_sequence(T,T'),
+   not same_robot(T,T'), not same_robot(T',T), not depends(deliver,T,T').
 
-:- task_sequence(T,T'), not same_robot(T,T'), not same_robot(T',T).
+% Make sure a task can't have more than one predecessor.
 
-%:- task_sequence(T,T'), task_sequence(T',T).             % Stop trivial cycles
-%:- task_sequence(T,T'), task_sequence(T,T''), T' < T''.  % Enforced by the sequence choice rule
+:- task(T,_), 2 #count{ T' : task_sequence(T',T) }.
 
-:- task_sequence(T',T), task_sequence(T'',T), T' < T''.
-:- task(T,_), not task_sequence(T,_), not task_sequence(_,T).
+% Each assigned robot must have exactly one linear sequence; hence must have
+% only a single first task.  Note: could have some cyclic sequences as well but
+% we don't prevent that here.
 
-:- robot(R), #count{ T : assignment(R,T), not task_sequence(_,T) } > 1.
+:- assignment(R,_), not #count{ T : assignment(R,T), not task_sequence(_,T) } = 1.
 
-% I think this is redundant????
-:- assignment(R,_),
-   #false : assignment(R,T), task_sequence(T,_), not task_sequence(_,T).
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
