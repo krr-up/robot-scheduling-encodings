@@ -14,11 +14,9 @@
 % Input facts: tasks/2, depends/2, task_sequence/2, assignment/2, same_robot/2.
 % ------------------------------------------------------------------------------
 
+#edge(T,T') : task_sequence(T,T').
+#edge(T,T') : depends(wait,T,T').
 
-_tpo_seq(T,T') :- task_sequence(T,T').
-_tpo_seq(T,T') :- depends(wait,T,T').
-
-#edge (T,T') : _tpo_seq(T,T').
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
