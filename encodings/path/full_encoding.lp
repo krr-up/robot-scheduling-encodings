@@ -3,6 +3,7 @@
 % from that vertex.
 % ------------------------------------------------------------------------------
 
+encoding(full).
 encoding(path).
 
 % ------------------------------------------------------------------------------
@@ -81,30 +82,30 @@ encoding(path).
 %#include "path/visit_ordering_extra.lp".
 
 % ------------------------------------------------------------------------------
-% Handle the before(v,(P,V),(P',V')) predicate.  NOTE: We are modelling a vertex
+% Handle the before((P,V),(P',V')) predicate.  NOTE: We are modelling a vertex
 % as taking up space enough to contain a robot. Therefore we can have a robot
 % exit a node at the same instance that another robot arrives at that node. But
 % we are also allowing a robot to arrive and exit a node at the same
-% instant. This creates a problem that before(v,(P,V),(P',V)) allows P and P' to
+% instant. This creates a problem that before((P,V),(P',V)) allows P and P' to
 % both arrive and exit the node at the same instant without violating the
 % constraint. We could add a delay between arriving and exiting, but instead
 % make sure two robots cannot arrive at the same time.
 % ------------------------------------------------------------------------------
 
-&diff{ arrive(P,V) - arrive(P',V') } <= -1  :- before(v,(P,V),(P',V')).
-&diff{ exit(P,V) - arrive(P',V') } <= 0     :- before(v,(P,V),(P',V')).
+&diff{ arrive(P,V) - arrive(P',V') } <= -1  :- before((P,V),(P',V')).
+&diff{ exit(P,V) - arrive(P',V') } <= 0     :- before((P,V),(P',V')).
 
 % ------------------------------------------------------------------------------
 % Two cases for edge conflicts that are not subsumed by the vertex conflicts.
 % ------------------------------------------------------------------------------
 
 &diff{ arrive(P,V2) - exit(P',V1') } <= 0  :-
-                                       before(v,(P,V2),(P',V2')),
+                                       before((P,V2),(P',V2')),
                                        move(P,V1,V2), move(P',V1',V2'),
                                        conflict(e,(V1,V2),(V1',V2')).
 
 &diff{ arrive(P,V2) - exit(P',V1') } <= 0  :-
-                                       before(v,(P,V1),(P',V2')),
+                                       before((P,V1),(P',V2')),
                                        move(P,V1,V2), move(P',V1',V2'),
                                        conflict(e,(V1,V2),(V1',V2')).
 

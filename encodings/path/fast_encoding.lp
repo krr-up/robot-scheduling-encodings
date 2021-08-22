@@ -3,6 +3,7 @@
 % the departure time.
 % ------------------------------------------------------------------------------
 
+encoding(path).
 encoding(fast).
 
 % ------------------------------------------------------------------------------
@@ -76,25 +77,25 @@ encoding(fast).
 %#include "path/visit_ordering_extra.lp".
 
 % ------------------------------------------------------------------------------
-% Arrival at a node based on the before(v,(P,V),(P',V')) relation. Because we
+% Arrival at a node based on the before((P,V),(P',V')) relation. Because we
 % don't track the exit times we ensure that P arrives at the vertex after V
 % before P' arrives at V'.
 % ------------------------------------------------------------------------------
 
 &diff{ arrive(P,V'') - arrive(P',V') } <= 0  :-
-                                       before(v,(P,V),(P',V')), move(P,V,V'').
+                                       before((P,V),(P',V')), move(P,V,V'').
 
 % ------------------------------------------------------------------------------
 % Two cases for edge conflicts that are not subsumed by the vertex conflicts.
 % ------------------------------------------------------------------------------
 
 &diff{ arrive(P,V2) - arrive(P',V1') } <= 0  :-
-                                       before(v,(P,V2),(P',V2')),
+                                       before((P,V2),(P',V2')),
                                        move(P,V1,V2), move(P',V1',V2'),
                                        conflict(e,(V1,V2),(V1',V2')).
 
 &diff{ arrive(P,V2) - arrive(P',V1') } <= 0  :-
-                                       before(v,(P,V1),(P',V2')),
+                                       before((P,V1),(P',V2')),
                                        move(P,V1,V2), move(P',V1',V2'),
                                        conflict(e,(V1,V2),(V1',V2')).
 
