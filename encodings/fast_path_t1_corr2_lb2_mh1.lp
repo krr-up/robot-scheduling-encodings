@@ -1,4 +1,5 @@
 %!flags! --heuristic=Domain
+%!desc! Task sequencing edge detection, corridor, lower-bounds and move heuristics
 % ------------------------------------------------------------------------------
 % The "fast" path encoding with no options.
 % ------------------------------------------------------------------------------
