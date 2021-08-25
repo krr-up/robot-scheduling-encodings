@@ -1,4 +1,5 @@
 %!flags! --heuristic=Domain
+%!desc! Task sequence acyclicity, corridors, lower-bounds, move heuristics
 % ------------------------------------------------------------------------------
 % The "fast" path encoding with no options.
 % ------------------------------------------------------------------------------

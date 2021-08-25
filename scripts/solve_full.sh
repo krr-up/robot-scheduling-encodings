@@ -14,17 +14,31 @@ OPTIONS=""
 FPATHS_FILTER=""
 
 flags(){
-    local line=$(head -n 1 $1)
-    local flags=$(echo $line | sed -n "s/^%!flags!\s*\(.*\)$/\1/p")
-    echo "$flags"
+    local flags=$(cat $1 | sed -n "s/^%!flags!\s*\(.*\)$/\1/p")
+    echo $(echo $flags | tr '\n' ' ')
+    return 0
+}
+
+description(){
+    local desc=$(cat $1 | sed -n "s/^%!desc!\s*\(.*\)$/\1/p")
+    echo $(echo $desc | tr '\n' ' ')
     return 0
 }
 
 list_variants(){
     for v in "${ENCODING_DIR}/${BASE}_"*.lp; do
+        options=$(flags $v)
+        comment=$(description $v)
         v="${v##*/${BASE}_}"
         v="${v%.lp}"
-        echo "          ${v} "
+        output="          $v"
+        if [ "$comment" != "" ]; then
+            output="$output :  $comment"
+        fi
+        if [ "$options" != "" ]; then
+            output="$output :  $options"
+        fi
+        echo "$output"
     done
 }
 

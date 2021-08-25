@@ -5,7 +5,7 @@
 #script(python)
 import sys
 import networkx as nx
-from clorm import func, simple_predicate, alias, notin_, in_, ph1_
+from clorm import func, simple_predicate, alias, notin_, in_, ph1_, refine_field
 from clorm import Predicate, IntegerField, RawField, ConstantField
 from clorm.clingo import Control
 
@@ -33,6 +33,22 @@ class Conflict(Predicate):
     walk1=Walk.Field
     walk2=Walk.Field
     class Meta: name="walkconflict"
+
+class Err(Predicate):
+    errterm=RawField
+
+class NoErrors(Predicate):
+    pass
+    class Meta: name="noerrors"
+
+class Dl(Predicate):
+    bound=refine_field("BoundField",ConstantField,["bound"])
+    time=IntegerField
+
+class WalkLength(Predicate):
+    rid=RawField
+    steps=IntegerField
+    class Meta: name="walk_length"
 
 # -------------------------------------------------------------------------------
 # Global variables
@@ -104,7 +120,7 @@ def print_walk(fb):
                  .where(Assn.rid == ph1_)\
                  .order_by(Action.stime)\
                  .select(Action)
-    qWalks = fb.query(Walk).order_by(Walk.rid,Walk.step).group_by()\
+    qWalks = fb.query(Walk).group_by(Walk.rid).order_by(Walk.step)\
                .select(Walk)
 
     for r,walks in qWalks.all():
@@ -127,19 +143,38 @@ def print_walk(fb):
             else:
                 print("{}".format(tmp1))
 
+
+# -------------------------------------------------------------------------------
+# Solution checker output
+# -------------------------------------------------------------------------------
+def print_checker(fb):
+    print("")
+    WL=WalkLength
+    qWL=fb.query(WL).order_by(WL.rid).select(WL.rid,WL.steps)
+    for r,s in qWL.all(): print("Robot {} steps = {}".format(r,s))
+
+    qDlb=fb.query(Dl).select(Dl.time)
+    for t in qDlb.all():
+        print("Makespan: {}".format(t))
+
+    for err in fb.query(Err).select(Err.errterm).all():
+        print("Error in: {}".format(errterm))
+    if NoErrors() in fb:
+        print("The plan is free from errors")
 # -------------------------------------------------------------------------------
 # Print output
 # -------------------------------------------------------------------------------
 def print_output(fb):
     load_conflicts(fb)
     print_walk(fb)
+    print_checker(fb)
 
 # -------------------------------------------------------------------------------
 # Main
 # -------------------------------------------------------------------------------
 
 def main(ctrl_):
-    unifier=[ Walk, Action, Assn, Conflict ]
+    unifier=[ Walk, Action, Assn, Conflict, Err, NoErrors, Dl, WalkLength]
     ctrl=Control(control_=ctrl_,unifier=unifier)
 
 #    ctrl.configuration.solve.quiet = 2
