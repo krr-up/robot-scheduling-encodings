@@ -7,16 +7,39 @@ ENCODING_DIR="$( cd "${THIS_DIR}/../encodings" && pwd )"
 
 #export PYTHONPATH="$THIS_DIR:${PYTHONPATH}"
 
+BASE="walk"
 RAWSOLVE=""
 MAXSTEP=""
 VARIANT="basic"
 POSITIONAL=()
 
 flags(){
-    local line=$(head -n 1 $1)
-    local flags=$(echo $line | sed -n "s/^%!flags!\s*\(.*\)$/\1/p")
-    echo "$flags"
+    local flags=$(cat $1 | sed -n "s/^%!flags!\s*\(.*\)$/\1/p")
+    echo $(echo $flags | tr '\n' ' ')
     return 0
+}
+
+description(){
+    local desc=$(cat $1 | sed -n "s/^%!desc!\s*\(.*\)$/\1/p")
+    echo $(echo $desc | tr '\n' ' ')
+    return 0
+}
+
+list_variants(){
+    for v in "${ENCODING_DIR}/${BASE}_"*.lp; do
+        options=$(flags $v)
+        comment=$(description $v)
+        v="${v##*/${BASE}_}"
+        v="${v%.lp}"
+        output="          $v"
+        if [ "$comment" != "" ]; then
+            output="$output :  $comment"
+        fi
+        if [ "$options" != "" ]; then
+            output="$output :  $options"
+        fi
+        echo "$output"
+    done
 }
 
 usage(){
@@ -27,6 +50,9 @@ usage(){
     echo "       -g            generate ground text output only"
     echo "       -m <number>   maxstep constant"
     echo "       -v <variant>  different variant"
+    echo ""
+    echo "       Variants:"
+    list_variants
     exit 1
 }
 
@@ -98,16 +124,16 @@ if [ "${RAWSOLVE}" != "" ]; then
 fi
 
 # To pretty print the output
-#${CLINGODLFACTS} ${OPTIONS} ${ASP}  $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_debug.lp" -
+#${CLINGODLFACTS} ${OPTIONS} ${ASP}  $@ | ${CLINGOFACTS} "${TESTS_DIR}/${BASE}_debug.lp" -
 
 # To check the solution - make sure the plan is collision free
-#${CLINGODLFACTS} ${OPTIONS} ${ASP}  $@ | ${CLINGOFACTS} "${THIS_DIR}/${BASE}_to_plan.lp" -
+#${CLINGODLFACTS} ${OPTIONS} ${ASP}  $@ | ${CLINGOFACTS} "${TESTS_DIR}/${BASE}_to_plan.lp" -
 
-#${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS}  "${THIS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${THIS_DIR}/solution_checker.lp -
+#${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS}  "${TESTS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${THIS_DIR}/solution_checker.lp -
 
-#${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${TESTS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${TESTS_DIR}/user_output.lp ${TESTS_DIR}/solution_checker.lp -
+${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${TESTS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${TESTS_DIR}/user_output.lp ${TESTS_DIR}/solution_checker.lp -
 
-${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${TESTS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${TESTS_DIR}/user_output.lp -
+#${CLINGODLFACTS} ${OPTIONS} ${ASP} $@ | ${CLINGOFACTS} "${TESTS_DIR}/${BASE}_to_plan.lp" - | ${CLINGOFACTS} ${TESTS_DIR}/user_output.lp -
 
 
 
