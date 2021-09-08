@@ -66,37 +66,19 @@ Exit=DlExit
 # -------------------------------------------------------------------------------
 
 def print_walk(fb):
-    qArrivals = fb.query(Walk,Arr)\
-                  .join(Walk.rid == Arr.a.rid, Walk.step == Arr.a.step)\
-                  .order_by(Walk.rid, Arr.t)\
-                  .group_by()\
-                  .select(Walk.step,Walk.vertex,Arr.t)
 
     qExits = fb.query(Walk,Exit)\
                 .join(Walk.rid == Exit.e.rid, Walk.step == Exit.e.step)\
-                .where(Walk.rid == ph1_, Walk.step == ph2_)\
-                .select(Exit.t)
+                .select(lambda w,e : ((w.rid,w.step), e.t))
+    exits = { k : v for k,v in qExits.all() }
 
-    for r, walk in qArrivals.all():
-#        print("Robot: {}".format(r))
-        for s,v,a in walk:
-            tmp = list(qExits.bind(r,s).all())
-            if tmp: e = tmp[0]
-            else: e = -1
-            print("walk({},{},{},{},{}).".format(r,s,v,a,e))
+    qWS = fb.query(Walk,Arr)\
+            .join(Walk.rid == Arr.a.rid, Walk.step == Arr.a.step)\
+            .order_by(Walk.rid,Arr.t)\
+            .select(lambda w,a : (w.rid,w.step, w.vertex, a.t, exits[(w.rid,w.step)]))
 
-    return
-
-    qWalks = fb.query(Walk,Arr,Exit)\
-               .join(Walk.rid == Arr.a.rid, Walk.rid == Exit.e.rid,
-                     Walk.step == Arr.a.step,Walk.step == Exit.e.step)\
-               .order_by(Walk.rid,Walk.step).group_by()\
-               .select(Walk.rid,Walk.step,Walk.vertex,Arr.t,Exit.t)
-
-    for r, walk in qWalks.all():
-#        print("Robot: {}".format(r))
-        for w in walk:
-            print("walk({},{},{},{},{}).".format(*w))
+    for ws in qWS.all():
+        print("walk({},{},{},{},{}).".format(*ws))
 
 
 # -------------------------------------------------------------------------------
