@@ -1,21 +1,25 @@
+%!flags! --heuristic=Domain
 % ------------------------------------------------------------------------------
-% The walk encoding for no options
+% The "fast" path encoding with no options.
 % ------------------------------------------------------------------------------
 
-#include "walk/show_basic.lp".
+#include "path/show_basic.lp".
 
 #include "common/task_assignment.lp".
 #include "common/task_sequencing_direct.lp".
+#include "common/task_sequencing_acyclic.lp".
 
-#include "walk/step_choice.lp".
+#include "path/task_to_path.lp".
 
-#include "walk/step_ordering.lp".
+#include "path/move_choice_corr.lp".
 
-#include "walk/projection_choice.lp".
+#include "path/move_sequencing.lp".
 
-#include "walk/walk_encoding.lp".
+#include "path/visit_ordering.lp".
 
-#include "walk/step_minimize.lp".
+#include "path/path_encoding.lp".
+
+#include "path/move_choice_corr_heur.lp".
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------

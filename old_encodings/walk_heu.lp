@@ -1,5 +1,5 @@
 % ------------------------------------------------------------------------------
-% The walk encoding for no options
+% The walk encoding with added heuristics
 % ------------------------------------------------------------------------------
 
 #include "walk/show_basic.lp".
@@ -14,8 +14,8 @@
 #include "walk/projection_choice.lp".
 
 #include "walk/walk_encoding.lp".
+#include "walk/walk_encoding_heur1.lp".
 
-#include "walk/step_minimize.lp".
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------

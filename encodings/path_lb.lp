@@ -1,21 +1,23 @@
 % ------------------------------------------------------------------------------
-% The walk encoding for no options
+% The "full" path encoding with some lower-bound DL constraints for path_sequences.
 % ------------------------------------------------------------------------------
 
-#include "walk/show_basic.lp".
+#include "path/show_basic.lp".
 
 #include "common/task_assignment.lp".
 #include "common/task_sequencing_direct.lp".
 
-#include "walk/step_choice.lp".
+#include "path/task_to_path.lp".
 
-#include "walk/step_ordering.lp".
+#include "path/move_choice_open.lp".
 
-#include "walk/projection_choice.lp".
+#include "path/move_sequencing.lp".
 
-#include "walk/walk_encoding.lp".
+#include "path/visit_ordering.lp".
 
-#include "walk/step_minimize.lp".
+#include "path/path_encoding.lp".
+
+#include "path/path_encoding_lb.lp".
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------

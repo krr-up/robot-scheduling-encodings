@@ -1,12 +1,25 @@
 % ------------------------------------------------------------------------------
-% Decide the order in which robots visit a vertex (as part of a given path) to
-% ensure a conflict free ordering.
+% Decide the order in which different robots visit a given vertex (as part of a
+% given path) to ensure a conflict free ordering.
 %
-% Input: same_robot/2, assignment/2, path_assignment/2, visit/2, conflict/3,
+% Input: same_robot/2, assignment/2, path_assignment/2, conflict/3,
 %        start/2, path/2, move/3,
 %
 % Output: before/3, same_walk/2 (auxiliary).
 %
+% ------------------------------------------------------------------------------
+
+% ------------------------------------------------------------------------------
+% Track the vertices that are visited for each path.
+% ------------------------------------------------------------------------------
+
+visit(P,V) :- move(P,V,_).
+visit(P,V) :- path(P,V).
+
+% ------------------------------------------------------------------------------
+% Need to explicitly track the paths that are assigned to different robots
+% since we only need to order between two paths if they are part of the walks
+% for different robots.
 % ------------------------------------------------------------------------------
 
 same_walk(T,T')                :- same_robot(T,T').
