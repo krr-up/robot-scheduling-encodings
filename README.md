@@ -60,6 +60,64 @@ For testing the encoding install `networkx` and`clorm`:
     conda install -c potassco clorm
 
 
+## Basics of the different encodings
+
+- There are two Difference Logic (DL) based encodings: _walk_ encoding and _path_ encoding.
+- The two encodings are the same in how they assign tasks to robots and the
+  sequence in which the tasks are executed.
+- However, they vary in how they assign the movements of the robots:
+- The walk encoding is the most general and intuitive.
+  - Each robot is assigned a sequence of moves that traverses the graph from
+    its starting location through and must end at its home location.
+  - The sequence of moves is a _walk_ through the graph since it can visit any
+    given vertex multiple times.
+  - A given robot's walk must visit the appropriate task's nodes in the correct
+    order.
+- The path encoding adds an abstraction layer by constructing the moves of a
+  robot in terms of a set of distinct paths.
+  - Each task is associated with a path; and there is also a return home path
+    for each robot.
+  - A path traverses the graph from a source to a destination vertex but can
+    visit a given vertex only once.
+  - moves are chosen at the path level; with the additional requirements to
+    ensure that the sequence of paths assigned to a given robot must match up.
+- There are two more important things to note:
+  - The robot/path move choices are independent of timing. The move assignment
+    is handled in ASP while the the timing of when a robot arrives and leaves a
+    vertex is handled by the DL constraints. This dramatically reduces the
+    state space for bot the walk and path encodings.
+  - The path encoding solutions are a proper subset of the walk encoding
+    solutions. For the walk encoding a robot could visit a vertex any number of
+    times, whereas for the path encoding a robot can visit a vertex only once
+    as part of any given path.
+
+## Path encoding variants
+
+- The path encoding allows for a number of additional rules to provide improved
+  performance.
+
+- These improvements are based around pre-computing _shortest path_ information
+  for the graph.
+
+- The rational is that a graph corresponds to a given warehouse and so this
+  graph is will rarely change. Therefore pre-computing shortest path
+  information for the graph is a one-off cost that can be computed off-line.
+
+- _Corridor limted moves_. By default the moves of any given path can range
+  over any vertex in the graph; provided it ends at the appropriate vertex. The
+  corridor concept restricts the allowable moves associated with a path to a
+  more restricted set of vertices based around the shortest path from the
+  source to the destination vertex.
+
+- _Lower bounds_. Using the shortest path information it is possible to
+  determine a realistic lower bounds for the shortest time it could possibly
+  take for a robot to arrive at a path destination from a given source.
+
+
+
+
+
+
 ## Running
 
 ### Computing Shortest Paths

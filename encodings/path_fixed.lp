@@ -1,3 +1,4 @@
+%!desc! Path encoding for fixed moves (useful for debugging purposes)
 % ------------------------------------------------------------------------------
 % The "full" path encoding with no options.
 % ------------------------------------------------------------------------------

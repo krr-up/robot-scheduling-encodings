@@ -1,3 +1,4 @@
+%!desc! Use lower bounds only
 % ------------------------------------------------------------------------------
 % The "full" path encoding with some lower-bound DL constraints for path_sequences.
 % ------------------------------------------------------------------------------

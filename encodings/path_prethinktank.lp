@@ -1,6 +1,5 @@
 %!flags! --heuristic=Domain
-%!desc! Encoding before August 2021 thinktank
-
+%!desc! Encoding before August 2021 thinktank (all the options)
 
 % ------------------------------------------------------------------------------
 % Assigning tasks to robots with some ordering

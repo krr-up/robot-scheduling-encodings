@@ -1,4 +1,5 @@
 %!flags! --heuristic=Domain
+%!desc! Phillip W's task sequencing selection with task sequence acyclicty, corridor limited moves, lower bounds, and move heuristic
 % ------------------------------------------------------------------------------
 % The "fast" path encoding with no options.
 % ------------------------------------------------------------------------------

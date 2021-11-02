@@ -1,4 +1,5 @@
 %!flags! --heuristic=Domain
+%!desc! Corridor limited moves, lower bounds, and move heuristic
 % ------------------------------------------------------------------------------
 % The "fast" path encoding with no options.
 % ------------------------------------------------------------------------------
