@@ -91,6 +91,21 @@ For testing the encoding install `networkx` and`clorm`:
     times, whereas for the path encoding a robot can visit a vertex only once
     as part of any given path.
 
+## Common encoding variants
+
+- There are some additional rules that can be added to the encoding that can
+  potentially improve performance.
+
+- _Task sequence acyclicity_. This variant applies the both the walk and path
+  encodings. The pure ASP code to assign tasks to robots and to construct a
+  sequence of tasks for a given robot can generate some invalid task
+  sequences. In particular, there can be cyclic task sequences. Only when it is
+  combined with the DL timing constraints that these invalid sequences are
+  removed. To acheive a pure ASP correct assignment requires ensuring that the
+  task sequences are acyclic. This variant uses Clingo special support for
+  cycle detection.
+
+
 ## Path encoding variants
 
 - The path encoding allows for a number of additional rules to provide improved
@@ -99,7 +114,7 @@ For testing the encoding install `networkx` and`clorm`:
 - These improvements are based around pre-computing _shortest path_ information
   for the graph.
 
-- The rational is that a graph corresponds to a given warehouse and so this
+- The rationale is that a graph corresponds to a given warehouse and so this
   graph is will rarely change. Therefore pre-computing shortest path
   information for the graph is a one-off cost that can be computed off-line.
 
@@ -111,11 +126,14 @@ For testing the encoding install `networkx` and`clorm`:
 
 - _Lower bounds_. Using the shortest path information it is possible to
   determine a realistic lower bounds for the shortest time it could possibly
-  take for a robot to arrive at a path destination from a given source.
+  take for a robot to arrive at a path destination from a given source. This
+  can help general solving; but is particularly important if we want to
+  calculate the minimum makespan.
 
-
-
-
+- _Move domain heuristic_. Domain heuristics allow for domain information to be
+  injected into Clingo's heuristic search algorithm. The move heuristic guides
+  the move choices to those are likely to be both correct and good. In
+  particular moves along the shortest paths are preferred over longer routes.
 
 
 ## Running
@@ -154,23 +172,8 @@ For example:
   `solve_walk.sh -h`
 
 
+### Path Encoding
 
-## Path Encodings
-
-- Path encodings divide each robot's route into a sequence of acyclic paths,
-  where a path is (roughly) associated with a task.
-- Since a path is acyclic there are problem instances that the path encodings
-  cannot solve (even though there are satisfiable). But the benefit is much
-  faster solving times.
-- Path encodings don't need a horizon.
-- Two path encodings: one where we track both the arrival and exit times of a
-  robot at a node, and one where we only track the arrival times.
-- Within the two path encodings we consider a number of variants. Some variants
-  rely on pre-computed shortest path information.
-
-### Full Path Encoding
-
-- Tracks both the arrival and exit times of a robot at a node.
 
   `solve_full.sh <instance-name>`
 
@@ -180,7 +183,7 @@ For example:
 
 - In particular to run a high-performance variant:
 
-  `solve_full.sh -v t1_corr2_lb2_mh1 instances/sp/20x4_15_1_75_100_2_6_3_replenish_many_edges.lp`
+  `solve_full.sh -v tsa_corr_lb_mh instances/sp/20x4_15_1_75_100_2_6_3_replenish_many_edges.lp`
 
 
 ### Fast Path Encoding
@@ -189,32 +192,11 @@ For example:
 
   `solve_fast.sh <instance-name>`
 
-- For options:
+- For options and an explanation of the different variants:
 
   `solve_fast.sh -h`
 
 - In particular to run a high-performance variant:
 
   `solve_fast.sh -v t1_corr2_lb2_mh1 instances/sp/20x4_15_1_75_100_2_6_3_replenish_many_edges.lp`
-
-- NOTE: The naming of `fast` and `full` is misleading. The `full` path encoding is often faster
-
-### Path Encoding Variants Explained
-
-- This provides a very rough explanation of the main solving options: `t1_corr2_lb2_mh1`:
-
-  - `t1` refers to the use of additional acyclicity checking for the task
-    assignment/sequencing problem (the assignment of tasks to robots and the
-    task order for each robot).
-  - `corr2` refers to restricting the path for each robot to a "corridor" that
-    is defined around each path's shortest path. This can dramatically reduce
-    the grounding of the problem.
-  - `lb2` refer to the use of a solving time lower bound that can be determined
-    from the shortest path. This can help generally but is important for
-    minimising the makespan and determining if the problem is unsatisfiable.
-  - `mh1` refers to the use of a move heuristic. The move heuristic prefers the
-    robot to choose it's minimal path. This provides the greatest performance
-    improvement.
-
-
 
