@@ -31,14 +31,17 @@ list_variants(){
         comment=$(description $v)
         v="${v##*/${BASE}_}"
         v="${v%.lp}"
-        output="          $v"
-        if [ "$comment" != "" ]; then
-            output="$output :  $comment"
-        fi
+        output="       - $v"
         if [ "$options" != "" ]; then
-            output="$output :  $options"
+            output="$output [ $options ]"
         fi
-        echo "$output"
+        if [ "$comment" != "" ]; then
+            echo "$output: "
+            comment=$(echo $comment | fold -w 70 -s | sed 's/^/            /')
+            echo "$comment"
+        else
+            echo "$output"
+        fi
     done
 }
 
@@ -52,6 +55,11 @@ usage(){
     echo ""
     echo "       Variants:"
     list_variants
+    echo ""
+    echo "          *Note: the lower bounds, corridor limited moves, and move heuristic "
+    echo "                 all require instance files with precomputed shortest path "
+    echo "                 information. See \"shortest_paths.py\" for details on generating "
+    echo "                 shortest path info."
     exit 1
 }
 

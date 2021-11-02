@@ -1,3 +1,4 @@
+%!desc! Basic walk encoding with minimizing the total number of moves
 % ------------------------------------------------------------------------------
 % The walk encoding for no options
 % ------------------------------------------------------------------------------

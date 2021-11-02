@@ -1,3 +1,4 @@
+%!desc! Task sequence acyclicity, corridor limited moves, and lower bounds
 % ------------------------------------------------------------------------------
 % The "fast" path encoding with no options.
 % ------------------------------------------------------------------------------
