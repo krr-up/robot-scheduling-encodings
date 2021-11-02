@@ -62,61 +62,83 @@ For testing the encoding install `networkx` and`clorm`:
 
 ## Basics of the different encodings
 
-- There are two Difference Logic (DL) based encodings: _walk_ encoding and _path_ encoding.
+- There are two Difference Logic (DL) based encodings: _walk_ encoding and
+  _path_ encoding.
 - The two encodings are the same in how they assign tasks to robots and the
   sequence in which the tasks are executed.
 - However, they vary in how they assign the movements of the robots:
-- The walk encoding is the most general and intuitive.
+- The walk encoding is the most general and intuitive, and matches closely to
+  the formalization:
   - Each robot is assigned a sequence of moves that traverses the graph from
-    its starting location through and must end at its home location.
-  - The sequence of moves is a _walk_ through the graph since it can visit any
+    its starting location and must end at its home location.
+  - The sequence of moves is a _walk_ through the graph, since it can visit any
     given vertex multiple times.
-  - A given robot's walk must visit the appropriate task's nodes in the correct
-    order.
-- The path encoding adds an abstraction layer by constructing the moves of a
-  robot in terms of a set of distinct paths.
+  - A given robot's walk must visit the appropriate task's vertex in the
+    correct order.
+  - A walk encoding requires the specification of a step horizon, which is the
+    maximum number of steps allowed for any one robot.
+- In contrast to the walk encoding, the path encoding adds an abstraction layer
+  by constructing the moves of a robot in terms of a set of distinct paths:
   - Each task is associated with a path; and there is also a return home path
     for each robot.
-  - A path traverses the graph from a source to a destination vertex but can
-    visit a given vertex only once.
-  - moves are chosen at the path level; with the additional requirements to
+  - A path traverses the graph from a source to a destination vertex but a
+    single path can visit a given vertex only once.
+  - Moves are chosen at the path level; with the additional requirements to
     ensure that the sequence of paths assigned to a given robot must match up.
-- There are two more important things to note:
+  - The path encoding does not require the specification of a horizon.
+- There are two additional things to note:
   - The robot/path move choices are independent of timing. The move assignment
     is handled in ASP while the the timing of when a robot arrives and leaves a
     vertex is handled by the DL constraints. This dramatically reduces the
-    state space for bot the walk and path encodings.
-  - The path encoding solutions are a proper subset of the walk encoding
-    solutions. For the walk encoding a robot could visit a vertex any number of
-    times, whereas for the path encoding a robot can visit a vertex only once
-    as part of any given path.
+    state space for both the walk and path encodings.
+  - Every path encoding solutions can be mapped to a walk encoding solution
+    (with an appropriate step horizon). The opposite does not hold, so the walk
+    encoding is strictly more general than the path encoding. This can be
+    realised simply by the fact that in the walk encoding a robot can visit a
+    vertex any number of times, whereas for the path encoding a robot can visit
+    a vertex only once as part of any given path.
 
-## Common encoding variants
+## Common encoding enhancements
 
 - There are some additional rules that can be added to the encoding that can
   potentially improve performance.
 
-- _Task sequence acyclicity_. This variant applies the both the walk and path
+- _Task sequence acyclicity_. This variant applies to both the walk and path
   encodings. The pure ASP code to assign tasks to robots and to construct a
   sequence of tasks for a given robot can generate some invalid task
   sequences. In particular, there can be cyclic task sequences. Only when it is
   combined with the DL timing constraints that these invalid sequences are
   removed. To acheive a pure ASP correct assignment requires ensuring that the
-  task sequences are acyclic. This variant uses Clingo special support for
+  task sequences are acyclic. This variant uses Clingo's special support for
   cycle detection.
 
+## Common encoding variant
 
-## Path encoding variants
+- We consider two variants for generating the task sequences:
+  - The default is to use a single choice rule to connect any two tasks in the
+    sequence.
+  - A second variant uses two choice rules to connect task sequences; by
+    chosing who to connect to and who to connect from. While technically
+    redundant this second rule can potentially improve performance (especially
+    as the number of tasks increase). Note: more experiments required.
+
+## Shortest path information
+
+- There are some enhancements that can take advantage of pre-computed _shortest
+  path_ information for the graph.
+- The rationale is that a graph corresponds to a given warehouse and so this
+  graph will rarely change. Therefore pre-computing shortest path information
+  for the graph is a one-off cost that can be computed off-line.
+- For the sake of our testing framework we run the shortest path calculation on
+  each problem instance (which includes both the graph and tasks) to generate
+  the supplementary shortest path information for that instance.
+
+
+## Path encoding enhancements
 
 - The path encoding allows for a number of additional rules to provide improved
-  performance.
-
-- These improvements are based around pre-computing _shortest path_ information
-  for the graph.
-
-- The rationale is that a graph corresponds to a given warehouse and so this
-  graph is will rarely change. Therefore pre-computing shortest path
-  information for the graph is a one-off cost that can be computed off-line.
+  performance. These improvements are based on using the shortest path data for
+  each instance.
 
 - _Corridor limted moves_. By default the moves of any given path can range
   over any vertex in the graph; provided it ends at the appropriate vertex. The
@@ -135,6 +157,15 @@ For testing the encoding install `networkx` and`clorm`:
   the move choices to those are likely to be both correct and good. In
   particular moves along the shortest paths are preferred over longer routes.
 
+## Pallet replacement bound
+
+- In order to provide bounded behaviour some rules can be added to enforce a
+  strict time limit on the time between the pickup of an item and the putdown
+  of its replacement empty pallet.
+
+- This enhancement works best on a structured environment (rather than randomly
+  generated data) to determine what are reasonable bounds.
+
 
 ## Running
 
@@ -142,9 +173,6 @@ For testing the encoding install `networkx` and`clorm`:
 
 - There are a number of different solving options. But the high-performance
   options rely on pre-computed shortest path information.
-- The rationale is that the shortest path data needs to be computed only once
-  for any given graph, so in any given warehouse it would be possible to
-  pre-compute the shortest paths and then reuse for any combination of tasks.
 - To generate a shortest path instance:
 
   `shortest_path.py <input-instance> > <output-instance>`
