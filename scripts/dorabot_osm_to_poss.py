@@ -26,6 +26,11 @@ def parse_args():
     parser.add_argument('-s', '--robot-speed', dest='robot_speed',
                         type=float, default=1.0,
                         help="The speed of the robots in m/s [default: 1.0]")
+    parser.add_argument('-c', '--charge-as-home', dest='charge_as_home',
+                        action='store_true',
+                        help=("Treat all 'charge' cells as allowable "
+                              "robot home, increasing max robots"))
+
     return parser.parse_args()
 
 # ------------------------------------------------------------------------------
@@ -154,7 +159,11 @@ def main():
     print(f"Node tag keys: {tagkeys}", file=sys.stderr)
     print(f"Node tag values: {tagvalues}", file=sys.stderr)
 
-    home_values = set(["standby", "charge"])
+    home_values = set(["standby"])
+    if args.charge_as_home:
+        print("Allowing 'charge' nodes as possible robot homes",
+              file=sys.stderr)
+        home_values.add("charge")
 
     if "type" in tagkeys:
         is_poss_home = lambda a: a["type"] == "standby_cell"
