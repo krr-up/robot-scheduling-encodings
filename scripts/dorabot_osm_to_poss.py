@@ -23,7 +23,9 @@ def parse_args():
                         help="The input OSM file")
     parser.add_argument('out_file',
                         help="The output ASP file")
-
+    parser.add_argument('-s', '--robot-speed', dest='robot_speed',
+                        type=float, default=1.0,
+                        help="The speed of the robots in m/s [default: 1.0]")
     return parser.parse_args()
 
 # ------------------------------------------------------------------------------
@@ -90,10 +92,9 @@ def filter_nodes(G, poss_homes):
 # ------------------------------------------------------------------------------
 
 
-def print_graph(G, outfd):
+def print_graph(robot_speed, G, outfd):
     """Export the graph as ASP facts."""
-    rspeed_kmh = 5                        # 10 kmh
-    rspeed_ms = float(rspeed_kmh)/3.6
+    rspeed_ms = robot_speed
 
     def conflict(x1, x2, x3, x4):
         fd = outfd
@@ -102,9 +103,11 @@ def print_graph(G, outfd):
     # Output the edges of the graph
     for (n1, n2) in G.edges:
         meters = G.edges[n1, n2]['weight']
-        ttime = (meters/rspeed_ms)*1000
-        print("edge({},{},{:.0f}).".format(n1, n2, ttime), file=outfd)
-        print("edge({},{},{:.0f}).".format(n2, n1, ttime), file=outfd)
+        tt_ms = meters/rspeed_ms
+        tt_mms = round(tt_ms * 1000.0)
+
+        print(f"edge({n1},{n2},{tt_mms}).", file=outfd)
+        print(f"edge({n2},{n1},{tt_mms}).", file=outfd)
         conflict(n1, n2, n1, n2)
         conflict(n1, n2, n2, n1)
         conflict(n2, n1, n1, n2)
@@ -119,7 +122,7 @@ def print_graph(G, outfd):
 # Write out
 # ------------------------------------------------------------------------------
 
-def write_out(graph, grid, poss_homes, poss_manips,
+def write_out(robot_speed, graph, grid, poss_homes, poss_manips,
               poss_eps, poss_stores, outfd):
     """Write the ASP file."""
     print(f"grid({grid.x},{grid.y}).", file=outfd)
@@ -131,7 +134,7 @@ def write_out(graph, grid, poss_homes, poss_manips,
         print(f"poss_empty_pallet({ep}).", file=outfd)
     for st in poss_stores:
         print(f"poss_storage({st}).", file=outfd)
-    print_graph(graph, outfd)
+    print_graph(robot_speed, graph, outfd)
 
 # ------------------------------------------------------------------------------
 #
@@ -187,15 +190,17 @@ def main():
 
     # Write the output
     if args.out_file == "-":
-        write_out(graph=G, grid=grid, poss_homes=poss_homes,
-                  poss_manips=poss_manips, poss_eps=poss_eps,
-                  poss_stores=poss_stores, outfd=sys.stdout)
+        write_out(robot_speed=args.robot_speed, graph=G, grid=grid,
+                  poss_homes=poss_homes, poss_manips=poss_manips,
+                  poss_eps=poss_eps, poss_stores=poss_stores,
+                  outfd=sys.stdout)
         return
 
     with open(args.out_file, 'w') as outfd:
-        write_out(graph=G, grid=grid, poss_homes=poss_homes,
-                  poss_manips=poss_manips, poss_eps=poss_eps,
-                  poss_stores=poss_stores, outfd=outfd)
+        write_out(robot_speed=args.robot_speed, graph=G, grid=grid,
+                  poss_homes=poss_homes, poss_manips=poss_manips,
+                  poss_eps=poss_eps, poss_stores=poss_stores,
+                  outfd=outfd)
 
 
 # ------------------------------------------------------------------------------
