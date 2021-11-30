@@ -9,6 +9,7 @@ import networkx.algorithms as nxa
 from osm_parser import parse
 
 # Module level logger
+logging.basicConfig()
 g_logger = logging.getLogger(__name__)
 
 
@@ -30,6 +31,8 @@ def parse_args():
                         action='store_true',
                         help=("Treat all 'charge' cells as allowable "
                               "robot home, increasing max robots"))
+    parser.add_argument('-l', '--log-level', default='info',
+                        help=('Log level [fatal|error|info|warning|debug]'))
 
     return parser.parse_args()
 
@@ -52,7 +55,7 @@ def node_tag_keys(G):
     for n in G.nodes():
         nattr = G.nodes[n]['nattr']
         if nattr:
-            print(f"Node {n}: {nattr}", file=sys.stderr)
+            g_logger.debug(f"Node {n}: {nattr}")
         for k in nattr.keys():
             keys.add(k)
     return keys
@@ -78,19 +81,19 @@ def filter_nodes(G, poss_homes):
     for connected_nodes in nxa.connected_components(G):
         if connected_nodes.isdisjoint(poss_homes):
             bad_nodes.update(connected_nodes)
-            print(("Found robot unreachable sub-graph with "
-                   f"{len(connected_nodes)} nodes"), file=sys.stderr)
+            g_logger.info(("Found robot unreachable sub-graph with "
+                           f"{len(connected_nodes)} nodes"))
         else:
             rcount += 1
-            print(("Found robot reachable sub-graph with "
-                   f"{len(connected_nodes)} nodes"), file=sys.stderr)
+            g_logger.info(("Found robot reachable sub-graph with "
+                           f"{len(connected_nodes)} nodes"))
 
     if bad_nodes:
         G.remove_nodes_from(bad_nodes)
-        print(f"Removed robot unreachable nodes: {bad_nodes}", file=sys.stderr)
+        g_logger.info(f"Removed robot unreachable nodes: {bad_nodes}")
     if rcount > 1:
-        print(("Expecting only 1 robot reachable subgraphs, "
-               f"but there are {len(rcount)}"), file=sys.stderr)
+        g_logger.info(("Expecting only 1 robot reachable subgraphs, "
+                       f"but there are {len(rcount)}"))
 
 # ------------------------------------------------------------------------------
 #
@@ -150,19 +153,20 @@ def main():
     """Load the OSM file and export it as ASP facts."""
 
     args = parse_args()
+    g_logger.setLevel(level=args.log_level.upper())
+
     (G, grid) = parse(args.in_file)
     G = G.to_undirected()                 # Make the graph undirected
 
     # Tag keys and value keys
     tagkeys = node_tag_keys(G)
     tagvalues = node_tag_values(G)
-    print(f"Node tag keys: {tagkeys}", file=sys.stderr)
-    print(f"Node tag values: {tagvalues}", file=sys.stderr)
+    g_logger.debug(f"Node tag keys: {tagkeys}")
+    g_logger.debug(f"Node tag values: {tagvalues}")
 
     home_values = set(["standby"])
     if args.charge_as_home:
-        print("Allowing 'charge' nodes as possible robot homes",
-              file=sys.stderr)
+        g_logger.info("Allowing 'charge' nodes as possible robot homes")
         home_values.add("charge")
 
     if "type" in tagkeys:
@@ -192,10 +196,10 @@ def main():
     poss_eps = nodes_with(G, is_poss_ep)
     poss_stores = nodes_with(G, is_poss_store)
 
-    print(f"POSS HOMES: {len(poss_homes)}", file=sys.stderr)
-    print(f"POSS MANIPS: {len(poss_manips)}", file=sys.stderr)
-    print(f"POSS EPS: {len(poss_eps)}", file=sys.stderr)
-    print(f"POSS STORES: {len(poss_stores)}", file=sys.stderr)
+    g_logger.info(f"Poss home nodes: {len(poss_homes)}")
+    g_logger.info(f"Poss manipulator nodes: {len(poss_manips)}")
+    g_logger.info(f"Poss empty pallet nodes: {len(poss_eps)}")
+    g_logger.info(f"Poss storage nodes: {len(poss_stores)}")
 
     # Write the output
     if args.out_file == "-":
