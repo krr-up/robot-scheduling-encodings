@@ -9,10 +9,11 @@ import sys
 import networkx as nx
 import networkx.algorithms as nxa
 
-from clorm import Predicate, IntegerField, ConstantField, RawField, \
-    refine_field, simple_predicate, parse_fact_files, FactBase, in_
+from clorm import Predicate, IntegerField, ConstantField, \
+    refine_field, parse_fact_files, FactBase, in_
 
 # Module level logger
+logging.basicConfig()
 g_logger = logging.getLogger(__name__)
 
 # ------------------------------------------------------------------------------
@@ -79,8 +80,15 @@ def parse_args():
                         help="The output ASP file")
     parser.add_argument('-r', '--robots', dest='num_robots', type=int,
                         help="The number of randomly generated robots")
-    parser.add_argument('-t', '--tasks', dest='num_tasks', type=int, default=0,
+    parser.add_argument('-t', '--tasks', dest='num_tasks',
+                        type=int, required=True,
                         help="The number of randomly generated tasks")
+    parser.add_argument('-et', '--excess_tasks', dest='excess_tasks',
+                        action='store_true',
+                        help=("If there are more tasks than manipulators "
+                              "then use storage locations for the excess"))
+    parser.add_argument('-l', '--log-level', default='info',
+                        help=('Log level [fatal|error|info|warning|debug]'))
 
     return parser.parse_args()
 
@@ -91,23 +99,24 @@ def parse_args():
 
 
 def filter_nodes(fb, reachable_from):
+    """Remove unreachable nodes."""
     G = nx.DiGraph()
     G.add_edges_from(list(fb.query(Edge).select(Edge.nfrom, Edge.nto).all()))
-    print(f"Robot nodes: {reachable_from}", file=sys.stderr)
+    g_logger.info(f"Robot nodes: {reachable_from}")
 
     bad_nodes = set()
     for connected_nodes in nxa.strongly_connected_components(G):
         if connected_nodes.isdisjoint(reachable_from):
             bad_nodes.update(connected_nodes)
-            print(("No Robots connected to sub-graph with "
-                   f"{len(connected_nodes)} nodes"), file=sys.stderr)
+            g_logger.info(("No Robots connected to sub-graph with "
+                           f"{len(connected_nodes)} nodes"))
         else:
-            print(("Found robot reachable sub-graph with "
-                   f"{len(connected_nodes)} nodes"), file=sys.stderr)
+            g_logger.info(("Found robot reachable sub-graph with "
+                           f"{len(connected_nodes)} nodes"))
 
     if not bad_nodes:
         return
-    print(f"Robot unreachable nodes: {bad_nodes}", file=sys.stderr)
+    g_logger.info(f"Robot unreachable nodes: {bad_nodes}")
 
     # Remove any edge or conflict that includes a bad node
     bad_edges = fb.query(Edge).\
@@ -121,11 +130,11 @@ def filter_nodes(fb, reachable_from):
               in_(ConflictE.e2[0], bad_nodes))
 
     edcount = bad_edges.delete()
-    print(f"Deleted {edcount} edges", file=sys.stderr)
+    g_logger.debug(f"Deleted {edcount} edges")
     vccount = bad_vconflicts.delete()
-    print(f"Deleted {vccount} node conflicts", file=sys.stderr)
+    g_logger.debug(f"Deleted {vccount} node conflicts")
     eccount = bad_econflicts.delete()
-    print(f"Deleted {eccount} edge conflicts", file=sys.stderr)
+    g_logger.debug(f"Deleted {eccount} edge conflicts")
 
 
 # ------------------------------------------------------------------------------
@@ -134,22 +143,44 @@ def filter_nodes(fb, reachable_from):
 
 
 def choose_tasks(num_delivery_tasks, poss_manips,
-                 poss_eps, poss_stores):
+                 poss_eps, poss_stores, excess_tasks):
     """Given the different cell locations, randomly generate num tasks."""
     if num_delivery_tasks <= 0:
         g_logger.fatal("No delivery tasks")
         raise RuntimeError("No delivery tasks")
-    if num_delivery_tasks > len(poss_manips):
-        msg = ("More delivery tasks ({}) than possible manipulator "
-               "robots ({})").format(num_delivery_tasks, len(poss_manips))
-        g_logger.fatal(msg)
-        raise RuntimeError(msg)
 
-    pickup_cells = random.choices(list(poss_manips), k=num_delivery_tasks)
-    for c in pickup_cells:
+    # The number of tasks may be more than the manipulators so we may have to
+    # use storage locations or reduce the number of tasks depending on the
+    # excess_tasks flag.
+    manip_delivery_tasks = num_delivery_tasks
+    excess_delivery_tasks = 0
+    if num_delivery_tasks > len(poss_manips):
+        msg = (f"More delivery tasks ({num_delivery_tasks}) than possible "
+               f"manipulator robots ({len(poss_manips)})")
+        g_logger.error(msg)
+        if excess_tasks:
+            excess_delivery_tasks = num_delivery_tasks - len(poss_manips)
+            manip_delivery_tasks = len(poss_manips)
+            g_logger.error((f"Using {excess_delivery_tasks} storage locations "
+                            "as manipulator robot locations"))
+        else:
+            num_delivery_tasks = len(poss_manips)
+            manip_delivery_tasks = num_delivery_tasks
+            g_logger.error(f"Reducing delivery tasks to {num_delivery_tasks}")
+
+    # Assign the pickup locations for the delivery tasks
+    pickup_cells = []
+    for c in random.sample(list(poss_manips), k=manip_delivery_tasks):
+        pickup_cells.append(c)
         poss_eps.discard(c)
         poss_stores.discard(c)
-    storage_cells = random.choices(list(poss_stores), k=num_delivery_tasks)
+    for c in random.sample(list(poss_stores), k=excess_delivery_tasks):
+        pickup_cells.append(c)
+        poss_eps.discard(c)
+        poss_stores.discard(c)
+
+    # Assign the putdown locations or the delivery tasks
+    storage_cells = random.sample(list(poss_stores), k=num_delivery_tasks)
     for c in storage_cells:
         poss_eps.discard(c)
     pallet_cells = list(poss_eps)
@@ -188,7 +219,7 @@ def choose_robots(num_robots, poss_homes):
     rc = 1
     fact_strs = []
     nodes = []
-    for v in random.choices(list(poss_homes), k=num_robots):
+    for v in sorted(random.sample(list(poss_homes), k=num_robots)):
         nodes.append(v)
         r = "r{}".format(rc)
         rc += 1
@@ -222,8 +253,9 @@ def write_out(fbout, robots, tasks, outfd):
 
 def main():
     """Load the OSM file and export it as ASP facts."""
-
     args = parse_args()
+    g_logger.setLevel(level=args.log_level.upper())
+
     fb = parse_fact_files([args.in_file], unifier=UNIFIER, raise_nonfact=True)
 
     poss_homes = set(fb.query(PossHome).select(PossHome.node).all())
@@ -234,17 +266,18 @@ def main():
     poss_stores = set(fb.query(PossStorage).
                       select(PossStorage.node).all())
 
-    print(f"POSS HOMES: {len(poss_homes)}", file=sys.stderr)
-    print(f"POSS MANIPS: {len(poss_manips)}", file=sys.stderr)
-    print(f"POSS EPS: {len(poss_eps)}", file=sys.stderr)
-    print(f"POSS STORES: {len(poss_stores)}", file=sys.stderr)
-
+    g_logger.info(f"Poss home nodes: {len(poss_homes)}")
+    g_logger.info(f"Poss manipulator nodes: {len(poss_manips)}")
+    g_logger.info(f"Poss empty pallet nodes: {len(poss_eps)}")
+    g_logger.info(f"Poss storage nodes: {len(poss_stores)}")
+#
     num_robots = args.num_robots if args.num_robots else len(poss_homes)
     robot_strs, robot_nodes = choose_robots(num_robots, poss_homes)
 
 #    orig_fb = FactBase(fb)
     out_fb = FactBase()
     filter_nodes(fb, robot_nodes)
+
     out_fb.add(fb.query(Edge).all())
     out_fb.add(fb.query(ConflictV).all())
     out_fb.add(fb.query(ConflictE).all())
@@ -253,7 +286,7 @@ def main():
 #    print(f"Removed:\n{diff_fb.asp_str()}")
 #    return
     task_strs = choose_tasks(args.num_tasks, poss_manips,
-                             poss_eps, poss_stores)
+                             poss_eps, poss_stores, args.excess_tasks)
     # Write the output
     if args.out_file == "-":
         write_out(out_fb, robot_strs, task_strs, outfd=sys.stdout)
@@ -267,4 +300,14 @@ def main():
 # main
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
+
     main()
+#    sys.exit(0)
+
+#    import cProfile, pstats
+#    profiler = cProfile.Profile()
+#    profiler.enable()
+#    main()
+#    profiler.disable()
+#    stats = pstats.Stats(profiler).sort_stats('tottime')
+#    stats.print_stats()

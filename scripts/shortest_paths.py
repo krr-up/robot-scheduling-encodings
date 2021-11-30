@@ -6,13 +6,12 @@
 # ------------------------------------------------------------------------------
 import logging
 import os
-import math
+import argparse
 import sys
 import numpy as np
-#from numpy import array, asarray, inf, zeros, minimum, diagonal, newaxis
 
-from clorm import Predicate, StringField, IntegerField, ConstantField, \
-    RawField, make_function_asp_callable, simple_predicate, ContextBuilder
+from clorm import StringField, IntegerField, ConstantField, \
+    RawField, simple_predicate, ContextBuilder
 
 from clorm.clingo import Control
 import clingo
@@ -229,6 +228,21 @@ def shortest_paths() -> [(RF,RF,IF,RF)]:
     return make_min_tt_via(g_ttmap,mat,min_mat)
 
 # ------------------------------------------------------------------------------
+#
+# ------------------------------------------------------------------------------
+
+def parse_args():
+    """Parse the command line arguments."""
+    parser = argparse.ArgumentParser(description="Generate shortest path info")
+    parser.add_argument('in_file',
+                        help="The input ASP file")
+    parser.add_argument('out_file',
+                        help="The output ASP file with shortest path info")
+
+    return parser.parse_args()
+
+
+# ------------------------------------------------------------------------------
 # main
 # ------------------------------------------------------------------------------
 SCRIPT_DIR=os.path.dirname(os.path.abspath(__file__))
@@ -236,24 +250,17 @@ SPFILE=os.path.join(SCRIPT_DIR,"shortest_paths.lp")
 
 def main():
 
+    args = parse_args()
+
     # Setup the clingo control object
     ctrl = Control(unifier=[Edge,Robot,Home,Start,Conflict,Task,Depends, ShortestPath])
 #    ctrl = Control(unifier=[Edge,Robot,Home,Start,Conflict,Task,Depends,
 #                            EndPoint,Nearest,EntryPoint,OnDeadEnd,EndpointAccess,
 #                            AllShortestPath,ShortestPath])
     ctrl.load(SPFILE)
+    g_logger.info("Loading instance from %s", args.in_file)
+    ctrl.load(args.in_file)
 
-    # Load the instance
-    if len(sys.argv) <= 1:
-        g_logger.fatal("Missing input instance")
-        return
-    elif len(sys.argv) == 2 and sys.argv == "-":
-        g_logger.fatal("READ FROM STDIN")
-        return
-    else:
-        for arg in sys.argv[1:]:
-            g_logger.info("Loading instance from {}".format(arg))
-            ctrl.load(arg)
 
     # Ground, solve and print the output
     fb=None
@@ -261,11 +268,17 @@ def main():
     with ctrl.solve(yield_=True) as sh:
         for model in sh:
             fb = model.facts(shown=True)
-            print("{}".format(fb.asp_str()))
-            return
+            break
 
     if fb is None:
         raise SystemError("Unsatisfiable")
+
+    if args.out_file == "-":
+        print(f"{fb.asp_str()}")
+        return
+
+    with open(args.out_file, 'w') as outfd:
+        print(f"{fb.asp_str()}", file=outfd)
 
     sys.stderr.flush()
     sys.stdout.flush()
