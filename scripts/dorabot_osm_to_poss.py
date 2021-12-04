@@ -5,6 +5,7 @@
 import argparse
 import logging
 import sys
+import networkx as nx
 import networkx.algorithms as nxa
 from osm_parser import parse
 
@@ -104,7 +105,16 @@ def print_graph(robot_speed, G, outfd):
     """Export the graph as ASP facts."""
     rspeed_ms = robot_speed
 
-    def conflict(x1, x2, x3, x4):
+    # Write out the x,y coordinates of each node
+    get_x = nx.get_node_attributes(G, 'x')
+    get_y = nx.get_node_attributes(G, 'y')
+    for v in G.nodes:
+        x = round(get_x[v])# * 1000.0)
+        y = round(get_y[v])# * 1000.0)
+        print(f"node({v},{x},{y}).", file=outfd)
+
+
+    def conflict_e(x1, x2, x3, x4):
         fd = outfd
         print("conflict(e,({},{}),({},{})).".format(x1, x2, x3, x4), file=fd)
 
@@ -116,10 +126,10 @@ def print_graph(robot_speed, G, outfd):
 
         print(f"edge({n1},{n2},{tt_mms}).", file=outfd)
         print(f"edge({n2},{n1},{tt_mms}).", file=outfd)
-        conflict(n1, n2, n1, n2)
-        conflict(n1, n2, n2, n1)
-        conflict(n2, n1, n1, n2)
-        conflict(n2, n1, n2, n1)
+        conflict_e(n1, n2, n1, n2)
+        conflict_e(n1, n2, n2, n1)
+        conflict_e(n2, n1, n1, n2)
+        conflict_e(n2, n1, n2, n1)
 
     # Output the vertex conflicts
     for v in G.nodes():
