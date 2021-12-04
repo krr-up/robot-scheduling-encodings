@@ -79,6 +79,20 @@ def on_way(G,way):
     if not prev:
         raise RuntimeError("Missing nodes in wid {}".format(wid))
 
+
+# ------------------------------------------------------------------------------
+# add the x,y coordinate relative to (lat_min, lon_min).
+# ------------------------------------------------------------------------------
+
+def add_xy(G, lon_min, lat_min):
+    get_lon = nx.get_node_attributes(G, "lon")
+    get_lat = nx.get_node_attributes(G, "lat")
+    for n in G.nodes:
+        x = distance.distance((lat_min, lon_min), (lat_min, get_lon[n])).meters
+        y = distance.distance((lat_min, lon_min), (get_lat[n], lon_min)).meters
+        G.nodes[n]['x'] = x
+        G.nodes[n]['y'] = y
+
 # ------------------------------------------------------------------------------
 #
 # ------------------------------------------------------------------------------
@@ -95,18 +109,18 @@ def parse(filename):
         elif child.tag == "way":
             on_way(G, child)
 
-    lat = nx.get_node_attributes(G, "lat")
-    lon = nx.get_node_attributes(G, "lon")
-    lats = [lat[n] for n in G.nodes]
-    lons = [lon[n] for n in G.nodes]
-    lat_max = max(lats)
-    lat_min = min(lats)
+    get_lon = nx.get_node_attributes(G, "lon")
+    get_lat = nx.get_node_attributes(G, "lat")
+    lons = [get_lon[n] for n in G.nodes]
+    lats = [get_lat[n] for n in G.nodes]
     lon_max = max(lons)
     lon_min = min(lons)
-    x = distance.distance((lat_max, lon_min), (lat_max, lon_max)).meters
-    y = distance.distance((lat_min, lon_max), (lat_max, lon_max)).meters
+    lat_max = max(lats)
+    lat_min = min(lats)
+    x = distance.distance((lat_min, lon_min), (lat_min, lon_max)).meters
+    y = distance.distance((lat_min, lon_min), (lat_max, lon_min)).meters
     grid = Grid(x=math.ceil(x), y=math.ceil(y))
-
+    add_xy(G, lon_min, lat_min)
     return (G, grid)
 
 # ------------------------------------------------------------------------------
