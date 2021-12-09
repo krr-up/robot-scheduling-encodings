@@ -1,3 +1,4 @@
+%!desc! Walk encoding for fixed moves (useful for debugging purposes)
 % ------------------------------------------------------------------------------
 % The walk encoding for no options
 % ------------------------------------------------------------------------------

@@ -40,11 +40,15 @@ def stats(fb):
        return
 
     count = len(tmp)
+    minimum = min(tmp)
+    maximum = max(tmp)
     mean = statistics.mean(tmp)
     median = statistics.median(tmp)
     geo_mean = statistics.geometric_mean(tmp)
 
     sys.stdout.write("replacement_count({}).\n".format(count))
+    sys.stdout.write("replacement_min(\"{:.2f}\").\n".format(minimum))
+    sys.stdout.write("replacement_max(\"{:.2f}\").\n".format(maximum))
     sys.stdout.write("replacement_mean(\"{:.2f}\").\n".format(mean))
     sys.stdout.write("replacement_median(\"{:.2f}\").\n".format(median))
     sys.stdout.write("replacement_geomean(\"{:.2f}\").\n".format(geo_mean))

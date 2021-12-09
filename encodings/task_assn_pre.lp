@@ -4,7 +4,7 @@
 % it could contain cycles or different sorts.
 % ------------------------------------------------------------------------------
 
-#include "common/show.lp".
+#include "common/show_basic.lp".
 
 #include "common/task_assignment.lp".
 #include "common/task_sequencing_direct.lp".
