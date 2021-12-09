@@ -42,7 +42,7 @@ class NoErrors(Predicate):
     class Meta: name="noerrors"
 
 class Dl(Predicate):
-    bound=refine_field("BoundField",ConstantField,["bound"])
+    bound=refine_field(ConstantField,["bound"],name="BoundField")
     time=IntegerField
 
 class WalkLength(Predicate):
@@ -104,7 +104,7 @@ def match_action(action,walk):
     if not action: return False
     if action.stime > walk.etime: return False
     if (walk.atime <= action.stime) and (walk.etime >= action.etime) and \
-       (Action.vertex == walk.vertex): return True
+       (action.vertex == walk.vertex): return True
 
     msg=("Mismatch: {} and {}".format(action,walk))
     raise RuntimeError(msg)
