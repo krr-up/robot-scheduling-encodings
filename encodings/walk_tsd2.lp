@@ -3,7 +3,7 @@
 % The walk encoding for no options
 % ------------------------------------------------------------------------------
 
-#include "walk/show_basic.lp".
+#include "walk/show.lp".
 
 #include "common/task_assignment.lp".
 #include "common/task_sequencing_direct2.lp".

@@ -7,9 +7,9 @@
 % Output: sets DL constraints
 % ------------------------------------------------------------------------------
 
-% Note: we don't have a precise notion of time. But treating 10 time points as 1
-% second. So 2 minutes is:
-#const repl_time=2*600.
+% Note: we don't have a precise notion of time. But for the example "real" data
+% we are looking at 1000 time points per second. So 2 min = 2*60*1000 = 120000
+#const repl_time=2*60*1000.
 
 % NOTE: strictly speaking I'm not sure this captures the semantics of what is
 % meant by the replacement time. The start time should be the earliest time that

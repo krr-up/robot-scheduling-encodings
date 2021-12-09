@@ -290,19 +290,18 @@ def main():
     # Write the output
     if args.out_file == "-":
         write_out(out_fb, robot_strs, task_strs, outfd=sys.stdout)
-        return
+        return 0
 
     with open(args.out_file, 'w') as outfd:
         write_out(out_fb, robot_strs, task_strs, outfd=outfd)
-
+    return 0
 
 # ------------------------------------------------------------------------------
 # main
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
 
-    main()
-#    sys.exit(0)
+    sys.exit(main())
 
 #    import cProfile, pstats
 #    profiler = cProfile.Profile()

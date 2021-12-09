@@ -7,6 +7,7 @@ import logging
 import sys
 import subprocess
 from pathlib import Path
+from clorm import parse_fact_files, simple_predicate
 
 # Module level logger
 g_logger = logging.getLogger(__name__)
@@ -52,6 +53,21 @@ def parse_args():
 
     return parser.parse_args()
 
+
+# ------------------------------------------------------------------------------
+# Load the input file to get the maximum number of available robots
+# ------------------------------------------------------------------------------
+
+PossHome = simple_predicate("poss_home", 1)
+
+
+def get_max_robots(input_file):
+    """Read the lp file to find the max number of possible robots."""
+#    print(f"\nPROCESSING {input_file}\n")
+    fb = parse_fact_files([str(input_file)], unifier=[PossHome])
+#    print(f"HERE:\n{fb.asp_str()}\n")
+    return len(fb)
+
 # ------------------------------------------------------------------------------
 # Given an input file that defines a graph and possible home, storage, empty
 # pallet locations, create output instances matching a specification for the
@@ -71,6 +87,8 @@ def generate_instances(input_file, output_dir, num_tasks,
     basic_inst_dir = output_dir / "basic"
     sp_inst_dir = output_dir / "sp"
 
+    max_robots = get_max_robots(input_file)
+
     if not input_file.is_file():
         print(f"Expected input file {input_file} doesn't exists",
               file=sys.stderr)
@@ -78,7 +96,8 @@ def generate_instances(input_file, output_dir, num_tasks,
 
     print("========================================================")
     if num_robots is None:
-        robots_str = "as many robots as possible"
+        robots_str = f"as many robots as possible ({max_robots})"
+        num_robots = max_robots
     else:
         robots_str = "{num_robots} robots"
     print((f"Creating {num_instances} problem instances for {input_file} "
@@ -90,12 +109,16 @@ def generate_instances(input_file, output_dir, num_tasks,
 
     # Generate the appropriate number of instances
     for inst_id in range(1, num_instances+1):
-        basic_inst = basic_inst_dir / f"{stem}_{inst_id}.lp"
-        sp_inst = sp_inst_dir / f"{stem}_{inst_id}_sp.lp"
+        basic_inst = basic_inst_dir \
+            / f"{stem}_r{num_robots}_t{num_tasks}_{inst_id}.lp"
+        sp_inst = sp_inst_dir \
+            / f"{stem}_r{num_robots}_t{num_tasks}_{inst_id}_sp.lp"
 
         # Make a basic instance file and if it succeeds make the corresponding
         # shortest path version
-        run_pti = [EXE_POSS_TO_INST, "-t", f"{num_tasks}", "-et",
+        run_pti = [EXE_POSS_TO_INST,
+                   "-r", f"{num_robots}",
+                   "-t", f"{num_tasks}", "-et",
                    "-l", "warning", str(input_file), str(basic_inst)]
         run_sp = [EXE_SHORTEST_PATH, str(basic_inst), (str(sp_inst))]
         run_pti_str = " ".join(run_pti)
@@ -105,12 +128,14 @@ def generate_instances(input_file, output_dir, num_tasks,
         result = subprocess.run(run_pti)
         if result.returncode != 0:
             print(f"Error executing: {run_pti_str}", file=sys.stderr)
-            raise RuntimeError(f"Error executing: {run_pti_str}")
+            continue
+#            raise RuntimeError(f"Error executing: {run_pti_str}")
         print(f"Running: {run_sp_str}", file=sys.stderr)
         result = subprocess.run(run_sp)
         if result.returncode != 0:
             print(f"Error executing: {run_sp_str}", file=sys.stderr)
-            raise RuntimeError(f"Error executing: {run_sp_str}")
+            continue
+#            raise RuntimeError(f"Error executing: {run_sp_str}")
 
     print("========================================================")
 
