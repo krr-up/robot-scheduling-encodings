@@ -105,6 +105,11 @@ replacement(T,T',Time'-Time) :- task(T,V),task(T',V'),depends(wait,T,T'),
 % The makespan
 makespan(Time)               :- dl(bound,Time).
 
+
+% The number of distinct time points will be an upper bound on the number of
+% steps; that is the maxsteps will be some number less than this.
+timepoints(S)                :- S = #count{ Time : dl(_,Time) }.
+
 % ---------------------------------------------------------------------------------
 
 % ---------------------------------------------------------------------------------
