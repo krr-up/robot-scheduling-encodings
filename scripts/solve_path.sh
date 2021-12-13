@@ -112,12 +112,12 @@ ASPSTATS="${TESTS_DIR}/soln_to_stats.lp"
 
 
 getmodelallstats(){
-    output=$(${THIS_DIR}/extract_model.py --id -1 --rawonerror --count --fregex makespan --fregex replacement - --exec "${CLINGOFACTS} ${ASPSTATS} -")
+    output=$(${THIS_DIR}/extract_model.py --id -1 --rawonerror --count --fregex timepoints --fregex makespan --fregex replacement - --exec "${CLINGOFACTS} ${ASPSTATS} -")
     echo "$output"
 }
 
 getmodelbasic(){
-    output=$(${THIS_DIR}/extract_model.py --id -1 --rawonerror --count --fregex makespan --fregex replacement_ - --exec "${CLINGOFACTS} ${ASPSTATS} -")
+    output=$(${THIS_DIR}/extract_model.py --id -1 --rawonerror --count --fregex timepoints --fregex makespan --fregex replacement_ - --exec "${CLINGOFACTS} ${ASPSTATS} -")
     echo "$output"
 }
 
