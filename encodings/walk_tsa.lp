@@ -1,4 +1,4 @@
-%!desc! Basic walk encoding with no options
+%!desc! Walk encoding with task sequence acyclicity
 % ------------------------------------------------------------------------------
 % The walk encoding for no options
 % ------------------------------------------------------------------------------
@@ -7,6 +7,7 @@
 
 #include "common/task_assignment.lp".
 #include "common/task_sequencing_direct.lp".
+#include "common/task_sequencing_acyclic.lp".
 
 #include "walk/step_choice.lp".
 
