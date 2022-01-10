@@ -37,7 +37,7 @@ encoding(walk).
 &diff{ exit(R,S) - arrive(R,S+1) } <= -W    :- walk(R,S,V), walk(R,S+1,V'),
                                                edge(V,V',W).
 % Returning home before some bound.
-&diff{ arrive(R,S) - bound } <= 0      :- walk(R,S,V), not walk(R,S+1,_).
+&diff{ arrive(R,S) - bound } <= 0      :- walk(R,S,_), not walk(R,S+1,_).
 
 % Robot "exits" its destination node at the time bound
 %&diff{ arrive(R,S) - exit(R,S) } <= 0  :- walk(R,S,_), not walk(R,S+1,_).
