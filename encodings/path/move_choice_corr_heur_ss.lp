@@ -14,10 +14,10 @@
 
 
 #heuristic move(P,V,V')  : path_corr_d(P,V), edge(V,V',_), path(P,V''),
-                           not shortest_path(V,V'',_,V').           [1,false]
+                           not shortest_path(V,V'',_,V').           [-1,sign]
 
 #heuristic move(P,V,V')  : path_corr(_,P,V), edge(V,V',_), path(P,V''),
-                           not shortest_path(V,V'',_,V').           [1,false]
+                           not shortest_path(V,V'',_,V').           [-1,sign]
 
 
 % ------------------------------------------------------------------------------

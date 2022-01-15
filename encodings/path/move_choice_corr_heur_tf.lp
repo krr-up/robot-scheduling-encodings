@@ -6,10 +6,10 @@
 % #include "move_choice_corr.lp"
 
 #heuristic move(P,V,V')  : path_minpath_d(P,V), path(P,V''),
-                           shortest_path(V,V'',_,V'), V != V'.      [1,sign]
+                           shortest_path(V,V'',_,V'), V != V'.      [1,true]
 
 #heuristic move(P,V,V')  : path_minpath_nd(P,V), path(P,V''),
-                           shortest_path(V,V'',_,V'), V != V'.      [1,sign]
+                           shortest_path(V,V'',_,V'), V != V'.      [1,true]
 
 
 
