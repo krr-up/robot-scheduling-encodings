@@ -1,0 +1,17 @@
+% ------------------------------------------------------------------------------
+% Domain heuristics for improving move selection based on precomputed shortest
+% path relations. Handle both domain and non-domain predicate based moves.
+% ------------------------------------------------------------------------------
+% #include "minpath.lp".
+% #include "move_choice_corr.lp"
+
+#heuristic move(P,V,V')  : path_minpath_d(P,V), path(P,V''),
+                           shortest_path(V,V'',_,V'), V != V'.      [1,sign]
+
+#heuristic move(P,V,V')  : path_minpath_nd(P,V), path(P,V''),
+                           shortest_path(V,V'',_,V'), V != V'.      [1,sign]
+
+
+% ------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------
+
