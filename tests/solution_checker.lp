@@ -41,7 +41,7 @@ err(not_in_sequence(T))       :- task(T,_), not in_sequence(T).
 % Requires the following input facts:
 %
 % - Edges: edge(V1,V2,Weight).
-% - Conflicts: conflict(e,(V1,V2),(V1',V2')), conflict(v,V,V').
+% - Conflicts: conflict(V,V').
 % - Robot walks: walk(Robot,Step,Vertex,ArriveTime,ExitTime).
 % - Robot home: home(R,V)
 % - Robot start: start(R,V)
@@ -58,13 +58,9 @@ err(noedge(R,S,V,V'))               :- twalk(R,S,V,A,E), twalk(R,S+1,V',A',E'),
 err(timing(R,S,V,V',A'-E))          :- twalk(R,S,V,A,E), twalk(R,S+1,V',A',E'),
                                        edge(V,V',W), A'-E < W.
 
-err(conflict(v,(R,S,V),(R',S',V'))) :- twalk(R,S,V,A,Ex), twalk(R',S',V',A',Ex'), R != R',
-                                       conflict(v,V,V'), A <= A', Ex >= Ex'.
+err(conflict((R,S,V),(R',S',V'))) :- twalk(R,S,V,A,Ex), twalk(R',S',V',A',Ex'), R != R',
+                                       conflict(V,V'), A <= A', Ex >= Ex'.
 
-err(conflict(e,(R,S,E),(R',S',E'))) :- twalk(R,S,V1,A1,Ex1), twalk(R,S+1,V2,A2,Ex2),
-                                       twalk(R',S',V1',A1',Ex1'), twalk(R',S'+1,V2',A2',Ex2'),
-                                       E=(V1,V2), E'=(V1',V2'), R != R',
-                                       conflict(e,E,E'), Ex1 <= Ex1', A2 >= A2'.
 
 err(nothoming(R)) :- start(R,V), not home(R,V), not walk(R,_,_,_,_).
 err(nothoming(R)) :- walk(R,S,V,_,_), not walk(R,S+1,_,_,_), not home(R,V).

@@ -53,41 +53,14 @@ encoding(walk).
 %#include "walk/step_ordering.lp".
 
 % ------------------------------------------------------------------------------
-% A before B. NOTE: We are modelling a vertex as taking up some space that is
-% enough to contain a robot. Therefore we can have a robot exit a node at the
-% same instance that another robot arrives at that node. But we are also
-% allowing a robot to arrive and exit a node at the same instant. This creates a
-% problem that before(v,(R,S),(R',S')) allows R and R' to both arrive and exit
-% the node at the same instant without violating the constraint. We could add a
-% delay between arriving and exiting, but instead make sure two robots cannot
-% arrive at the same time.
-% ------------------------------------------------------------------------------
+% A before B. NOTE: We are modelling a vertex as a point (and therefore taking
+% up no space). So we can have a robot arrive and exit a vertex at the same
+% instant. Because of this if robot A is at vertex V and moves to vertex V', we
+% ensure that A arrives at V' no later than B arrives at V. So only one robot
+% can be on an edge at the same time.
 
-&diff{ arrive(R,S) - arrive(R',S') } <= -1  :- before(v,(R,S),(R',S')).
-&diff{ exit(R,S) - arrive(R',S') } <= 0     :- before(v,(R,S),(R',S')).
-
-% ------------------------------------------------------------------------------
-% Two cases for edge conflicts that are not subsumed by the vertex conflicts.
-% ------------------------------------------------------------------------------
-
-&diff{ arrive(R,S+1) - exit(R',S') } <= 0  :-
-                                       before(v,(R,S+1),(R',S'+1)),
-                                       walk(R,S,V1), walk(R,S+1,V2),
-                                       walk(R',S',V1'), walk(R',S'+1,V2'),
-                                       conflict(e,(V1,V2),(V1',V2')).
-
-&diff{ arrive(R,S+1) - exit(R',S') } <= 0  :-
-                                       before(v,(R,S),(R',S'+1)),
-                                       walk(R,S,V1), walk(R,S+1,V2),
-                                       walk(R',S',V1'), walk(R',S'+1,V2'),
-                                       conflict(e,(V1,V2),(V1',V2')).
-
-
-
-
-
-
-%%%&diff{ arrive(R,S+1) - exit(R',S') } <= 0   :- before(e,(R,S),(R',S')).
+&diff{ arrive(R,S) - arrive(R',S') } <= -1  :- before((R,S),(R',S')).
+&diff{ exit(R,S) - arrive(R',S') } <= 0     :- before((R,S),(R',S')).
 
 % ------------------------------------------------------------------------------
 % Choose a set of projections

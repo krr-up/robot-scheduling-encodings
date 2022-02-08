@@ -29,7 +29,6 @@ class Assn(Predicate):
     class Meta: name="assignment"
 
 class Conflict(Predicate):
-    ctype=ConstantField
     walk1=Walk.Field
     walk2=Walk.Field
     class Meta: name="walkconflict"
@@ -53,7 +52,6 @@ class WalkLength(Predicate):
 # -------------------------------------------------------------------------------
 # Global variables
 # -------------------------------------------------------------------------------
-g_econf = {}
 g_vconf = {}
 
 # -------------------------------------------------------------------------------
@@ -61,7 +59,7 @@ g_vconf = {}
 # -------------------------------------------------------------------------------
 
 def load_conflicts(fb):
-    global g_econf, g_vconf
+    global g_vconf
     def addconf(cdict,walk1,walk2):
         if walk1 not in cdict: cdict[walk1] = set()
         if walk2 not in cdict: cdict[walk2] = set()
@@ -70,15 +68,11 @@ def load_conflicts(fb):
 
     qConflicts = fb.query(Conflict)
     for conflict in qConflicts.all():
-        if conflict.ctype == "edge":
-            addconf(g_econf,conflict.walk1,conflict.walk2)
-        else:
-            addconf(g_vconf,conflict.walk1,conflict.walk2)
+        addconf(g_vconf,conflict.walk1,conflict.walk2)
 
-#    if g_econf or g_vconf: print("-------------")
-#    if g_econf: print("EDGE CONFLICTS: {}".format(g_econf))
+#    if g_vconf: print("-------------")
 #    if g_vconf: print("VERTEX CONFLICTS: {}".format(g_vconf))
-#    if g_econf or g_vconf: print("-------------\n")
+#    if g_vconf: print("-------------\n")
 
 
 # -------------------------------------------------------------------------------
@@ -87,15 +81,11 @@ def load_conflicts(fb):
 
 def conflict_report(walk):
     vconf = g_vconf.get(walk,None)
-    econf = g_econf.get(walk,None)
 
-    if not vconf and not econf: return ""
+    if not vconf: return ""
     vstr = "vertex: {}".format(list(vconf)) if vconf else ""
-    estr = "edge: {}".format(list(econf)) if econf else ""
 
-    if vconf and not econf: return "[{}]".format(vstr)
-    if econf and not vconf: return "[{}]".format(estr)
-    return "[{}, {}]".format(vstr,estr)
+    return "[{}]".format(vstr)
 
 # -------------------------------------------------------------------------------
 #
@@ -199,20 +189,14 @@ def main(ctrl_):
 
 #end.
 
-walkconflict(vertex,walk(R,S,V,A,Ex), walk(R',S',V',A',Ex')) :-
+walkconflict(walk(R,S,V,A,Ex), walk(R',S',V',A',Ex')) :-
                                 walk(R,S,V,A,Ex), walk(R',S',V',A',Ex'),
                                 R != R', Ex >= 0, Ex' >= 0,
-                                conflict(v,V,V'), A <= A', Ex >= Ex'.
-
-walkconflict(edge,walk(R,S,V1,A1,Ex1), walk(R',S',V1',A1',Ex1')) :-
-                                 walk(R,S,V1,A1,Ex1), walk(R,S+1,V2,A2,Ex2),
-                                 walk(R',S',V1',A1',Ex1'), walk(R',S'+1,V2',A2',Ex2'),
-                                 E=(V1,V2), E'=(V1',V2'),R != R',
-                                 conflict(e,E,E'), Ex1 <= Ex1', A2 >= A2'.
+                                conflict(V,V'), A <= A', Ex >= Ex'.
 
 #show.
-%#show walkconflict/3.
-%#show before/3.
+%#show walkconflict/2.
+%#show before/2.
 %#show dl/2.
 
 %#show on_minpath/3.

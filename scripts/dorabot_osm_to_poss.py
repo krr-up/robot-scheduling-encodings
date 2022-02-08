@@ -126,14 +126,14 @@ def print_graph(robot_speed, G, outfd):
 
         print(f"edge({n1},{n2},{tt_mms}).", file=outfd)
         print(f"edge({n2},{n1},{tt_mms}).", file=outfd)
-        conflict_e(n1, n2, n1, n2)
-        conflict_e(n1, n2, n2, n1)
-        conflict_e(n2, n1, n1, n2)
-        conflict_e(n2, n1, n2, n1)
+#        conflict_e(n1, n2, n1, n2)
+#        conflict_e(n1, n2, n2, n1)
+#        conflict_e(n2, n1, n1, n2)
+#        conflict_e(n2, n1, n2, n1)
 
     # Output the vertex conflicts
     for v in G.nodes():
-        print("conflict(v,{},{}).".format(v, v), file=outfd)
+        print("conflict({},{}).".format(v, v), file=outfd)
 
 
 # ------------------------------------------------------------------------------

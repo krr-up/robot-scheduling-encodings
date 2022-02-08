@@ -24,7 +24,7 @@
 
 #include "path/replacement_time_bound.lp".
 
-#include "path/move_choice_corr_heur.lp".
+#include "path/move_choice_corr_heur_sf.lp".
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------

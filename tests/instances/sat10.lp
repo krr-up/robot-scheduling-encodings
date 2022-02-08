@@ -16,7 +16,7 @@ edge(w3,w4,15). edge(w4,w5,15). edge(w5,w6,15). edge(w6,w7,15).
 robot(r1). start(r1,w1). home(r1,w7).
 robot(r2). start(r2,w3). home(r2,w6).
 
-conflict(e,(w2,w5),(w4,w5)).
+
 
 %#minimize{ S : walk(R,S,_), not walk(R,S+1,_) }. % Walk DL
 

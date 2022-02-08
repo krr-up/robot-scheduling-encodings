@@ -28,10 +28,10 @@ same_walk(R,T)                 :- assignment(R,T).
 
 % P visits V before P' visit V'
 { before((P,V),(P',V')) }    :- visit(P,V), visit(P',V'),
-                                conflict(v,V,V'), P < P',
+                                conflict(V,V'), P < P',
                                 not same_walk(P,P').
 before((P',V'),(P,V))        :- visit(P,V), visit(P',V'),
-                                conflict(v,V,V'), P < P',
+                                conflict(V,V'), P < P',
                                 not same_walk(P,P'),
                                 not before((P,V),(P',V')).
 
@@ -56,7 +56,7 @@ before((P',V'),(P,V))        :- visit(P,V), visit(P',V'),
 % robot move in the same directions over two nodes then one robot must complete
 % both moves before the other.
 :- move(P,V1,V2), move(P',V1',V2'),
-   conflict(v,V1,V1'), conflict(v,V2,V2'), before((P,V1),(P',V1')),
+   conflict(V1,V1'), conflict(V2,V2'), before((P,V1),(P',V1')),
    not before((P,V2),(P',V2')).
 
 
@@ -64,7 +64,7 @@ before((P',V'),(P,V))        :- visit(P,V), visit(P',V'),
 % robot move in opposite directions over two nodes then one robot must complete
 % both moves before the other.
 :- move(P,V1,V2), move(P',V1',V2'),
-   conflict(v,V1,V2'), conflict(v,V2,V1'), before((P,V1),(P',V2')),
+   conflict(V1,V2'), conflict(V2,V1'), before((P,V1),(P',V2')),
    not before((P,V2),(P',V1')).
 
 % ------------------------------------------------------------------------------

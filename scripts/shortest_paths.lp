@@ -11,8 +11,7 @@
 % Make sure edges and conflicts are symmetric
 % ------------------------------------------------------------------------------
 edge(B,A,D)                   :- edge(A,B,D).
-conflict(T,C2,C1)             :- conflict(T,C1,C2).
-conflict(e,(V1,V2),(V2',V1')) :- conflict(e,(V1,V2),(V1',V2')).
+conflict(C2,C1)               :- conflict(C1,C2).
 % ------------------------------------------------------------------------------
 % Get the vertices and endpoints
 % ------------------------------------------------------------------------------
@@ -104,7 +103,7 @@ rel_shortest_path(V',EP,D',V'') :- rel_shortest_path(V,EP,D,V'),
 #show robot/1.
 #show home/2.
 #show start/2.
-#show conflict/3.
+#show conflict/2.
 #show task/2.
 #show depends/3.
 
