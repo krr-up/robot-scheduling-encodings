@@ -25,18 +25,18 @@ edge(V',V,W) :- edge(V,V',W).
 robot(r1). home(r1,h1).  start(r1,h1).
 robot(r2). home(r2,h2).  start(r2,h2).
 
-conflict(v,V,V;v,V',V')   :- edge(V,V',_).
-conflict(e,(V,V'),(V,V')) :- edge(V,V',_).
-conflict(e,(V,V'),(V',V)) :- edge(V,V',_).
-conflict(T,R',R)          :- conflict(T,R,R').
+conflict(V,V;V',V')   :- edge(V,V',_).
 
-conflict(v,s1,s2).    conflict(v,s3,s4).
-conflict(v,s5,s6).    conflict(v,w12,w11).
-conflict(v,w10,w9).   conflict(v,w8,w7).
 
-conflict(e,(s1,w12),(s2,w11)).
-conflict(e,(s3,w10),(s4,w9)).
-conflict(e,(s5,w8),(s6,w7)).
+conflict(R',R)          :- conflict(R,R').
+
+conflict(s1,s2).    conflict(s3,s4).
+conflict(s5,s6).    conflict(w12,w11).
+conflict(w10,w9).   conflict(w8,w7).
+
+
+
+
 
 task(t1,l1). task(t2,s2).
 task(t3,p1). task(t4,l1).

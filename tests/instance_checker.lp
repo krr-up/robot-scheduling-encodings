@@ -28,35 +28,15 @@ err(invalid_edge_weight(V,V',W)) :- edge(V,V',W), W <= 0.
 % A bidirectional graph
 err(missing_edge(V,V))           :- edge(V,V',W), not edge(V',V,W).
 
-% Vertices and edges conflict with themselves
-err(missing_self_conflict(V))    :- vertex(V), not conflict(v,V,V).
-err(missing_self_conflict(V,V')) :- edge(V,V',_), not conflict(e,(V,V'),(V,V')).
+% Vertices conflict with themselves
+err(missing_self_conflict(V))    :- vertex(V), not conflict(V,V).
 
 % Conflicts are symmetric
-err(missing_v_conflict(V,V'))    :- conflict(v,V,V'), not conflict(v,V',V).
-err(missing_e_conflict((V1',V2'),(V1,V2)))
-                                 :- conflict(e,(V1,V2),(V1',V2')),
-                                    not conflict(e,(V1',V2'),(V1,V2)).
-err(missing_e_conflict((V2,V1),(V1',V2')))
-                                 :- conflict(e,(V1,V2),(V1',V2')),
-                                    not conflict(e,(V2,V1),(V1',V2')).
+err(missing_conflict(V,V'))      :- conflict(V,V'), not conflict(V',V).
 
-% Edges are assumed to be straight lines between two vertices. So: 1) no edge
-% from a vertex to itself, 2) if two pairs of connected vertices conflict then
-% the corresponding edges must conflict, 2) if two edges conflict then at least
-% one pair of the vertices must conflict.
+% Edges are assumed to be straight lines between two vertices so no edge
+% from a vertex to itself.
 err(symmetric_edge(V))           :- edge(V,V,_).
-err(missing_edge_conflict((V1,V2),(V1',V2')))
-                                 :- conflict(v,V1,V1'), conflict(v,V2,V2'),
-                                    edge(V1,V2,_), edge(V1',V2',_),
-                                    not conflict(e,(V1,V2),(V1',V2')).
-
-err(missing_edge_matching_vertex_conflict((V1,V2),(V1',V2')))
-                                 :- conflict(e,(V1,V2),(V1',V2')),
-                                    not conflict(v,V1,V1'),
-                                    not conflict(v,V2,V2'),
-                                    not conflict(v,V1,V2'),
-                                    not conflict(v,V2,V1').
 
 % ------------------------------------------------------------------------------
 % Task graph We are modelling delivering a full pallet from A to B and having a

@@ -24,7 +24,7 @@ encoding(path).
 % ------------------------------------------------------------------------------
 
 %#include "path/move_choice_open.lp".
-%#include "path/move_choice_heur.lp".
+%#include "path/move_choice_heur_sf.lp".
 
 % ------------------------------------------------------------------------------
 % Ensure that the move choices for a path form a proper sequence and ensure that
@@ -92,28 +92,16 @@ encoding(path).
 % make sure two robots cannot arrive at the same time.
 % ------------------------------------------------------------------------------
 
-&diff{ arrive(P,V) - arrive(P',V') } <= -1  :- before((P,V),(P',V')).
-&diff{ exit(P,V) - arrive(P',V') } <= 0     :- before((P,V),(P',V')).
+&diff{ arrive(P,V'') - arrive(P',V') } <= 0  :- before((P,V),(P',V')), move(P,V,V'').
 
-% ------------------------------------------------------------------------------
-% Two cases for edge conflicts that are not subsumed by the vertex conflicts.
-% ------------------------------------------------------------------------------
-
-&diff{ arrive(P,V2) - exit(P',V1') } <= 0  :-
-                                       before((P,V2),(P',V2')),
-                                       move(P,V1,V2), move(P',V1',V2'),
-                                       conflict(e,(V1,V2),(V1',V2')).
-
-&diff{ arrive(P,V2) - exit(P',V1') } <= 0  :-
-                                       before((P,V1),(P',V2')),
-                                       move(P,V1,V2), move(P',V1',V2'),
-                                       conflict(e,(V1,V2),(V1',V2')).
+%&diff{ arrive(P,V) - arrive(P',V') } <= -1  :- before((P,V),(P',V')).
+%&diff{ exit(P,V) - arrive(P',V') } <= 0     :- before((P,V),(P',V')).
 
 % ------------------------------------------------------------------------------
 % Assignment dependency checking only required for wait dependency because
 % deliver dependency is for a single robot and handled by task sequencing.
 % Note: the following relies on replacement/wait dependency being at the same
-% vertex so the before/3 constraints will ensure that the two robots cannot be
+% vertex so the before/2 constraints will ensure that the two robots cannot be
 % on the vertex at the same time.
 % ------------------------------------------------------------------------------
 

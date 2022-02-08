@@ -182,7 +182,7 @@ Edge           = simple_predicate("edge",3)
 Robot          = simple_predicate("robot",1)
 Home           = simple_predicate("home",2)
 Start          = simple_predicate("start",2)
-Conflict       = simple_predicate("conflict",3)
+Conflict       = simple_predicate("conflict",2)
 Task           = simple_predicate("task",2)
 Depends        = simple_predicate("depends",3)
 

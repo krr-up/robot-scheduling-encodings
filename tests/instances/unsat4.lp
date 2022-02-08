@@ -19,7 +19,7 @@ edge(w3,w4,15).
 robot(r1). start(r1,w1). home(r1,w4).
 robot(r2). start(r2,w4). home(r2,w1).
 
-conflict(v,w2,w3).
+conflict(w2,w3).
 
 % #minimize{ S : walk(R,S,_), not walk(R,S+1,_) }. % Walk DL
 #defined walk/3.
