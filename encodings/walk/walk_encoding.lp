@@ -23,25 +23,21 @@ encoding(walk).
 % arrives and exits the vertex associated with each step.
 % ------------------------------------------------------------------------------
 
-% Cannot exit a vertex before you arrive at it. Travel time must satisfy the
-% edge weight.
-
-%% NOTE: Robots arrive at their starting location at time 0 (otherwise could
-%%have late appearing robots).
-
+% Robots arrive at their starting location at time 0 (otherwise we could have
+% late appearing robots).
 &diff{ arrive(R,0) - 0 } <= 0               :- walk(R,0,_).
 &diff{ 0 - arrive(R,0) } <= 0               :- walk(R,0,_).
 
+% A robot must arrive before it exits a vertex
 &diff{ arrive(R,S) - exit(R,S) } <= 0       :- walk(R,S,_).
 
+% The edge weight is the travel time between vertecies
 &diff{ exit(R,S) - arrive(R,S+1) } <= -W    :- walk(R,S,V), walk(R,S+1,V'),
                                                edge(V,V',W).
 % Returning home before some bound.
 &diff{ arrive(R,S) - bound } <= 0      :- walk(R,S,_), not walk(R,S+1,_).
 
 % Robot "exits" its destination node at the time bound
-%&diff{ arrive(R,S) - exit(R,S) } <= 0  :- walk(R,S,_), not walk(R,S+1,_).
-
 &diff{ exit(R,S) - bound } <= 0        :- walk(R,S,_), not walk(R,S+1,_).
 &diff{ bound - exit(R,S) } <= 0        :- walk(R,S,_), not walk(R,S+1,_).
 
@@ -58,9 +54,9 @@ encoding(walk).
 % instant. Because of this if robot A is at vertex V and moves to vertex V', we
 % ensure that A arrives at V' no later than B arrives at V. So only one robot
 % can be on an edge at the same time.
+% ------------------------------------------------------------------------------
 
-&diff{ arrive(R,S) - arrive(R',S') } <= -1  :- before((R,S),(R',S')).
-&diff{ exit(R,S) - arrive(R',S') } <= 0     :- before((R,S),(R',S')).
+&diff{ arrive(R,S+1) - arrive(R',S') } <= 0 :- before((R,S),(R',S')).
 
 % ------------------------------------------------------------------------------
 % Choose a set of projections
@@ -71,12 +67,13 @@ encoding(walk).
 % ------------------------------------------------------------------------------
 % Timing based on the projection points
 % ------------------------------------------------------------------------------
-#const epsilon=10.
+#const kappa=10.
 
-&diff{ arrive(R,S) - exit(R,S) } <= -epsilon  :- proj(T,S), assignment(R,T).
-&diff{ exit(R,S) - exit(R',S') } <= -epsilon  :- proj(T,S), assignment(R,T),
-                                                 proj(T',S'), assignment(R',T'),
-                                                 depends(_,T,T').
+&diff{ arrive(R,S) - exit(R,S) } <= -kappa  :- proj(T,S), assignment(R,T).
+
+&diff{ arrive(R,S) - exit(R',S') } <= -2*kappa  :- proj(T,S), assignment(R,T),
+                                                   proj(T',S'), assignment(R',T'),
+                                                   depends(D,T,T'), D != deliver.
 
 
 % ------------------------------------------------------------------------------

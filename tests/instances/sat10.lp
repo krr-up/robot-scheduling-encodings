@@ -22,7 +22,3 @@ robot(r2). start(r2,w3). home(r2,w6).
 
 #defined task/2.
 #defined depends/3.
-
-
-#show diffo/2.
-#show before/3.
