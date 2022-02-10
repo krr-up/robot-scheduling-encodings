@@ -47,7 +47,7 @@ encoding(path).
 &diff{ exit(P,V) - arrive(P,V') } <= -W      :- move(P,V,V'), edge(V,V',W).
 
 % Action time
-&diff{ arrive(T,V) - exit(T,V) } <= -epsilon :- visit(T,V), task(T,V).
+&diff{ arrive(T,V) - exit(T,V) } <= -kappa :- visit(T,V), task(T,V).
 
 % Match end of one task and start of next
 &diff{ exit(P,V) - arrive(P',V) } <= 0       :- path_sequence(P,P'), path(P,V).
@@ -96,17 +96,21 @@ encoding(path).
 
 &diff{ arrive(P,V'') - arrive(P',V') } <= 0  :- before((P,V),(P',V')), move(P,V,V'').
 
+% ------------------------------------------------------------------------------
+% Task completion dependency check. When some robot R finishes task T (at V)
+% then robot R' has at least kappa time to finish executing T' (at V'). Note:
+% exit(T,V) doesn't force the robot to actually leave the node. That only
+% happens at exit(T'',V) for the subsequent task T'' in robot R's task/path
+% sequence.
+% ------------------------------------------------------------------------------
+
+&diff{ exit(T,V) - exit(T',V')} <= -kappa  :- depends(D,T,T'), D != deliver,
+                                              task(T,V), task(T',V').
+
+
+
 
 % ------------------------------------------------------------------------------
-% Assignment dependency checking only required for wait dependency because
-% deliver dependency is for a single robot and handled by task sequencing.
-% Note: the following relies on replacement/wait dependency being at the same
-% vertex so the before/2 constraints will ensure that the two robots cannot be
-% on the vertex at the same time.
 % ------------------------------------------------------------------------------
 
-&diff{ exit(T,V) - arrive(T',V')} <= 0  :- depends(wait,T,T'),
-                                           task(T,V), task(T',V').
 
-% ------------------------------------------------------------------------------
-% ------------------------------------------------------------------------------
