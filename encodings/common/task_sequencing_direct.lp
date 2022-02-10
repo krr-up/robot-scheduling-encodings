@@ -25,7 +25,8 @@
 % sequence).
 % ------------------------------------------------------------------------------
 
-0 { task_sequence(T,T') : depends(deliver,T',_) } 1 :- depends(deliver,_,T).
+0 { task_sequence(T,T') : task(T',_), T != T', not depends(deliver,_,T') } 1 :-
+                                            task(T,_), not depends(deliver,T,_).
 task_sequence(T,T')                                 :- depends(deliver,T,T').
 
 :- task_sequence(T,T'),
