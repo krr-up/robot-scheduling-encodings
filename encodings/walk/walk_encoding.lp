@@ -74,9 +74,9 @@ encoding(walk).
 #const epsilon=10.
 
 &diff{ arrive(R,S) - exit(R,S) } <= -epsilon  :- proj(T,S), assignment(R,T).
-&diff{ exit(R',S') - exit(R,S) } <= 0         :- proj(T,S), assignment(R,T),
+&diff{ exit(R,S) - exit(R',S') } <= -epsilon  :- proj(T,S), assignment(R,T),
                                                  proj(T',S'), assignment(R',T'),
-                                                 depends(_,T',T).
+                                                 depends(_,T,T').
 
 
 % ------------------------------------------------------------------------------
