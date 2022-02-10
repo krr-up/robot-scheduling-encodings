@@ -35,10 +35,10 @@ encoding(path).
 
 % ------------------------------------------------------------------------------
 % Travel times must satisfy edge weights. Transition between tasks must satisfy
-% epsilon time delay.
+% kappa time delay.
 % ------------------------------------------------------------------------------
 
-#const epsilon=10.
+#const kappa=10.
 
 % Travel times along a vertex and edge - note: a robot "exits" its final
 % destination at the upper bound.
@@ -82,20 +82,20 @@ encoding(path).
 %#include "path/visit_ordering_extra.lp".
 
 % ------------------------------------------------------------------------------
-% Handle the before((P,V),(P',V')) predicate.  NOTE: We are modelling a vertex
-% as taking up space enough to contain a robot. Therefore we can have a robot
-% exit a node at the same instance that another robot arrives at that node. But
-% we are also allowing a robot to arrive and exit a node at the same
-% instant. This creates a problem that before((P,V),(P',V)) allows P and P' to
-% both arrive and exit the node at the same instant without violating the
-% constraint. We could add a delay between arriving and exiting, but instead
-% make sure two robots cannot arrive at the same time.
+% Map the before((P,V),(P',V')) predicates into appropriate timing
+% constraints. The before predicates are only created for two paths where the
+% two paths are assigned to distinct robots. So if a robot R arrives at vertex
+% V (as part of path P) before a robot R' arrives at vertex V' (as part of path
+% P') then R must arrive at the subsequent vertex V'' on path P no later than
+% R' arrives at V'.
+%
+% NOTE: This is not the most conservative assumption to avoid collisions. In
+% particular this make an assumption that robots move uniformly and edges are
+% at least the a robot's width apart.
 % ------------------------------------------------------------------------------
 
 &diff{ arrive(P,V'') - arrive(P',V') } <= 0  :- before((P,V),(P',V')), move(P,V,V'').
 
-%&diff{ arrive(P,V) - arrive(P',V') } <= -1  :- before((P,V),(P',V')).
-%&diff{ exit(P,V) - arrive(P',V') } <= 0     :- before((P,V),(P',V')).
 
 % ------------------------------------------------------------------------------
 % Assignment dependency checking only required for wait dependency because
