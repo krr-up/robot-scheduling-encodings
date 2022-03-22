@@ -71,7 +71,12 @@ encoding(walk).
 
 &diff{ arrive(R,S) - exit(R,S) } <= -kappa  :- proj(T,S), assignment(R,T).
 
-&diff{ arrive(R,S) - exit(R',S') } <= -2*kappa  :- proj(T,S), assignment(R,T),
+
+%&diff{ arrive(R,S) - exit(R',S') } <= -2*kappa  :- proj(T,S), assignment(R,T),
+%                                                   proj(T',S'), assignment(R',T'),
+%                                                   depends(D,T,T'), D != deliver.
+
+&diff{ arrive(R,S) - arrive(R',S') } <= -kappa  :- proj(T,S), assignment(R,T),
                                                    proj(T',S'), assignment(R',T'),
                                                    depends(D,T,T'), D != deliver.
 

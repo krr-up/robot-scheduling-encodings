@@ -265,8 +265,10 @@ def main():
     filter_nodes(fb, robot_nodes)
 
     out_fb.add(fb.query(Edge).all())
-    out_fb.add(fb.query(ConflictV).all())
-    out_fb.add(fb.query(ConflictE).all())
+    out_fb.add(fb.query(Conflict).all())
+
+    #out_fb.add(fb.query(ConflictV).all())
+    #out_fb.add(fb.query(ConflictE).all())
 
 #    diff_fb = orig_fb - fb
 #    print(f"Removed:\n{diff_fb.asp_str()}")
@@ -286,8 +288,11 @@ def main():
 # main
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
-
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except ValueError as e:
+        print(f"{e}", file=sys.stderr)
+        sys.exit(1)
 
 #    import cProfile, pstats
 #    profiler = cProfile.Profile()

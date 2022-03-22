@@ -10,6 +10,7 @@
 #
 # ------------------------------------------------------------------------------
 
+import sys
 import logging
 import math
 from lxml import etree
@@ -77,7 +78,7 @@ def on_way(G,way):
                 G.add_edge(prev, curr, weight=dist)
             prev = curr
     if not prev:
-        raise RuntimeError("Missing nodes in wid {}".format(wid))
+        g_logger.warning(f"Empty way='{wid}'")
 
 
 # ------------------------------------------------------------------------------
