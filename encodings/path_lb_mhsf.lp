@@ -1,5 +1,5 @@
 %!flags! --heuristic=Domain
-%!desc! Task sequence acyclicity, corridor limited moves, lower bounds, and move heuristic ("1,true" shortest path and "1,false" otherwise)
+%!desc! Use lower bounds and move heuristic
 % ------------------------------------------------------------------------------
 % The "fast" path encoding with no options.
 % ------------------------------------------------------------------------------
@@ -8,12 +8,10 @@
 
 #include "common/task_assignment.lp".
 #include "common/task_sequencing_direct.lp".
-#include "common/task_sequencing_acyclic.lp".
-#include "common/task_sequencing_global_acyclic.lp".
 
 #include "path/task_to_path.lp".
 
-#include "path/move_choice_corr.lp".
+#include "path/move_choice_open.lp".
 
 #include "path/move_sequencing.lp".
 
@@ -23,7 +21,7 @@
 
 #include "path/path_encoding_lb.lp".
 
-#include "path/move_choice_corr_heur_tf.lp".
+#include "path/move_choice_open_heur_sf.lp".
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------

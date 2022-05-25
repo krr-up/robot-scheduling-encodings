@@ -15,9 +15,7 @@ edge(w3,w4,15).
 robot(r1). start(r1,w2). home(r1,w4).
 robot(r2). start(r2,w1). home(r2,w3).
 
-% Timing restriction that is not satisfiable for the fast encoding (because we
-% don't track exit times so have to have more restrictive arrival times) but is
-% satisfiable for the path and walk encodings.
+% Timing restriction that is not satisfiable for the path encoding.
 
 dl(arrive(r1,w3),45).
 dl(arrive(r2,w2),44).

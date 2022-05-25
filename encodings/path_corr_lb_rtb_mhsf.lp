@@ -1,5 +1,5 @@
 %!flags! --heuristic=Domain
-%!desc! Task sequence acyclicty, corridor limited moves, move heuristic
+%!desc! Task sequence acyclicty, corridor limited moves, use lower bounds, move heuristic, and bounded replacement time between item pickup and replacement empty pallet putdown
 % ------------------------------------------------------------------------------
 % The "fast" path encoding with no options.
 % ------------------------------------------------------------------------------
@@ -8,7 +8,6 @@
 
 #include "common/task_assignment.lp".
 #include "common/task_sequencing_direct.lp".
-#include "common/task_sequencing_acyclic.lp".
 
 #include "path/task_to_path.lp".
 
@@ -20,7 +19,11 @@
 
 #include "path/path_encoding.lp".
 
-#include "path/move_choice_corr_heur.lp".
+#include "path/path_encoding_lb.lp".
+
+#include "path/replacement_time_bound.lp".
+
+#include "path/move_choice_corr_heur_sf.lp".
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------

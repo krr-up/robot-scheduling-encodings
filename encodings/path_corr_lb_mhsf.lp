@@ -1,5 +1,5 @@
 %!flags! --heuristic=Domain
-%!desc! Use lower bounds and move heuristic
+%!desc! Corridor limited moves, lower bounds, and move heuristic
 % ------------------------------------------------------------------------------
 % The "fast" path encoding with no options.
 % ------------------------------------------------------------------------------
@@ -11,7 +11,7 @@
 
 #include "path/task_to_path.lp".
 
-#include "path/move_choice_open.lp".
+#include "path/move_choice_corr.lp".
 
 #include "path/move_sequencing.lp".
 
@@ -21,7 +21,7 @@
 
 #include "path/path_encoding_lb.lp".
 
-#include "path/move_choice_open_heur.lp".
+#include "path/move_choice_corr_heur_sf.lp".
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------

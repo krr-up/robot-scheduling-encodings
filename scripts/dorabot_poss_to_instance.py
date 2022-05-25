@@ -48,23 +48,16 @@ class Edge(Predicate):
     class Meta:
         name = "edge"
 
-class ConflictV(Predicate):
-    v = refine_field(ConstantField, ["v"])
+class Conflict(Predicate):
     n1 = IntegerField
     n2 = IntegerField
     class Meta:
         name = "conflict"
 
-class ConflictE(Predicate):
-    e = refine_field(ConstantField, ["e"])
-    e1 = (IntegerField, IntegerField)
-    e2 = (IntegerField, IntegerField)
-    class Meta:
-        name = "conflict"
 
 
 UNIFIER = (PossHome, PossManipulator, PossEmptyPallet, PossStorage,
-           Edge, ConflictV, ConflictE)
+           Edge, Conflict)
 
 # ------------------------------------------------------------------------------
 #
@@ -121,20 +114,13 @@ def filter_nodes(fb, reachable_from):
     # Remove any edge or conflict that includes a bad node
     bad_edges = fb.query(Edge).\
         where(in_(Edge.nfrom, bad_nodes) | in_(Edge.nto, bad_nodes))
-    bad_vconflicts = fb.query(ConflictV).\
-        where(in_(ConflictV.n1, bad_nodes) | in_(ConflictV.n2, bad_nodes))
-    bad_econflicts = fb.query(ConflictE).\
-        where(in_(ConflictE.e1[0], bad_nodes) |
-              in_(ConflictE.e1[1], bad_nodes) |
-              in_(ConflictE.e2[0], bad_nodes) |
-              in_(ConflictE.e2[0], bad_nodes))
+    bad_vconflicts = fb.query(Conflict).\
+        where(in_(Conflict.n1, bad_nodes) | in_(Conflict.n2, bad_nodes))
 
     edcount = bad_edges.delete()
     g_logger.debug(f"Deleted {edcount} edges")
     vccount = bad_vconflicts.delete()
     g_logger.debug(f"Deleted {vccount} node conflicts")
-    eccount = bad_econflicts.delete()
-    g_logger.debug(f"Deleted {eccount} edge conflicts")
 
 
 # ------------------------------------------------------------------------------
@@ -279,8 +265,10 @@ def main():
     filter_nodes(fb, robot_nodes)
 
     out_fb.add(fb.query(Edge).all())
-    out_fb.add(fb.query(ConflictV).all())
-    out_fb.add(fb.query(ConflictE).all())
+    out_fb.add(fb.query(Conflict).all())
+
+    #out_fb.add(fb.query(ConflictV).all())
+    #out_fb.add(fb.query(ConflictE).all())
 
 #    diff_fb = orig_fb - fb
 #    print(f"Removed:\n{diff_fb.asp_str()}")
@@ -300,8 +288,11 @@ def main():
 # main
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
-
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except ValueError as e:
+        print(f"{e}", file=sys.stderr)
+        sys.exit(1)
 
 #    import cProfile, pstats
 #    profiler = cProfile.Profile()

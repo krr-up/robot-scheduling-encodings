@@ -23,25 +23,21 @@ encoding(walk).
 % arrives and exits the vertex associated with each step.
 % ------------------------------------------------------------------------------
 
-% Cannot exit a vertex before you arrive at it. Travel time must satisfy the
-% edge weight.
-
-%% NOTE: Robots arrive at their starting location at time 0 (otherwise could
-%%have late appearing robots).
-
+% Robots arrive at their starting location at time 0 (otherwise we could have
+% late appearing robots).
 &diff{ arrive(R,0) - 0 } <= 0               :- walk(R,0,_).
 &diff{ 0 - arrive(R,0) } <= 0               :- walk(R,0,_).
 
+% A robot must arrive before it exits a vertex
 &diff{ arrive(R,S) - exit(R,S) } <= 0       :- walk(R,S,_).
 
+% The edge weight is the travel time between vertecies
 &diff{ exit(R,S) - arrive(R,S+1) } <= -W    :- walk(R,S,V), walk(R,S+1,V'),
                                                edge(V,V',W).
 % Returning home before some bound.
 &diff{ arrive(R,S) - bound } <= 0      :- walk(R,S,_), not walk(R,S+1,_).
 
 % Robot "exits" its destination node at the time bound
-%&diff{ arrive(R,S) - exit(R,S) } <= 0  :- walk(R,S,_), not walk(R,S+1,_).
-
 &diff{ exit(R,S) - bound } <= 0        :- walk(R,S,_), not walk(R,S+1,_).
 &diff{ bound - exit(R,S) } <= 0        :- walk(R,S,_), not walk(R,S+1,_).
 
@@ -53,41 +49,14 @@ encoding(walk).
 %#include "walk/step_ordering.lp".
 
 % ------------------------------------------------------------------------------
-% A before B. NOTE: We are modelling a vertex as taking up some space that is
-% enough to contain a robot. Therefore we can have a robot exit a node at the
-% same instance that another robot arrives at that node. But we are also
-% allowing a robot to arrive and exit a node at the same instant. This creates a
-% problem that before(v,(R,S),(R',S')) allows R and R' to both arrive and exit
-% the node at the same instant without violating the constraint. We could add a
-% delay between arriving and exiting, but instead make sure two robots cannot
-% arrive at the same time.
+% A before B. NOTE: We are modelling a vertex as a point (and therefore taking
+% up no space). So we can have a robot arrive and exit a vertex at the same
+% instant. Because of this if robot A is at vertex V and moves to vertex V', we
+% ensure that A arrives at V' no later than B arrives at V. So only one robot
+% can be on an edge at the same time.
 % ------------------------------------------------------------------------------
 
-&diff{ arrive(R,S) - arrive(R',S') } <= -1  :- before(v,(R,S),(R',S')).
-&diff{ exit(R,S) - arrive(R',S') } <= 0     :- before(v,(R,S),(R',S')).
-
-% ------------------------------------------------------------------------------
-% Two cases for edge conflicts that are not subsumed by the vertex conflicts.
-% ------------------------------------------------------------------------------
-
-&diff{ arrive(R,S+1) - exit(R',S') } <= 0  :-
-                                       before(v,(R,S+1),(R',S'+1)),
-                                       walk(R,S,V1), walk(R,S+1,V2),
-                                       walk(R',S',V1'), walk(R',S'+1,V2'),
-                                       conflict(e,(V1,V2),(V1',V2')).
-
-&diff{ arrive(R,S+1) - exit(R',S') } <= 0  :-
-                                       before(v,(R,S),(R',S'+1)),
-                                       walk(R,S,V1), walk(R,S+1,V2),
-                                       walk(R',S',V1'), walk(R',S'+1,V2'),
-                                       conflict(e,(V1,V2),(V1',V2')).
-
-
-
-
-
-
-%%%&diff{ arrive(R,S+1) - exit(R',S') } <= 0   :- before(e,(R,S),(R',S')).
+&diff{ arrive(R,S+1) - arrive(R',S') } <= 0 :- before((R,S),(R',S')).
 
 % ------------------------------------------------------------------------------
 % Choose a set of projections
@@ -98,12 +67,14 @@ encoding(walk).
 % ------------------------------------------------------------------------------
 % Timing based on the projection points
 % ------------------------------------------------------------------------------
-#const epsilon=10.
+#const kappa=10.
 
-&diff{ arrive(R,S) - exit(R,S) } <= -epsilon  :- proj(T,S), assignment(R,T).
-&diff{ exit(R',S') - exit(R,S) } <= 0         :- proj(T,S), assignment(R,T),
-                                                 proj(T',S'), assignment(R',T'),
-                                                 depends(_,T',T).
+&diff{ arrive(R,S) - exit(R,S) } <= -kappa  :- proj(T,S), assignment(R,T).
+
+&diff{ arrive(R,S) - arrive(R',S') } <= -kappa  :- proj(T,S), assignment(R,T),
+                                                   proj(T',S'), assignment(R',T'),
+                                                   depends(D,T,T'), D != deliver,
+                                                   R != R'.
 
 
 % ------------------------------------------------------------------------------

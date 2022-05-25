@@ -24,7 +24,7 @@ encoding(path).
 % ------------------------------------------------------------------------------
 
 %#include "path/move_choice_open.lp".
-%#include "path/move_choice_heur.lp".
+%#include "path/move_choice_heur_sf.lp".
 
 % ------------------------------------------------------------------------------
 % Ensure that the move choices for a path form a proper sequence and ensure that
@@ -35,10 +35,10 @@ encoding(path).
 
 % ------------------------------------------------------------------------------
 % Travel times must satisfy edge weights. Transition between tasks must satisfy
-% epsilon time delay.
+% kappa time delay.
 % ------------------------------------------------------------------------------
 
-#const epsilon=10.
+#const kappa=10.
 
 % Travel times along a vertex and edge - note: a robot "exits" its final
 % destination at the upper bound.
@@ -47,7 +47,7 @@ encoding(path).
 &diff{ exit(P,V) - arrive(P,V') } <= -W      :- move(P,V,V'), edge(V,V',W).
 
 % Action time
-&diff{ arrive(T,V) - exit(T,V) } <= -epsilon :- visit(T,V), task(T,V).
+&diff{ arrive(T,V) - exit(T,V) } <= -kappa :- visit(T,V), task(T,V).
 
 % Match end of one task and start of next
 &diff{ exit(P,V) - arrive(P',V) } <= 0       :- path_sequence(P,P'), path(P,V).
@@ -82,43 +82,35 @@ encoding(path).
 %#include "path/visit_ordering_extra.lp".
 
 % ------------------------------------------------------------------------------
-% Handle the before((P,V),(P',V')) predicate.  NOTE: We are modelling a vertex
-% as taking up space enough to contain a robot. Therefore we can have a robot
-% exit a node at the same instance that another robot arrives at that node. But
-% we are also allowing a robot to arrive and exit a node at the same
-% instant. This creates a problem that before((P,V),(P',V)) allows P and P' to
-% both arrive and exit the node at the same instant without violating the
-% constraint. We could add a delay between arriving and exiting, but instead
-% make sure two robots cannot arrive at the same time.
+% Map the before((P,V),(P',V')) predicates into appropriate timing
+% constraints. The before predicates are only created for two paths where the
+% two paths are assigned to distinct robots. So if a robot R arrives at vertex
+% V (as part of path P) before a robot R' arrives at vertex V' (as part of path
+% P') then R must arrive at the subsequent vertex V'' on path P no later than
+% R' arrives at V'.
+%
+% NOTE: This is not the most conservative assumption to avoid collisions. In
+% particular this make an assumption that robots move uniformly and edges are
+% at least the a robot's width apart.
 % ------------------------------------------------------------------------------
 
-&diff{ arrive(P,V) - arrive(P',V') } <= -1  :- before((P,V),(P',V')).
-&diff{ exit(P,V) - arrive(P',V') } <= 0     :- before((P,V),(P',V')).
+&diff{ arrive(P,V'') - arrive(P',V') } <= 0  :- before((P,V),(P',V')), move(P,V,V'').
 
 % ------------------------------------------------------------------------------
-% Two cases for edge conflicts that are not subsumed by the vertex conflicts.
+% Task completion dependency check. When some robot R finishes task T (at V)
+% then robot R' has at least kappa time to finish executing T' (at V'). Note:
+% exit(T,V) doesn't force the robot to actually leave the node. That only
+% happens at exit(T'',V) for the subsequent task T'' in robot R's task/path
+% sequence.
 % ------------------------------------------------------------------------------
 
-&diff{ arrive(P,V2) - exit(P',V1') } <= 0  :-
-                                       before((P,V2),(P',V2')),
-                                       move(P,V1,V2), move(P',V1',V2'),
-                                       conflict(e,(V1,V2),(V1',V2')).
+&diff{ exit(T,V) - exit(T',V')} <= -kappa  :- depends(D,T,T'), D != deliver,
+                                              task(T,V), task(T',V').
 
-&diff{ arrive(P,V2) - exit(P',V1') } <= 0  :-
-                                       before((P,V1),(P',V2')),
-                                       move(P,V1,V2), move(P',V1',V2'),
-                                       conflict(e,(V1,V2),(V1',V2')).
 
-% ------------------------------------------------------------------------------
-% Assignment dependency checking only required for wait dependency because
-% deliver dependency is for a single robot and handled by task sequencing.
-% Note: the following relies on replacement/wait dependency being at the same
-% vertex so the before/3 constraints will ensure that the two robots cannot be
-% on the vertex at the same time.
-% ------------------------------------------------------------------------------
 
-&diff{ exit(T,V) - arrive(T',V')} <= 0  :- depends(wait,T,T'),
-                                           task(T,V), task(T',V').
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------
+
+

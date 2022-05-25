@@ -14,7 +14,10 @@
 % ------------------------------------------------------------------------------
 step(0..maxstep).
 
-0 { walk(R,S,V) : edge(V,_,_) } 1 :- robot(R), step(S).
+vertex(V) :- edge(V,_,_).
+vertex(V) :- edge(_,V,_).
+
+0 { walk(R,S,V) : vertex(V) } 1 :- robot(R), step(S).
 
 % The walk forms a sequence that starts at the robot's current position and ends
 % at the robot's home position.
