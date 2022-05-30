@@ -6,7 +6,7 @@
 #include "walk/show.lp".
 
 #include "common/task_assignment.lp".
-#include "common/task_sequencing_direct.lp".
+#include "common/task_sequencing.lp".
 
 #include "walk/step_choice.lp".
 

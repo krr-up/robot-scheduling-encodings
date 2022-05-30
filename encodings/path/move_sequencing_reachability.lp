@@ -1,15 +1,12 @@
 % ------------------------------------------------------------------------------
-% Solve the task sequence problem without any DL routing. The assignment without
-% DL contrainsts or proper ordering is only a pre or partial assignment. That is
-% it could contain cycles or different sorts.
+% Use reachability to make sure that the moves for each path are not
+% cyclic. Work backwards from the path destination (ie the predicate
+% "path(P,V)") to the source.
 % ------------------------------------------------------------------------------
 
-#include "common/show_basic.lp".
-
-#include "common/task_assignment.lp".
-#include "common/task_sequencing_direct.lp".
-
-
+path_reachable(P,V) :- path(P,V).
+path_reachable(P,V) :- path_reachable(P,V'), move(P,V,V').
+:- move(P,_,V), not path_reachable(P,V).
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------

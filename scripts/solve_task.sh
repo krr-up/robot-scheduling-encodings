@@ -5,15 +5,43 @@ THIS_DIR="$( cd "$( dirname ${SCRIPT} )" && pwd )"
 TESTS_DIR="$( cd "${THIS_DIR}/../tests" && pwd )"
 ENCODING_DIR="$( cd "${THIS_DIR}/../encodings" && pwd )"
 
+BASE="task_assn"
 VARIANT="pre"
 POSITIONAL=()
 OPTIONS=""
 
 flags(){
-    local line=$(head -n 1 $1)
-    local flags=$(echo $line | sed -n "s/^%!flags!\s*\(.*\)$/\1/p")
-    echo "$flags"
+    local flags=$(cat $1 | sed -n "s/^%!flags!\s*\(.*\)$/\1/p")
+    echo $(echo $flags | tr '\n' ' ')
     return 0
+}
+
+description(){
+    local desc=$(cat $1 | sed -n "s/^%!desc!\s*\(.*\)$/\1/p")
+    echo $(echo $desc | tr '\n' ' ')
+    return 0
+}
+
+
+
+list_variants(){
+    for v in "${ENCODING_DIR}/${BASE}_"*.lp; do
+        options=$(flags $v)
+        comment=$(description $v)
+        v="${v##*/${BASE}_}"
+        v="${v%.lp}"
+        output="       - $v"
+        if [ "$options" != "" ]; then
+            output="$output [ $options ]"
+        fi
+        if [ "$comment" != "" ]; then
+            echo "$output: "
+            comment=$(echo $comment | fold -w 70 -s | sed 's/^/            /')
+            echo "$comment"
+        else
+            echo "$output"
+        fi
+    done
 }
 
 usage(){
@@ -22,6 +50,9 @@ usage(){
     echo "       -d            enable domain heuristics"
     echo "       -o <output>     output options: raw|text|tasks|rdisplay|display  [raw]"
     echo "       -v <variant>    different variant [pre]"
+    echo ""
+    echo "       Variants:"
+    list_variants
     exit 1
 }
 
@@ -56,7 +87,6 @@ if [ "$1" == "" ]; then
     usage
 fi
 
-BASE="task_assn"
 ASP="${ENCODING_DIR}/${BASE}_${VARIANT}.lp"
 
 CLINGOFACTS="${THIS_DIR}/../scripts/clingo-facts.sh"

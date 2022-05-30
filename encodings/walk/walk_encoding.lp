@@ -10,7 +10,7 @@ encoding(walk).
 % ------------------------------------------------------------------------------
 
 %#include "common/task_assignment.lp".
-%#include "common/task_sequencing_direct.lp".
+%#include "common/task_sequencing.lp".
 
 % ------------------------------------------------------------------------------
 % Construct the walk for each robot

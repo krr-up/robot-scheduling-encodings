@@ -11,7 +11,7 @@ encoding(path).
 % ------------------------------------------------------------------------------
 
 %#include "common/task_assignment.lp".
-%#include "common/task_sequencing_direct.lp".
+%#include "common/task_sequencing.lp".
 
 % ------------------------------------------------------------------------------
 % Map each task, task assignment, and task sequence to paths.
