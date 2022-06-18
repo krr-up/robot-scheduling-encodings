@@ -6,11 +6,9 @@
 % Input facts: task_sequence/2.
 % ------------------------------------------------------------------------------
 
-task_seq_reachable(T)  :- task_sequence(T,_), not task_sequence(_,T).
-task_seq_reachable(T') :- task_seq_reachable(T), depends(deliver,T,T').
-task_seq_reachable(T') :- task_seq_reachable(T), task_sequence(T,T'), not depends(deliver,T,T').
-
-:- task_sequence(_,T), not task_seq_reachable(T).
+task_reachable(T)  :- task_sequence(T,_), not task_sequence(_,T).
+task_reachable(T') :- task_reachable(T), task_sequence(T,T').
+:- task_sequence(T,_), not task_reachable(T).
 
 % ------------------------------------------------------------------------------
 % ------------------------------------------------------------------------------

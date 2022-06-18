@@ -47,7 +47,7 @@ encoding(path).
 &diff{ exit(P,V) - arrive(P,V') } <= -W      :- move(P,V,V'), edge(V,V',W).
 
 % Action time
-&diff{ arrive(T,V) - exit(T,V) } <= -kappa :- visit(T,V), task(T,V).
+&diff{ arrive(T,V) - exit(T,V) } <= -kappa :- task(T,V).
 
 % Match end of one task and start of next
 &diff{ exit(P,V) - arrive(P',V) } <= 0       :- path_sequence(P,P'), path(P,V).
