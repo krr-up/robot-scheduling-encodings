@@ -1,0 +1,32 @@
+%!flags! --heuristic=Domain
+%!desc! Task sequence reachability, path move sequence reachability, corridor limited moves, lower-bounds, and move heuristics ("1,sign" shortest path and "1,false" otherwise)
+% ------------------------------------------------------------------------------
+% The "fast" path encoding with no options.
+% ------------------------------------------------------------------------------
+
+#include "path/show_basic.lp".
+
+#include "common/task_assignment.lp".
+#include "common/task_sequencing.lp".
+#include "common/task_sequencing_reachability.lp".
+
+#include "path/task_to_path.lp".
+
+#include "path/move_choice_corr.lp".
+
+#include "path/move_sequencing.lp".
+#include "path/move_sequencing_reachability.lp".
+
+#include "path/visit_ordering.lp".
+
+#include "path/path_encoding.lp".
+
+#include "path/path_encoding_lb.lp".
+
+#include "path/replacement_time_bound.lp".
+
+#include "path/move_choice_corr_heur_nf.lp".
+
+% ------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------
+
