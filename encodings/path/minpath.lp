@@ -26,6 +26,9 @@ path_minpath_d(T,V'')   :- path_minpath_d(T,V), task(T,V'),
 % assigned task, 3) a robot that's finished a putdown task and moving on to the
 % next pickup task. For robots returning home there are two sub-cases: 1) they
 % have no assignments, 2) they have finished their assigned tasks.
+%
+% path_minpath(X,Y,V) can be read as: if a robot has just finished task X and is
+% now executing task Y then V is on the shortest path to task Y's endpoint.
 % ------------------------------------------------------------------------------
 
 path_minpath(R,R,V)     :- start(R,V).

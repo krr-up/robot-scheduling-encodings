@@ -33,11 +33,17 @@ path_corr_d(T,V') :- path_minpath_d(T,V), edge(V,V',_), task(T,V''),
 
 % ------------------------------------------------------------------------------
 % For pickup tasks the starting location can vary depending on the task
-% sequence. So we can't define the corridor using only domain
-% predicates. Instead define a non-domain path corridor and separately define a
-% larger grounding that encompasses all possibilities. The move choice is then
-% defined over the domain grounding and subsequently restricted to the
-% non-domain corridor.
+% sequence. So we can't simply define the corridor using only domain predicates
+% like the path_corr_d/2 case. Instead we define a domain predicate path_corr/3
+% in terms of the domain predicate path_minpath/3.
+%
+% path_corr(X,Y,V) can be read as: if a robot has just finished task X and is now
+% executing task Y then V is on the corridor to Y's endpoint.
+%
+% Move choices are then defined in terms of path_corr/3 and edge/3 (which are
+% both domain predicates). Constraints are then defined in terms of the
+% non-domain predicate path_sequence/2 that restrict the moves to the actual
+% task sequences.
 % ------------------------------------------------------------------------------
 
 path_corr(P,P',V)  :- path_minpath(P,P',V).
