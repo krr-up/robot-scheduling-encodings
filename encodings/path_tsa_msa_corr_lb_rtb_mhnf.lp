@@ -12,6 +12,7 @@
 
 #include "path/task_to_path.lp".
 
+#include "path/corr_strict.lp".
 #include "path/move_choice_corr.lp".
 
 #include "path/move_sequencing.lp".
