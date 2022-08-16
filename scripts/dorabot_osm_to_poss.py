@@ -5,6 +5,7 @@
 import argparse
 import logging
 import sys
+import math
 import networkx as nx
 import networkx.algorithms as nxa
 from osm_parser import parse
@@ -40,6 +41,7 @@ def parse_args():
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
+
 def nodes_with(G, func):
     """Return nodes that satisfy func condition."""
     result = set()
@@ -51,7 +53,9 @@ def nodes_with(G, func):
             result.add(n)
     return result
 
+
 def node_tag_keys(G):
+    """Get the keys associated with a node."""
     keys = set()
     for n in G.nodes():
         nattr = G.nodes[n]['nattr']
@@ -60,6 +64,7 @@ def node_tag_keys(G):
         for k in nattr.keys():
             keys.add(k)
     return keys
+
 
 def node_tag_values(G):
     values = set()
@@ -76,7 +81,7 @@ def node_tag_values(G):
 
 
 def filter_nodes(G, poss_homes):
-
+    """Remove nodes that are not reachable from some robot home."""
     bad_nodes = set()
     rcount = 0
     for connected_nodes in nxa.connected_components(G):
@@ -109,10 +114,9 @@ def print_graph(robot_speed, G, outfd):
     get_x = nx.get_node_attributes(G, 'x')
     get_y = nx.get_node_attributes(G, 'y')
     for v in G.nodes:
-        x = round(get_x[v])# * 1000.0)
-        y = round(get_y[v])# * 1000.0)
+        x = round(get_x[v] * 1000.0)
+        y = round(get_y[v] * 1000.0)
         print(f"node({v},{x},{y}).", file=outfd)
-
 
     def conflict_e(x1, x2, x3, x4):
         fd = outfd
@@ -143,7 +147,9 @@ def print_graph(robot_speed, G, outfd):
 def write_out(robot_speed, graph, grid, poss_homes, poss_manips,
               poss_eps, poss_stores, outfd):
     """Write the ASP file."""
-    print(f"grid({grid.x},{grid.y}).", file=outfd)
+    x = math.ceil(grid.x * 1000.0)
+    y = math.ceil(grid.y * 1000.0)
+    print(f"grid({x},{y}).", file=outfd)
     for ph in poss_homes:
         print(f"poss_home({ph}).", file=outfd)
     for pm in poss_manips:
@@ -153,6 +159,11 @@ def write_out(robot_speed, graph, grid, poss_homes, poss_manips,
     for st in poss_stores:
         print(f"poss_storage({st}).", file=outfd)
     print_graph(robot_speed, graph, outfd)
+
+
+# ------------------------------------------------------------------------------
+# calculate_grid(G) - we need to recalculate the grid once we've removed unreachable nodes
+# ------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
 #
@@ -184,20 +195,29 @@ def main():
         is_poss_manip = lambda a: a["type"] == "manipulation_buffer_cell"
         is_poss_ep = lambda a: a["type"] == "empty_pallet"
         is_poss_store = lambda a: a["type"] == "storage_cell"
-
+        g_logger.info("Poss home identified by tag type: standby_cell")
+        g_logger.info("Poss manipulator identified by tag type: manipulation_buffer_cell")
+        g_logger.info("Poss empty pallet location identifed by tag type: empty_pallet")
+        g_logger.info("Poss storage location identifed by tag type: storage_cell")
     else:
         if "func_types" in tagkeys:
             is_poss_home = lambda a: a.get("func_types","") in home_values
+            g_logger.info(f"Poss home identifed by func_type: {home_values}")
         else:
             is_poss_home = lambda a: a.get("cell_type", "") in home_values
+            g_logger.info(f"Poss home identifed by cell_type: {home_values}")
 
         is_poss_ep = lambda a: a.get("cell_type", "") == "storage"
+        g_logger.info("Poss empty pallet location identifed by cell_type: storage")
         is_poss_store = lambda a: a.get("cell_type", "") == "storage"
+        g_logger.info("Poss storage location identifed by cell_type: storage")
 
         if "brienne_buffer" in tagvalues:
             is_poss_manip = lambda a: a.get("cell_type", "") == "brienne_buffer"
+            g_logger.info("Poss manipulator identifed by cell_type: brienne_buffer")
         else:
             is_poss_manip = lambda a: a.get("cell_type", "") == "storage"
+            g_logger.info("Poss manipulator identifed by cell_type: storage")
 
     poss_homes = nodes_with(G, is_poss_home)
     filter_nodes(G, poss_homes)

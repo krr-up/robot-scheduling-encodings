@@ -12,7 +12,6 @@
 
 import sys
 import logging
-import math
 from lxml import etree
 import networkx as nx
 from geopy import distance
@@ -120,7 +119,7 @@ def parse(filename):
     lat_min = min(lats)
     x = distance.distance((lat_min, lon_min), (lat_min, lon_max)).meters
     y = distance.distance((lat_min, lon_min), (lat_max, lon_min)).meters
-    grid = Grid(x=math.ceil(x), y=math.ceil(y))
+    grid = Grid(x=x, y=y)
     add_xy(G, lon_min, lat_min)
     return (G, grid)
 
