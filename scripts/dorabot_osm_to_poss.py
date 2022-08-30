@@ -29,6 +29,9 @@ def parse_args():
     parser.add_argument('-s', '--robot-speed', dest='robot_speed',
                         type=float, default=1.0,
                         help="The speed of the robots in m/s [default: 1.0]")
+    parser.add_argument('-w', '--robot-width', dest='robot_width',
+                        type=float, default=0.0,
+                        help="The width of the robots in meters [default: 0.0]")
     parser.add_argument('-c', '--charge-as-home', dest='charge_as_home',
                         action='store_true',
                         help=("Treat all 'charge' cells as allowable "
@@ -101,12 +104,23 @@ def filter_nodes(G, poss_homes):
         g_logger.info(("Expecting only 1 robot reachable subgraphs, "
                        f"but there are {len(rcount)}"))
 
+
+# ------------------------------------------------------------------------------
+# Calculate whether two nodes conflict
+# ------------------------------------------------------------------------------
+
+def vertices_conflict(v1,v2,robot_width):
+    xdist = abs(v1[0]-v2[0])
+    ydist = abs(v1[1]-v2[1])
+    vdist = math.sqrt(xdist**2.0 + ydist**2.0)
+    return vdist <= robot_width
+
 # ------------------------------------------------------------------------------
 #
 # ------------------------------------------------------------------------------
 
 
-def print_graph(robot_speed, G, outfd):
+def print_graph(robot_speed, robot_width, G, outfd):
     """Export the graph as ASP facts."""
     rspeed_ms = robot_speed
 
@@ -136,15 +150,30 @@ def print_graph(robot_speed, G, outfd):
 #        conflict_e(n2, n1, n2, n1)
 
     # Output the vertex conflicts
+
+    # Every node conflicts with itself
     for v in G.nodes():
         print("conflict({},{}).".format(v, v), file=outfd)
 
+    # If the robot width is non-zero then calculate the conflicts between all nodes
+    if robot_width > 0.1:
+        for v1 in G.nodes():
+            for v2 in G.nodes():
+                if int(v1) >= int(v2):
+#                    print(f"{v1} >= {v2}")
+                    continue
+#                print(f"{v1} < {v2}")
+                if vertices_conflict((get_x[v1], get_y[v1]), (get_x[v2],get_y[v2]), robot_width):
+#                    print(f"conflict: {v1} and {v2}")
+                    print(f"conflict({v1},{v2}).", file=outfd)
+                    print(f"conflict({v2},{v1}).", file=outfd)
 
 # ------------------------------------------------------------------------------
 # Write out
 # ------------------------------------------------------------------------------
 
-def write_out(robot_speed, graph, grid, poss_homes, poss_manips,
+def write_out(robot_speed, robot_width,
+              graph, grid, poss_homes, poss_manips,
               poss_eps, poss_stores, outfd):
     """Write the ASP file."""
     x = math.ceil(grid.x * 1000.0)
@@ -158,7 +187,7 @@ def write_out(robot_speed, graph, grid, poss_homes, poss_manips,
         print(f"poss_empty_pallet({ep}).", file=outfd)
     for st in poss_stores:
         print(f"poss_storage({st}).", file=outfd)
-    print_graph(robot_speed, graph, outfd)
+    print_graph(robot_speed, robot_width, graph, outfd)
 
 
 # ------------------------------------------------------------------------------
@@ -233,14 +262,16 @@ def main():
 
     # Write the output
     if args.out_file == "-":
-        write_out(robot_speed=args.robot_speed, graph=G, grid=grid,
+        write_out(robot_speed=args.robot_speed, robot_width=args.robot_width,
+                  graph=G, grid=grid,
                   poss_homes=poss_homes, poss_manips=poss_manips,
                   poss_eps=poss_eps, poss_stores=poss_stores,
                   outfd=sys.stdout)
         return
 
     with open(args.out_file, 'w') as outfd:
-        write_out(robot_speed=args.robot_speed, graph=G, grid=grid,
+        write_out(robot_speed=args.robot_speed, robot_width=args.robot_width,
+                  graph=G, grid=grid,
                   poss_homes=poss_homes, poss_manips=poss_manips,
                   poss_eps=poss_eps, poss_stores=poss_stores,
                   outfd=outfd)

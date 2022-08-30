@@ -1,0 +1,582 @@
+<runscript output="juggling-results">
+
+	<machine name="zuse" cpu="24x8xE5520@2.27GHz" memory="24GB"/>
+
+  	<config name="run-small" template="templates/run-20G.sh"/>
+
+    <!--
+        ===========================================================================
+        The solving setup. The different solver configurations
+        ===========================================================================
+    -->
+
+	<system name="clingo-dl" version="1.3.0" measures="clingodl" config="run-small">
+
+      <!--
+           ===========================================================================
+           Finding a solution. Solving with the walk encoding
+           ===========================================================================
+      -->
+
+      <setting name="walk_basic_tweety"
+               cmdline='--configuration=tweety "${HOME}/encodings/walk_basic.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="walk" />
+
+      <setting name="walk_tsag_tweety"
+               cmdline='--configuration=tweety "${HOME}/encodings/walk_tsag.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="walk" />
+
+
+      <!--
+           ===========================================================================
+           Finding a solution. Solver (tweety) with path encoding variants that
+           don't restrict moves. Note: these are more likely to fail on bigger
+           problem instances due to grounding.
+           ===========================================================================
+      -->
+
+      <setting name="path_basic_tweety"
+               cmdline='--configuration=tweety "${HOME}/encodings/path_basic.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="unrest_moves" />
+
+      <setting name="path_lb_tweety"
+               cmdline='--configuration=tweety "${HOME}/encodings/path_lb.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="unrest_moves" />
+
+      <setting name="path_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="unrest_moves" />
+
+      <setting name="path_tsa_lb_mhnf_tweety"
+               cmdline='--configuration=tweety "${HOME}/encodings/path_tsa_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="unrest_moves" />
+
+      <setting name="path_tsag_lb_mhnf_tweety"
+               cmdline='--configuration=tweety "${HOME}/encodings/path_tsag_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="unrest_moves" />
+
+      <!-- Alternative move heuristic for comparison -->
+
+      <setting name="path_lb_mhsf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_lb_mhsf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="unrest_moves" />
+
+      <!--
+           ===========================================================================
+           Finding a solution. Solver (tweety) with path encoding variants that
+           restrict moves to a corridor.
+           ===========================================================================
+      -->
+
+      <setting name="path_corr_lb_tweety"
+               cmdline='--configuration=tweety "${HOME}/encodings/path_corr_lb.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+      <setting name="path_corrns_lb_tweety"
+               cmdline='--configuration=tweety "${HOME}/encodings/path_corrns_lb.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+
+      <setting name="path_corr_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+      <setting name="path_corrns_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+
+      <setting name="path_tsa_corr_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsa_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+      <setting name="path_tsa_corrns_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsa_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+
+      <setting name="path_tsag_corr_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+      <setting name="path_tsag_corrns_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+
+      <setting name="path_tsag_msa_corr_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+      <setting name="path_tsag_msa_corrns_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+
+      <setting name="path_tsag_msr_corr_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msr_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+      <setting name="path_tsag_msr_corrns_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msr_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+
+      <setting name="path_tsag_msa_msr_corr_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_msr_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+      <setting name="path_tsag_msa_msr_corrns_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_msr_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+      <setting name="path_tsag_msa_msr_corr_lb_mhnf_tweety_wc"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_msr_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="wc" />
+
+      <setting name="path_tsag_msa_msr_corrns_lb_mhnf_tweety_wc"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_msr_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="wc" />
+
+      <!-- Alternative tsa combinations - not interesting -->
+
+      <setting name="path_tsa_msa_corr_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsa_msa_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+      <setting name="path_tsr_msr_corr_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsr_msr_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+
+      <!-- Combine all task/move sequence reachability -->
+
+      <setting name="path_all_corr_lb_mhnf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_all_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+
+      <!-- Alternative move heuristic - to compare in the appendix -->
+
+      <setting name="path_corr_lb_mhsf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_corr_lb_mhsf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+      <setting name="path_tsag_corr_lb_mhsf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_corr_lb_mhsf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+      <setting name="path_tsag_msa_corr_lb_mhsf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_corr_lb_mhsf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+
+      <setting name="path_corr_lb_mhtf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_corr_lb_mhtf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+      <setting name="path_tsag_corr_lb_mhtf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_corr_lb_mhtf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+      <setting name="path_tsag_msa_corr_lb_mhtf_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_corr_lb_mhtf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="corr_moves" />
+
+
+     <!--
+           ===========================================================================
+           Finding a decent solution by restricting the pallet replacement
+           time. Solver (tweety) with two best path encoding variant
+           (corr_lb_mh and tsa_corr_lb_mh).
+
+           Note: only meaningful to run this on the dorabot maps where the time
+           points have a direct correlation to seconds. That is:
+
+                timepoints   seconds    min
+                400000        400       6.6
+                300000        300       5
+                200000        200       3.3
+           ===========================================================================
+     -->
+
+     <!-- ============================================================================
+           Time out of 400000 (400s) - realistic for the coarse maps
+     -->
+
+     <setting name="path_corr_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_corrns_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsa_corr_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_tsa_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsa_corrns_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_tsa_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsag_corr_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_tsag_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsag_corrns_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_tsag_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsag_msa_corr_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_tsag_msa_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsag_msa_corrns_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_tsag_msa_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsag_msr_corr_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_tsag_msr_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsag_msr_corrns_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_tsag_msr_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsag_msa_msr_corr_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_tsag_msa_msr_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsag_msa_msr_corrns_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_tsag_msa_msr_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsag_msa_msr_corr_lb_mhnf_rtb_800_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=800000 "${HOME}/encodings/path_tsag_msa_msr_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time_large" />
+
+     <setting name="path_tsag_msa_msr_corrns_lb_mhnf_rtb_800_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=800000 "${HOME}/encodings/path_tsag_msa_msr_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time_large" />
+
+
+
+
+
+     <setting name="path_all_corr_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_all_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsa_msa_corr_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_tsa_msa_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsr_msr_corr_lb_mhnf_rtb_400_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=400000 "${HOME}/encodings/path_tsr_msr_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <!-- ============================================================================
+           Time out of 300000 (300s) - realistic for the coarse maps
+     -->
+
+     <setting name="path_corr_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_corrns_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsa_corr_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_tsa_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsa_corrns_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_tsa_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsag_corr_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_tsag_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsag_corrns_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_tsag_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsag_msa_corr_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_tsag_msa_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsag_msa_corrns_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_tsag_msa_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsag_msr_corr_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_tsag_msr_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsag_msr_corrns_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_tsag_msr_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsag_msa_msr_corr_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_tsag_msa_msr_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsag_msa_msr_corrns_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_tsag_msa_msr_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+
+     <setting name="path_all_corr_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_all_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsa_msa_corr_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_tsa_msa_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsr_msr_corr_lb_mhnf_rtb_300_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=300000 "${HOME}/encodings/path_tsr_msr_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+
+     <!-- ============================================================================
+           Time out of 200000 (200s) - not realistic
+     -->
+
+     <setting name="path_corr_lb_mhnf_rtb_200_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=200000 "${HOME}/encodings/path_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_corrns_lb_mhnf_rtb_200_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=200000 "${HOME}/encodings/path_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsa_corr_lb_mhnf_rtb_200_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=200000 "${HOME}/encodings/path_tsa_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsa_corrns_lb_mhnf_rtb_200_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=200000 "${HOME}/encodings/path_tsa_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsag_corr_lb_mhnf_rtb_200_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=200000 "${HOME}/encodings/path_tsag_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsag_corrns_lb_mhnf_rtb_200_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=200000 "${HOME}/encodings/path_tsag_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsag_msa_corr_lb_mhnf_rtb_200_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=200000 "${HOME}/encodings/path_tsag_msa_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsag_msa_corrns_lb_mhnf_rtb_200_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=200000 "${HOME}/encodings/path_tsag_msa_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsag_msr_corr_lb_mhnf_rtb_200_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=200000 "${HOME}/encodings/path_tsag_msr_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsag_msr_corrns_lb_mhnf_rtb_200_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=200000 "${HOME}/encodings/path_tsag_msr_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+
+     <setting name="path_tsag_msa_msr_corr_lb_mhnf_rtb_200_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=200000 "${HOME}/encodings/path_tsag_msa_msr_corr_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <setting name="path_tsag_msa_msr_corrns_lb_mhnf_rtb_200_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --const repl_time=200000 "${HOME}/encodings/path_tsag_msa_msr_corrns_lb_rtb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="repl_time" />
+
+     <!--
+           ===========================================================================
+           Finding the minimum makespan. Solver (tweety)
+           ===========================================================================
+      -->
+
+      <setting name="path_corr_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+      <setting name="path_corrns_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+
+      <setting name="path_tsa_corr_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_tsa_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+      <setting name="path_tsa_corrns_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_tsa_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+
+      <setting name="path_tsag_corr_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_tsag_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+      <setting name="path_tsag_corrns_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_tsag_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+
+      <setting name="path_tsag_msa_corr_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_tsag_msa_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+      <setting name="path_tsag_msa_corrns_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_tsag_msa_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+
+      <setting name="path_tsag_msr_corr_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_tsag_msr_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+      <setting name="path_tsag_msr_corrns_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_tsag_msr_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+
+      <setting name="path_tsag_msa_msr_corr_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_tsag_msa_msr_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+      <setting name="path_tsag_msa_msr_corrns_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_tsag_msa_msr_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+
+
+      <setting name="path_all_corr_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_all_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+      <setting name="path_tsa_msa_corr_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_tsa_msa_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+      <setting name="path_tsr_msr_corr_lb_mhnf_min_makespan_tweety"
+               cmdline='--configuration=tweety --heuristic=Domain --minimize-variable=bound "${HOME}/encodings/path_tsr_msr_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="min_makespan" />
+
+    </system>
+
+
+
+    <!--
+        ===========================================================================
+        The benchmark instances. Two sets: 1) Philipp's purely randomly
+        generated instances, 2) the dorabot maps with randomly generated
+        tasks. The reason to separate them is the pallet replacement time
+        restriction is only meaningful for the dorabot map version.
+        ===========================================================================
+    -->
+
+	<benchmark name="instances-philipp">
+		<folder path="instances/philipp"><ignore prefix=""/></folder>
+	</benchmark>
+    <benchmark name="instances-dorabot">
+		<folder path="instances/dorabot"><ignore prefix=""/></folder>
+	</benchmark>
+    <benchmark name="instances-dorabot-wc">
+		<folder path="instances/dorabot_with_conflicts"><ignore prefix=""/></folder>
+	</benchmark>
+    <benchmark name="instances-dorabot-large">
+		<folder path="instances/dorabot_large"><ignore prefix=""/></folder>
+	</benchmark>
+
+	<benchmark name="instances-philipp-maxstep">
+		<folder path="instances/philipp_maxstep"><ignore prefix=""/></folder>
+	</benchmark>
+    <benchmark name="instances-dorabot-maxstep">
+		<folder path="instances/dorabot_maxstep"><ignore prefix=""/></folder>
+	</benchmark>
+    <benchmark name="instances-dorabot-large-maxstep">
+		<folder path="instances/dorabot_large_maxstep"><ignore prefix=""/></folder>
+	</benchmark>
+
+    <!--
+        ===========================================================================
+        For finding a single solution we consider a timeout of 30 min. For
+        finding a good solution using pallet replacement time we allow
+        30 min. For finding best solution with a minimum makespan we allow
+        2hr (120 min).
+        ===========================================================================
+    -->
+
+    <pbsjob name="walksoln" timeout="1800" runs="1"
+            script_mode="timeout" walltime="96:00:00" cpt="8" partition="kr"/>
+
+	<pbsjob name="onesoln" timeout="1800" runs="1"
+            script_mode="timeout" walltime="96:00:00" cpt="8" partition="kr"/>
+
+	<pbsjob name="goodsoln" timeout="1800" runs="1"
+            script_mode="timeout" walltime="96:00:00" cpt="8" partition="kr"/>
+
+	<pbsjob name="goodsoln-large" timeout="1800" runs="1"
+            script_mode="timeout" walltime="96:00:00" cpt="8" partition="kr"/>
+
+	<pbsjob name="bestsoln" timeout="7200" runs="1"
+            script_mode="timeout" walltime="96:00:00" cpt="8" partition="kr"/>
+
+	<project name="clingo-walksoln-job" job="walksoln">
+		<runtag machine="zuse" benchmark="instances-philipp-maxstep" tag="walk"/>
+		<runtag machine="zuse" benchmark="instances-dorabot-maxstep" tag="walk"/>
+		<runtag machine="zuse" benchmark="instances-dorabot-large-maxstep" tag="walk"/>
+	</project>
+
+	<project name="clingo-onesoln-job" job="onesoln">
+		<runtag machine="zuse" benchmark="instances-philipp" tag="unrest_moves"/>
+		<runtag machine="zuse" benchmark="instances-dorabot" tag="unrest_moves"/>
+		<runtag machine="zuse" benchmark="instances-dorabot-large" tag="unrest_moves"/>
+		<runtag machine="zuse" benchmark="instances-philipp" tag="corr_moves"/>
+		<runtag machine="zuse" benchmark="instances-dorabot" tag="corr_moves"/>
+		<runtag machine="zuse" benchmark="instances-dorabot-large" tag="corr_moves"/>
+	</project>
+
+    <project name="clingo-onesoln-wc-job" job="onesoln">
+		<runtag machine="zuse" benchmark="instances-dorabot-wc" tag="wc"/>
+	</project>
+
+	<project name="clingo-goodsoln-job" job="goodsoln">
+		<runtag machine="zuse" benchmark="instances-dorabot" tag="repl_time"/>
+	</project>
+
+	<project name="clingo-goodsoln-large-job" job="goodsoln-large">
+		<runtag machine="zuse" benchmark="instances-dorabot-large" tag="repl_time_large"/>
+	</project>
+
+	<project name="clingo-bestsoln-job" job="bestsoln">
+		<runtag machine="zuse" benchmark="instances-philipp" tag="min_makespan"/>
+		<runtag machine="zuse" benchmark="instances-dorabot" tag="min_makespan"/>
+		<runtag machine="zuse" benchmark="instances-dorabot-large" tag="min_makespan"/>
+	</project>
+
+</runscript>
+
