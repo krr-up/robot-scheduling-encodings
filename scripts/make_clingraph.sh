@@ -9,10 +9,11 @@
 
 SCRIPT="$( readlink -f ${BASH_SOURCE[0]} )"
 THIS_DIR="$( cd "$( dirname ${SCRIPT} )" && pwd )"
-MKGV_DIR="${THIS_DIR}/make_graphviz"
+MKGV_DIR="${THIS_DIR}/make_clingraph"
 
 TMP_DIR="out"
-TMP_FILE="${TMP_DIR}/tmp.default.lp"
+TMP_MAP_FILE="${TMP_DIR}/tmp.map.lp"
+TMP_TASK_FILE="${TMP_DIR}/tmp.task.lp"
 CG_FILE="${TMP_DIR}/default.pdf"
 OUT_DIR=""
 
@@ -38,7 +39,7 @@ dorabot_mapfile(){
     return
 }
 
-output_file(){
+output_file_prefix(){
     local dir="$( dirname $1 )"
     local filename="$( basename $1 )"
 
@@ -46,7 +47,7 @@ output_file(){
         dir="$OUT_DIR"
     fi
     mkdir -p "$dir"
-    echo "$dir/$filename.pdf"
+    echo "$dir/$filename"
 }
 
 run(){
@@ -55,19 +56,22 @@ run(){
     local filename="$( basename $infile )"
     local prefix=$(dorabot_prefix $filename)
     local mapfile=$(dorabot_mapfile $prefix)
-    local outfile="$(output_file $infile)"
+    local out_file_prefix="$(output_file_prefix $infile)"
+    local out_map_file="${out_file_prefix}.pdf"
+    local out_task_file="${out_file_prefix}.task.pdf"
 
     echo "DIR: ${dir}"
     echo "FILENAME: ${filename}"
     echo "PREFIX: ${prefix}"
     echo "MAPFILE: ${mapfile}"
-    echo "OUTFILE: ${outfile}"
+    echo "OUT_MAP_FILE: ${out_map_file}"
+    echo "OUT_TASK_FILE: ${out_task_file}"
 
     mkdir -p "${TMP_DIR}"
-    clingo -V0 --quiet=2,2,2 ${MKGV_DIR}/map_to_graphviz.lp $infile $mapfile | sed -e 's/^SATISFIABLE//g' > $TMP_FILE
-    clingraph --out=render --engine=neato $TMP_FILE
-    echo "Renaming ${CG_FILE} to $outfile"
-    mv "${CG_FILE}"  "$outfile"
+    clingo -V0 --quiet=2,2,2 ${MKGV_DIR}/to_map_graph.lp $infile $mapfile | sed -e 's/^SATISFIABLE//g' > $TMP_MAP_FILE
+    clingraph --out=render --engine=neato $TMP_MAP_FILE
+    echo "Renaming ${CG_FILE} to $out_map_file"
+    mv "${CG_FILE}"  "$out_map_file"
 }
 
 usage(){
