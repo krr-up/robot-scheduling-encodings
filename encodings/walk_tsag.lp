@@ -1,6 +1,6 @@
 %!desc! Walk encoding with task sequence acyclicity
 % ------------------------------------------------------------------------------
-% The walk encoding for no options
+% The walk encoding for only the task sequence acycilicty options
 % ------------------------------------------------------------------------------
 
 #include "walk/show.lp".

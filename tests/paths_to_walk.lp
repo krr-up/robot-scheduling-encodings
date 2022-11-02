@@ -31,7 +31,7 @@ active_path(P) :- visit(P,_), #count{ V : visit(P,V) } > 1.
 % assign a sequence count to each path.
 % ---------------------------------------------------------------------------------
 
-task_num(R,T,0)    :- assignment(R,T), task_sequence(T,_), not task_sequence(_,T).
+task_num(R,T,0)    :- assignment(R,T), not task_sequence(_,T).
 task_num(R,T',N+1) :- task_num(R,T,N), task_sequence(T,T').
 
 path_num(R,T,N)   :- task_num(R,T,N).

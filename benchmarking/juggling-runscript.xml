@@ -39,6 +39,10 @@
                cmdline='--configuration=tweety "${HOME}/encodings/path_basic.lp -"'
                ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="unrest_moves" />
 
+      <setting name="path_tsag_tweety"
+               cmdline='--configuration=tweety "${HOME}/encodings/path_tsag.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="unrest_moves" />
+
       <setting name="path_lb_tweety"
                cmdline='--configuration=tweety "${HOME}/encodings/path_lb.lp -"'
                ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="unrest_moves" />

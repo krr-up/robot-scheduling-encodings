@@ -37,6 +37,7 @@ def stats(fb):
     tmp = list(qRepl.all())
     if not tmp:
        sys.stderr.write("Warning: no replacement time data\n")
+       sys.stderr.write(f"Facts:\n{fb.asp_str(sorted=True)}\n")
        return
 
     count = len(tmp)

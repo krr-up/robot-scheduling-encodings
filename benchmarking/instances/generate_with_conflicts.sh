@@ -8,7 +8,7 @@ SCRIPT="$( readlink -f ${BASH_SOURCE[0]} )"
 THIS_DIR="$( cd "$( dirname ${SCRIPT} )" && pwd )"
 MC_DIR="with_conflicts"
 IN_DIR="dorabot"
-OUT_DIR="dorabot_with_conflicts"
+OUT_DIR="dorabot_with_conflicts_again"
 
 dorabot_prefix(){
     local map=$(echo $1 | sed -n 's/^\(map[0-9]\).*$/\1/p')

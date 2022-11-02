@@ -14,7 +14,10 @@ path(R,V)             :- assignment(R,_), home(R,V).
 path(R,V)             :- home(R,V), not start(R,V).
 
 path_sequence(T,T')   :- task_sequence(T,T').
-path_sequence(T,R)    :- task_sequence(_,T), not task_sequence(T,_), assignment(R,T).
+%path_sequence(T,R)    :- task_sequence(_,T), not task_sequence(T,_), assignment(R,T).
+%path_sequence(T,R)    :- assignment(R,T), not task_sequence(_,T), not task_sequence(T,_).
+
+path_sequence(T,R)    :- assignment(R,T), not task_sequence(T,_).
 
 path_assignment(R,T)  :- assignment(R,T).
 path_assignment(R,R)  :- assignment(R,_).
