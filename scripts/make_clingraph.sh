@@ -13,7 +13,7 @@ MKGV_DIR="${THIS_DIR}/make_clingraph"
 
 TMP_DIR="out"
 TMP_MAP_FILE="${TMP_DIR}/tmp.map.lp"
-TMP_TASK_FILE="${TMP_DIR}/tmp.task.lp"
+#TMP_TASK_FILE="${TMP_DIR}/tmp.task.lp"
 CG_FILE="${TMP_DIR}/default.pdf"
 OUT_DIR=""
 
@@ -65,7 +65,7 @@ run(){
     echo "PREFIX: ${prefix}"
     echo "MAPFILE: ${mapfile}"
     echo "OUT_MAP_FILE: ${out_map_file}"
-    echo "OUT_TASK_FILE: ${out_task_file}"
+    echo "TMP_MAP_FILE: ${TMP_MAP_FILE}"
 
     mkdir -p "${TMP_DIR}"
     clingo -V0 --quiet=2,2,2 ${MKGV_DIR}/to_map_graph.lp $infile $mapfile | sed -e 's/^SATISFIABLE//g' > $TMP_MAP_FILE

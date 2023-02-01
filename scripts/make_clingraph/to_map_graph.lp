@@ -24,8 +24,9 @@ def node_dim(dim: str) -> str:
     return f"{size}"
 
 @make_function_asp_callable(RawField, RawField)
-def node_name(rname: Raw) -> str:
+def node_name(rname: Raw) -> Raw:
     return rname
+    print(f"{rname} ({type(rname)}) => {str(rname)}")
     return f"{rname}"
 
 @make_function_asp_callable(RawField, StringField)
@@ -94,8 +95,8 @@ job(@register_job(@node_name(From),@node_name(To)),From,To,Rep) :-
 deliver(From,To)  :- job(_,From,To,Rep).
 deliver(Rep,From)  :- job(_,From,To,Rep).
 
-edge((@node_name(From),@node_name(To)))                            :- job(_,From,To,Rep).
-edge((@node_name(Rep),@node_name(From)))                           :- job(_,From,To,Rep).
+job_edge((@node_name(From),@node_name(To)))                        :- job(_,From,To,Rep).
+job_edge((@node_name(Rep),@node_name(From)))                       :- job(_,From,To,Rep).
 attr(edge, (@node_name(From),@node_name(To)), color, blue)         :- job(_,From,To,Rep).
 attr(edge, (@node_name(Rep),@node_name(From)), color, red)         :- job(_,From,To,Rep).
 attr(edge, (@node_name(Nid),@node_name(Nid')), style, "dashed")    :- deliver(Nid,Nid').
@@ -103,14 +104,15 @@ attr(edge, (@node_name(Nid),@node_name(Nid')), arrowsize, "1.0")   :- deliver(Ni
 attr(edge, (@node_name(Nid),@node_name(Nid')), splines, true)      :- deliver(Nid,Nid').
 attr(edge, (@node_name(Nid),@node_name(Nid')), dir, forward)       :- deliver(Nid,Nid').
 
-
-
 attr(graph_nodes, default, pin, true).
 attr(graph_nodes, default, fixedsize, true).
 
 node(@node_name(Nid))                                  :- node(Nid,_,_).
 attr(node, @node_name(Nid), pos, @xy_to_point(X,Y))    :- node(Nid,X,Y), scaled.
-edge((@node_name(From),@node_name(To)))                :- edge(From,To,_), From <= To.
+
+edge((@node_name(From),@node_name(To)))                :- edge(From,To,_), From <= To,
+                                                          not job_edge((To,From)).
+edge(X)                                                :- job_edge(X).
 
 node((X,Y),X*5000,Y*5000)              :- edge((X,Y),_,_).
 node((X,Y),X*5000,Y*5000)              :- edge(_,(X,Y),_).

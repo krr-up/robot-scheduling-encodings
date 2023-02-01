@@ -1,8 +1,8 @@
 <runscript output="juggling-results">
 
-	<machine name="zuse" cpu="24x8xE5520@2.27GHz" memory="24GB"/>
+	<machine name="zuse" cpu="24x8xE5520@2.27GHz" memory="32GB"/>
 
-  	<config name="run-small" template="templates/run-20G.sh"/>
+  	<config name="run-small" template="templates/run-30G.sh"/>
 
     <!--
         ===========================================================================
@@ -137,6 +137,30 @@
       <setting name="path_tsag_msa_msr_corr_lb_mhnf_tweety_wc"
                cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_msr_corr_lb_mhnf.lp -"'
                ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="wc" />
+
+      <setting name="path_tsag_msa_msr_corr_lb_mhnf_tweety_wc0m"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_msr_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="wc0m" />
+
+      <setting name="path_tsag_msa_msr_corr_lb_mhnf_tweety_wc1m"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_msr_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="wc1m" />
+
+      <setting name="path_tsag_msa_msr_corr_lb_mhnf_tweety_wc2m"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_msr_corr_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="wc2m" />
+
+      <setting name="path_tsag_msa_msr_corrns_lb_mhnf_tweety_wc0m"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_msr_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="wc0m" />
+
+      <setting name="path_tsag_msa_msr_corrns_lb_mhnf_tweety_wc1m"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_msr_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="wc1m" />
+
+      <setting name="path_tsag_msa_msr_corrns_lb_mhnf_tweety_wc2m"
+               cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_msr_corrns_lb_mhnf.lp -"'
+               ppn="8" procs="1" pbstemplate="templates/single.pbs" tag="wc2m" />
 
       <setting name="path_tsag_msa_msr_corrns_lb_mhnf_tweety_wc"
                cmdline='--configuration=tweety --heuristic=Domain "${HOME}/encodings/path_tsag_msa_msr_corrns_lb_mhnf.lp -"'
@@ -511,6 +535,15 @@
     <benchmark name="instances-dorabot-wc">
 		<folder path="instances/dorabot_with_conflicts"><ignore prefix=""/></folder>
 	</benchmark>
+    <benchmark name="instances-dorabot-wc0m">
+		<folder path="instances/dorabot_with_conflicts_0m"><ignore prefix=""/></folder>
+	</benchmark>
+    <benchmark name="instances-dorabot-wc1m">
+		<folder path="instances/dorabot_with_conflicts_1m"><ignore prefix=""/></folder>
+	</benchmark>
+    <benchmark name="instances-dorabot-wc2m">
+		<folder path="instances/dorabot_with_conflicts_2m"><ignore prefix=""/></folder>
+	</benchmark>
     <benchmark name="instances-dorabot-large">
 		<folder path="instances/dorabot_large"><ignore prefix=""/></folder>
 	</benchmark>
@@ -566,6 +599,16 @@
 
     <project name="clingo-onesoln-wc-job" job="onesoln">
 		<runtag machine="zuse" benchmark="instances-dorabot-wc" tag="wc"/>
+	</project>
+
+    <project name="clingo-onesoln-wc0m-job" job="onesoln">
+		<runtag machine="zuse" benchmark="instances-dorabot-wc0m" tag="wc0m"/>
+	</project>
+    <project name="clingo-onesoln-wc1m-job" job="onesoln">
+		<runtag machine="zuse" benchmark="instances-dorabot-wc1m" tag="wc1m"/>
+	</project>
+    <project name="clingo-onesoln-wc2m-job" job="onesoln">
+		<runtag machine="zuse" benchmark="instances-dorabot-wc2m" tag="wc2m"/>
 	</project>
 
 	<project name="clingo-goodsoln-job" job="goodsoln">
