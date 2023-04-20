@@ -31,15 +31,40 @@ path_minpath_d(T,V'')   :- path_minpath_d(T,V), task(T,V'),
 % now executing task Y then V is on the shortest path to task Y's endpoint.
 % ------------------------------------------------------------------------------
 
+%%%%%%path_minpath(R,R,V)     :- start(R,V).
+%%%%%%path_minpath(T,R,V)     :- robot(R), depends(deliver,_,T), task(T,V).
+%%%%%%path_minpath(P,R,V'')   :- path_minpath(P,R,V), home(R,V'),
+%%%%%%                           shortest_path(V,V',_,V'').
+%%%%%%path_minpath(R,T,V)     :- start(R,V), depends(deliver,T,_).
+%%%%%%path_minpath(T',T'',V') :- depends(deliver,T,T'), task(T',V'),
+%%%%%%                           depends(deliver,T'',_), T != T''.
+%%%%%%path_minpath(P,T,V'')   :- path_minpath(P,T,V), task(T,V'),
+%%%%%%                           shortest_path(V,V',_,V'').
+%%%%%%
+
+in_deliver_dependency(T) :- depends(deliver,T,_).
+in_deliver_dependency(T) :- depends(deliver,_,T).
+
+non_delivery(T)          :- task(T,_), not in_deliver_dependency(T).
+
+%path_minpath(R,T,V)     :- robot(R), non_delivery(T), task(T,V).
+%path_minpath(T,R,V)     :- robot(R), non_delivery(T), task(T,V).
+%path_minpath(T,T',V)    :- non_delivery(T), depends(deliver,T',_), task(T',V).
+
+
 path_minpath(R,R,V)     :- start(R,V).
 path_minpath(T,R,V)     :- robot(R), depends(deliver,_,T), task(T,V).
+path_minpath(T,R,V)     :- robot(R), non_delivery(T), task(T,V).
+
 path_minpath(P,R,V'')   :- path_minpath(P,R,V), home(R,V'),
                            shortest_path(V,V',_,V'').
 path_minpath(R,T,V)     :- start(R,V), depends(deliver,T,_).
+path_minpath(R,T,V)     :- start(R,V), non_delivery(T).
 path_minpath(T',T'',V') :- depends(deliver,T,T'), task(T',V'),
                            depends(deliver,T'',_), T != T''.
 path_minpath(P,T,V'')   :- path_minpath(P,T,V), task(T,V'),
                            shortest_path(V,V',_,V'').
+
 
 
 % ------------------------------------------------------------------------------
